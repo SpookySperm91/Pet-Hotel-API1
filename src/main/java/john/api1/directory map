@@ -1,0 +1,8 @@
+application
+    adapters        // concrete implementations
+    components      // shared utilities
+    domain          // core agnostic business layer
+    dto             // object mapping, request mapping
+
+common
+    config          // configurations
