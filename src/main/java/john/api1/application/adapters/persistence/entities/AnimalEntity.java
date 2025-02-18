@@ -1,6 +1,5 @@
-package john.api1.application.domain.models;
+package john.api1.application.adapters.persistence.entities;
 
-import john.api1.application.domain.models.metadata.AnimalMetadata;
 import lombok.Data;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -13,7 +12,6 @@ public class AnimalEntity {
     @Id
     private ObjectId id;
     private ObjectId clientId;
-    private AnimalMetadata animal;
             // hotel, grooming, medical, etc...
     private Map<String, Object> serviceMetadata;
     private Date createAt;

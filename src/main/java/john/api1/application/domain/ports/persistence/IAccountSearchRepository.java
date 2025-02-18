@@ -1,14 +1,18 @@
 package john.api1.application.domain.ports.persistence;
 
+import john.api1.application.adapters.persistence.entities.ClientEntity;
+import john.api1.application.domain.models.ClientAccountDomain;
+import org.bson.types.ObjectId;
+
 import java.util.List;
 import java.util.Optional;
 
-public interface IAccountSearchRepository<T, ID> {
-    Optional<T> getAccountById(ID id);
+public interface IAccountSearchRepository {
+    Optional<ClientAccountDomain> getAccountById(String id);
 
-    Optional<T> getAccountByEmail(String email);
+    Optional<ClientAccountDomain> getAccountByEmail(String email);
 
-    Optional<T> getAccountByPhoneNumber(String phoneNumber);
+    Optional<ClientAccountDomain> getAccountByPhoneNumber(String phoneNumber);
 
-    List<T> getAllAccount();
+    List<ClientAccountDomain> getAllAccount();
 }

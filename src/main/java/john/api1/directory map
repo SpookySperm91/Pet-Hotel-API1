@@ -1,8 +1,24 @@
 application
-    adapters        // concrete implementations
+    adapters        // concrete implementations (repositories, controllers)
+        controllers
+        persistence
+        dto
     components      // shared utilities
-    domain          // core agnostic business layer
-    dto             // object mapping, request mapping
-
+    domain          // core agnostic business layer by their objects
+        core            // complicated business logics
+        models          // domain objects
+        ports           // interfaces
+    services        // application's business logic
 common
     config          // configurations
+
+
+Services difference
+    application layer - use cases logics, delegates domain and externals(controllers, repositories, components, etc.).
+
+    domain layer - isolated layer, agnostic against externals, main system's existence, self own entities.
+
+
+Data flow
+    Request: JSON -> controller(JSON -mapped-> DTO-request) -> service(fields) -> repository(fields)
+    Response: controller(domainObject -mapped-> DTO) <- service(domainObject) <- repository(entity -mapped-> domainObject)
