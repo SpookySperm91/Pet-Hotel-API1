@@ -19,11 +19,15 @@ public class ClientAccountDomain {
     private final String hashedPassword;
 
     @Setter
-    private final boolean locked;
+    private boolean locked;
     private final Instant createdAt;
     private final Instant updatedAt;
 
     public ClientAccountDomain(String email, String phoneNumber, String hashedPassword) {
+        if (!isValidEmail(email)) throw new IllegalArgumentException("Invalid email format");
+        if (!isValidPhoneNumber(phoneNumber))
+            throw new IllegalArgumentException("Invalid phone-number format or length");
+
         this.id = null;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -82,7 +86,6 @@ public class ClientAccountDomain {
     }
 
     public static boolean isValidPhoneNumber(String phoneNumber) {
-        return phoneNumber.matches("^\\d{10,}$");
+        return phoneNumber.matches("^\\+?\\d{10,}$");
     }
-
 }

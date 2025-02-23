@@ -2,6 +2,7 @@ package john.api1.application.domain.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -12,9 +13,8 @@ import java.util.Optional;
 
 @Getter
 public class ClientDomain {
-    private final String id;
-    private final String accountId;       // client's account
-    private final List<String> petsId;    // client's pets
+    private final String accountId;             // client's account
+    private final List<String> petsId;          // client's pets
 
     // basics
     @Setter
@@ -32,11 +32,17 @@ public class ClientDomain {
     private final Instant createdAt;
     private Instant updatedAt;
 
-    public ClientDomain(String id, String accountId, String fullName, List<String> petsId) {
-        this.id = id;
+    public ClientDomain(String accountId, String fullName, List<String> petsId, String streetAddress, String cityAddress, String stateAddress, String emergencyPhoneNumber) {
+        if (emergencyPhoneNumber != null && !isValidPhoneNumber(emergencyPhoneNumber))
+            throw new IllegalArgumentException("Invalid emergency phone-number format or length");
+
         this.accountId = accountId;
         this.fullName = fullName;
         this.petsId = new ArrayList<>(Optional.ofNullable(petsId).orElse(Collections.emptyList()));
+        this.streetAddress = streetAddress;
+        this.cityAddress = cityAddress;
+        this.stateAddress = stateAddress;
+        this.emergencyPhoneNumber = emergencyPhoneNumber;
         this.createdAt = Instant.now();
         this.updatedAt = this.createdAt;
     }
@@ -64,7 +70,23 @@ public class ClientDomain {
                 .orElse(false);
     }
 
+    // map string ids to objectId
+    public List<ObjectId> getValidPetObjectIds() {
+        return this.petsId != null
+                ? this.petsId.stream()
+                .filter(ObjectId::isValid)
+                .map(ObjectId::new)
+                .toList()
+                : Collections.emptyList();
+    }
+
     private void updateTimestamp() {
         this.updatedAt = Instant.now();
     }
+
+    public static boolean isValidPhoneNumber(String phoneNumber) {
+        return phoneNumber.matches("^\\+?\\d{10,}$");
+    }
+
+
 }
