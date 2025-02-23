@@ -1,6 +1,6 @@
-package john.api1.application.domain.ports.contracts;
+package john.api1.application.ports.contracts;
 
-import john.api1.application.adapters.repositories.entities.ClientEntity;
+import john.api1.application.adapters.repositories.ClientEntity;
 
 public interface ClientServiceDomain {
     ClientEntity createClientAccount(ClientEntity newAccount);

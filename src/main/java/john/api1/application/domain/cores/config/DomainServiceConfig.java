@@ -1,4 +1,4 @@
-package john.api1.application.config;
+package john.api1.application.domain.cores.config;
 
 import john.api1.application.components.PasswordCreation;
 import john.api1.application.components.PasswordManagement;

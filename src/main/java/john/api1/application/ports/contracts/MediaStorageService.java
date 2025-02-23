@@ -1,4 +1,4 @@
-package john.api1.application.domain.ports.contracts;
+package john.api1.application.ports.contracts;
 
 public interface MediaStorageService<T> {
     boolean uploadMedia(T media);

@@ -1,4 +1,4 @@
-package john.api1.application.domain.ports.contracts;
+package john.api1.application.ports.contracts;
 
 public interface UpdateAccountService<T> {
     T updateEmail(T account, String newEmail);

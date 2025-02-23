@@ -1,9 +1,9 @@
-package john.api1.application.adapters.repositories;
+package john.api1.application.adapters.repositories.logging;
 
 import com.mongodb.MongoException;
-import john.api1.application.adapters.repositories.entities.FailedEmailEntity;
+import john.api1.application.adapters.repositories.LogFailedEmailEntity;
 import john.api1.application.components.exception.PersistenceException;
-import john.api1.application.domain.ports.repositories.ILoggingRepository;
+import john.api1.application.ports.repositories.ILoggingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -24,7 +24,7 @@ public class LoggingMongoDB implements ILoggingRepository {
     @Override
     public void logFailedEmail(String recipientEmail, String recipientUsername, String emailType, String body, String errorMessage) {
         try {
-            FailedEmailEntity failedEmail = new FailedEmailEntity(
+            LogFailedEmailEntity failedEmail = new LogFailedEmailEntity(
                     null,
                     recipientEmail,
                     recipientUsername,

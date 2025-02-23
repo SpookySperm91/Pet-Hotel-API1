@@ -1,4 +1,4 @@
-package john.api1.application.adapters.repositories.entities;
+package john.api1.application.adapters.repositories;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "failed-emails")
-public class FailedEmailEntity {
+public class LogFailedEmailEntity {
     @Id
     private ObjectId id;
 

@@ -2,7 +2,7 @@ package john.api1.application.adapters.services.email;
 
 import john.api1.application.adapters.services.EmailBaseSend;
 import john.api1.application.components.enums.EmailType;
-import john.api1.application.domain.ports.repositories.ILoggingRepository;
+import john.api1.application.ports.repositories.ILoggingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSender;

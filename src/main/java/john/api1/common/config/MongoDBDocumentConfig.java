@@ -1,4 +1,4 @@
-package john.api1.common;
+package john.api1.common.config;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

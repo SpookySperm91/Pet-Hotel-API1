@@ -1,4 +1,4 @@
-package john.api1.common;
+package john.api1.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

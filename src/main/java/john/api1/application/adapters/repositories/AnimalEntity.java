@@ -1,4 +1,4 @@
-package john.api1.application.adapters.repositories.entities;
+package john.api1.application.adapters.repositories;
 
 import lombok.Data;
 import org.bson.types.ObjectId;

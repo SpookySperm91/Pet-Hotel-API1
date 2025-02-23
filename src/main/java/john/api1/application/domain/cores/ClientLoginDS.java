@@ -3,7 +3,7 @@ package john.api1.application.domain.cores;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.PasswordManagement;
 import john.api1.application.domain.models.ClientAccountDomain;
-import john.api1.application.domain.ports.repositories.IAccountSearchRepository;
+import john.api1.application.ports.repositories.IAccountSearchRepository;
 
 import java.util.Optional;
 import java.util.function.Function;

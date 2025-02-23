@@ -1,6 +1,6 @@
-package john.api1.application.adapters.repositories;
+package john.api1.application.adapters.repositories.client;
 
-import john.api1.application.domain.ports.repositories.IAccountUpdateRepository;
+import john.api1.application.ports.repositories.IAccountUpdateRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

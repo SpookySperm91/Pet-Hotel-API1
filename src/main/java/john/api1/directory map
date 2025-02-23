@@ -1,13 +1,15 @@
 application
     adapters        // concrete implementations (repositories, controllers)
         controllers
-        persistence
-        dto
+        repositories
+        services
     components      // shared utilities
-    domain          // core agnostic business layer by their objects
+    async           // selected modules tweaked with multithreading function
+    domain          // core agnostic business layer of their objects
         core            // complicated business logics
         models          // domain objects
-        ports           // interfaces
+    dto             // data transfer objects(request, mapping)
+    ports           // interfaces
     services        // application's business logic
 common
     config          // configurations

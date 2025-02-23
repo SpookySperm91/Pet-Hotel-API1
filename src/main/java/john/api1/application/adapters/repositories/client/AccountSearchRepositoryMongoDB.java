@@ -1,8 +1,8 @@
-package john.api1.application.adapters.repositories;
+package john.api1.application.adapters.repositories.client;
 
-import john.api1.application.adapters.repositories.entities.ClientEntity;
+import john.api1.application.adapters.repositories.ClientEntity;
 import john.api1.application.domain.models.ClientAccountDomain;
-import john.api1.application.domain.ports.repositories.IAccountSearchRepository;
+import john.api1.application.ports.repositories.IAccountSearchRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

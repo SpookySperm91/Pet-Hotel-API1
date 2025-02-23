@@ -1,4 +1,4 @@
-package john.api1.application.adapters.repositories.entities;
+package john.api1.application.adapters.repositories;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

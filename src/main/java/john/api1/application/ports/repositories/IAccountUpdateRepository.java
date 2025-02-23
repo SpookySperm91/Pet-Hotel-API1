@@ -1,4 +1,4 @@
-package john.api1.application.domain.ports.repositories;
+package john.api1.application.ports.repositories;
 
 public interface IAccountUpdateRepository {
     boolean updateEmail(String id, String newEmail);
