@@ -2,7 +2,7 @@ package john.api1.application.adapters.controllers;
 
 import john.api1.application.components.DomainResponse;
 import john.api1.application.dto.request.RegisterRequestDTO;
-import john.api1.application.services.RegisterNewClientAS;
+import john.api1.application.services.admin.RegisterNewClientAS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package john.api1.application.services;
+package john.api1.application.services.admin;
 
 import john.api1.application.async.AsyncEmailService;
 import john.api1.application.components.DomainResponse;
