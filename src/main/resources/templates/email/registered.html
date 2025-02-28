@@ -1,75 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welcome to Big Paws Pet Hotel!</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f8f8;
-            padding: 0;
-            margin: 0;
-        }
-
+      body {
+        font-family: "Arial", sans-serif;
+        color: #444;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        background: #2e3357;
+        padding: 10px;
+        border-radius: 8px 8px 0 0;
+        color: #fff;
+        text-align: center;
+      }
+      .logo img {
+        width: 50px;
+        margin-right: 10px;
+      }
+      .social-icons {
+        text-align: center;
+        margin-top: 10px;
+      }
+      .social-icons img {
+        width: 30px;
+        margin: 0 5px;
+      }
+      .content {
+        background: #fff;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+      .info {
+        background-color: #eceff5;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+        font-weight: 600;
+      }
+      .button-container {
+        text-align: center;
+        margin-top: 15px;
+      }
+      .button {
+        background-color: #ff9800;
+        color: white;
+        padding: 12px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        display: inline-block;
+      }
+      .footer {
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+        margin-top: 20px;
+      }
+      .contact-details {
+        text-align: center;
+        margin-top: 15px;
+      }
+      /* Responsive */
+      @media screen and (max-width: 600px) {
         .container {
-            max-width: 600px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
+          padding: 15px;
         }
-
-        .header {
-            text-align: center;
-            background-color: #ff9800;
-            color: white;
-            padding: 15px;
-            font-size: 20px;
+        .info-block {
+          flex-direction: column;
+          align-items: flex-start;
         }
-
-        .content {
-            padding: 20px;
-            color: #333;
+        .highlight {
+          width: 100%;
         }
-
-        .info {
-            background: #ffebcc;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-            margin-top: 20px;
-        }
+      }
     </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="header">
-        Welcome to Big Paws Pet Hotel! 🐾
-    </div>
-    <div class="content">
-        <p>Dear <strong><span th:text="${username}"></span></strong>,</p>
-        <p>Your account has been created successfully! You can log in using either your email or phone number:</p>
-
-        <div class="info">
-            <p><strong>Email:</strong> <span th:text="${email}"></span></p>
-            <p><strong>Phone Number:</strong> <span th:text="${phone}"></span></p>
-            <p><strong>Temporary Password:</strong> <span th:text="${password}"></span></p>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/BigPawsLogo-tgQYrArFSfOX9irwlrG1D93gEjB9yr.png"
+            alt="Big Paws Pet Hotel"
+            width="100"
+          />
         </div>
-
-        <p><strong>Important:</strong> Please change your password as soon as possible for security reasons.</p>
-        <p>We look forward to providing the best care for your pets! 🐶🐱</p>
+        <h1>Welcome to Big Paws Pet Hotel!</h1>
+      </div>
+      <div class="content">
+        <p>
+          Dear <strong><span th:text="${username}"></span></strong>,
+        </p>
+        <p>
+          Welcome to the Big Paws family! We are absolutely thrilled to have you
+          and your beloved pet(s) with us.
+        </p>
+        <p>
+          At Big Paws Pet Hotel, we understand that your pet is part of your
+          family, and we are committed to providing a
+          <strong>safe, loving, and comfortable</strong> stay for them.
+        </p>
+        <p>Below are your account details:</p>
+        <div class="info">
+          <p><strong>Email:</strong> <span th:text="${email}"></span></p>
+          <p><strong>Phone Number:</strong> <span th:text="${phone}"></span></p>
+          <p>
+            <strong>Temporary Password:</strong>
+            <span th:text="${password}"></span>
+          </p>
+        </div>
+        <p>
+          <strong>Important:</strong> Please log in and change your password for
+          security purposes.
+        </p>
+        <!-- Buhat pakog chnage pass na page -->
+        <div class="button-container">
+          <a
+            href="https://big-paws-petsupplies-webapp.vercel.app/"
+            class="button"
+            >Change Password</a
+          >
+        </div>
+        <p>
+          If you have any questions or need assistance, feel free to reach out.
+          We can't wait to pamper your furry friend with love and care!
+        </p>
+      </div>
+      <!-- i download lang ang svg na icon boss -->
+      <div class="social-icons">
+        <a href="https://www.facebook.com/share/15jqk6ZeSE/">
+          <img src="/public/facebook-2870-svg.svg" alt="Facebook" />
+        </a>
+        <a href="https://instagram.com/BigPawsPetHotel">
+          <img src="/public/instagram-logo-svg.svg" alt="Instagram" />
+        </a>
+        <a href="https://www.facebook.com/108561992234737/">
+          <img src="/public/facebook-messenger-svg.svg" alt="Messenger" />
+        </a>
+      </div>
+      <div class="contact-details">
+        <p>
+          📍 Location: Bonifacio St., in front of Philhealth, Tagum City,
+          Philippines, 8100
+        </p>
+        <p>📞 Contact: +63 950 189 0933</p>
+        <p>✉️ Email: galojanlloyn18@gmail.com</p>
+      </div>
+      <div class="footer">
+        &copy; <span th:text="${#dates.year(#dates.createNow())}"></span> Big
+        Paws Pet Hotel. All rights reserved.
+      </div>
     </div>
-    <div class="footer">
-        &copy; 2024 Big Paws Pet Hotel. All rights reserved.
-    </div>
-</div>
-
-</body>
+  </body>
 </html>
