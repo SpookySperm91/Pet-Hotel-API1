@@ -3,23 +3,23 @@ package john.api1.application.adapters.services.email;
 import john.api1.application.adapters.services.EmailBaseSend;
 import john.api1.application.components.enums.EmailType;
 import john.api1.application.ports.repositories.ILoggingRepository;
+import john.api1.common.config.MailGunConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Component
+@Qualifier("RegisteredEmail")
 public class RegisteredEmail extends EmailBaseSend {
     private final TemplateEngine templateEngine;
-    private final ILoggingRepository logging;
 
     @Autowired
-    protected RegisteredEmail(JavaMailSender mailSender, TemplateEngine templateEngine, @Qualifier("MongoLoggingRepo") ILoggingRepository logging) {
-        super(mailSender);
+    protected RegisteredEmail(MailGunConfig mail, @Qualifier("mailgunWebClient") WebClient web, TemplateEngine templateEngine) {
+        super(mail, web);
         this.templateEngine = templateEngine;
-        this.logging = logging;
     }
 
     // Send Registered client's credentials to their email
@@ -42,12 +42,6 @@ public class RegisteredEmail extends EmailBaseSend {
         return "email/registered";
     }
 
-
-    @Override
-    protected void saveErrorLog(String recipientEmail, String recipientUsername, String body, String errorMessage) {
-        String emailType = EmailType.REGISTERED.getEmailType();
-        logging.logFailedEmail(recipientEmail, recipientUsername, emailType, body, errorMessage);
-    }
 
 
     private String[] parseBody(String body) {

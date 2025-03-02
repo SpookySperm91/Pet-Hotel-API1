@@ -12,7 +12,7 @@ public class ClientLoginAS {
     private final ClientLoginDS clientLogin;
 
     @Autowired
-    public ClientLoginAS(@Qualifier("MongoSearchRepo") IAccountSearchRepository searchRepository, ClientLoginDS clientLogin) {
+    public ClientLoginAS(@Qualifier("MongoAccountSearchRepo") IAccountSearchRepository searchRepository, ClientLoginDS clientLogin) {
         this.searchRepository = searchRepository;
         this.clientLogin = clientLogin;
     }
@@ -34,6 +34,5 @@ public class ClientLoginAS {
             throw new RuntimeException(e.getMessage());
         }
     }
-
 
 }

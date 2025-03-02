@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
-@Qualifier("MongoSearchRepo")
+@Qualifier("MongoAccountSearchRepo")
 public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository {
     private final MongoTemplate mongoTemplate;
 

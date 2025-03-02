@@ -5,9 +5,10 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum EmailType {
-    REGISTERED("Registered"),
-    RESET_PASSWORD("ResetPassword");
+public enum EmailStatus {
+    PENDING("Pending"),
+    SUCCESS("Success"),
+    FAILED("Failed");
 
-    private final String emailType;
+    private final String emailStatus;
 }
