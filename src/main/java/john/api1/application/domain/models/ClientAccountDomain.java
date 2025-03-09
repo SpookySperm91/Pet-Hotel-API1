@@ -1,6 +1,7 @@
 package john.api1.application.domain.models;
 
 import john.api1.application.components.PasswordManagement;
+import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,9 +25,9 @@ public class ClientAccountDomain {
     private final Instant updatedAt;
 
     public ClientAccountDomain(String email, String phoneNumber, String hashedPassword) {
-        if (!isValidEmail(email)) throw new IllegalArgumentException("Invalid email format");
+        if (!isValidEmail(email)) throw new DomainArgumentException("Invalid email format");
         if (!isValidPhoneNumber(phoneNumber))
-            throw new IllegalArgumentException("Invalid phone-number format or length");
+            throw new DomainArgumentException("Invalid phone-number format or length");
 
         this.id = null;
         this.email = email;

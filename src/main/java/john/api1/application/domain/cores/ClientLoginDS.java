@@ -13,10 +13,10 @@ public class ClientLoginDS {
         this.passwordManagement = passwordManagement;
     }
 
-    public DomainResponse<ClientAccountDomain> login(ClientAccountDomain account, String password) {
-        return Optional.ofNullable(account)
+    public DomainResponse<String> login(ClientAccountDomain account, String password) {
+        return Optional.ofNullable(account.getId())
                 .filter(a -> account.validatePassword(password, passwordManagement))
-                .map(a -> DomainResponse.success(account, "SUCCESS: Login successful."))
-                .orElseGet(() -> DomainResponse.error("ERROR: Invalid credentials."));
+                .map(a -> DomainResponse.success(account.getId(), "Login successful."))
+                .orElseGet(() -> DomainResponse.error("Invalid credentials."));
     }
 }

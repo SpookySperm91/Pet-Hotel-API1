@@ -1,172 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to Big Paws Pet Hotel!</title>
-    <style>
-      body {
-        font-family: "Arial", sans-serif;
-        color: #444;
-        background-color: #f9f9f9;
-        margin: 0;
-        padding: 20px;
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      .header {
-        display: flex;
-        align-items: center;
-        background: #2e3357;
-        padding: 10px;
-        border-radius: 8px 8px 0 0;
-        color: #fff;
-        text-align: center;
-      }
-      .logo img {
-        width: 50px;
-        margin-right: 10px;
-      }
-      .social-icons {
-        text-align: center;
-        margin-top: 10px;
-      }
-      .social-icons img {
-        width: 30px;
-        margin: 0 5px;
-      }
-      .content {
-        background: #fff;
-        padding: 15px;
-        border-radius: 5px;
-        margin-top: 10px;
-      }
-      .info {
-        background-color: #eceff5;
-        padding: 15px;
-        border-radius: 5px;
-        margin: 15px 0;
-        font-weight: 600;
-      }
-      .button-container {
-        text-align: center;
-        margin-top: 15px;
-      }
-      .button {
-        background-color: #ff9800;
-        color: white;
-        padding: 12px 20px;
-        text-decoration: none;
-        border-radius: 5px;
-        font-weight: bold;
-        display: inline-block;
-      }
-      .footer {
-        text-align: center;
-        font-size: 12px;
-        color: #666;
-        margin-top: 20px;
-      }
-      .contact-details {
-        text-align: center;
-        margin-top: 15px;
-      }
-      /* Responsive */
-      @media screen and (max-width: 600px) {
-        .container {
-          padding: 15px;
-        }
-        .info-block {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-        .highlight {
-          width: 100%;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <div class="logo">
-          <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/BigPawsLogo-tgQYrArFSfOX9irwlrG1D93gEjB9yr.png"
-            alt="Big Paws Pet Hotel"
-            width="100"
-          />
-        </div>
-        <h1>Welcome to Big Paws Pet Hotel!</h1>
-      </div>
-      <div class="content">
-        <p>
-          Dear <strong><span th:text="${username}"></span></strong>,
-        </p>
-        <p>
-          Welcome to the Big Paws family! We are absolutely thrilled to have you
-          and your beloved pet(s) with us.
-        </p>
-        <p>
-          At Big Paws Pet Hotel, we understand that your pet is part of your
-          family, and we are committed to providing a
-          <strong>safe, loving, and comfortable</strong> stay for them.
-        </p>
-        <p>Below are your account details:</p>
-        <div class="info">
-          <p><strong>Email:</strong> <span th:text="${email}"></span></p>
-          <p><strong>Phone Number:</strong> <span th:text="${phone}"></span></p>
-          <p>
-            <strong>Temporary Password:</strong>
-            <span th:text="${password}"></span>
-          </p>
-        </div>
-        <p>
-          <strong>Important:</strong> Please log in and change your password for
-          security purposes.
-        </p>
-        <!-- Buhat pakog chnage pass na page -->
-        <div class="button-container">
-          <a
-            href="https://big-paws-petsupplies-webapp.vercel.app/"
-            class="button"
-            >Change Password</a
-          >
-        </div>
-        <p>
-          If you have any questions or need assistance, feel free to reach out.
-          We can't wait to pamper your furry friend with love and care!
-        </p>
-      </div>
-      <!-- i download lang ang svg na icon boss -->
-      <div class="social-icons">
-        <a href="https://www.facebook.com/share/15jqk6ZeSE/">
-          <img src="/public/facebook-2870-svg.svg" alt="Facebook" />
-        </a>
-        <a href="https://instagram.com/BigPawsPetHotel">
-          <img src="/public/instagram-logo-svg.svg" alt="Instagram" />
-        </a>
-        <a href="https://www.facebook.com/108561992234737/">
-          <img src="/public/facebook-messenger-svg.svg" alt="Messenger" />
-        </a>
-      </div>
-      <div class="contact-details">
-        <p>
-          📍 Location: Bonifacio St., in front of Philhealth, Tagum City,
-          Philippines, 8100
-        </p>
-        <p>📞 Contact: +63 950 189 0933</p>
-        <p>✉️ Email: galojanlloyn18@gmail.com</p>
-      </div>
-      <div class="footer">
-        &copy; <span th:text="${#dates.year(#dates.createNow())}"></span> Big
-        Paws Pet Hotel. All rights reserved.
-      </div>
-    </div>
-  </body>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Big Paws Pet Hotel!</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #444; background-color: #f9f9f9; margin: 0; padding: 20px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: auto; background-color: #ffffff;">
+  <tr>
+    <td style="background: #2e3357; padding: 10px; text-align: center;">
+      <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/BigPawsLogo-tgQYrArFSfOX9irwlrG1D93gEjB9yr.png" alt="Big Paws Pet Hotel" width="50" style="display: block; margin: auto;" />
+      <h1 style="color: #fff; font-size: 20px; margin: 10px 0 0;">Welcome to Big Paws Pet Hotel!</h1>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 15px;">
+      <p>Dear <strong><span th:text="${username}"></span></strong>,</p>
+      <p>Welcome to the Big Paws family! We are thrilled to have you and your beloved pet(s) with us.</p>
+      <p>At Big Paws Pet Hotel, we are committed to providing a <strong>safe, loving, and comfortable</strong> stay for your pet.</p>
+      <p><strong>Your Account Details:</strong></p>
+      <table width="100%" cellpadding="5" cellspacing="0" border="0" style="background-color: #eceff5; padding: 10px;">
+        <tr>
+          <td><strong>Email:</strong></td>
+          <td><span th:text="${email}"></span></td>
+        </tr>
+        <tr>
+          <td><strong>Phone Number:</strong></td>
+          <td><span th:text="${phone}"></span></td>
+        </tr>
+        <tr>
+          <td><strong>Password:</strong></td>
+          <td><span th:text="${password}"></span></td>
+        </tr>
+      </table>
+      <p><strong>Notice:</strong> Please change your password for security purposes.</p>
+      <p style="text-align: center;">
+        <a href="https://big-paws-petsupplies-webapp.vercel.app/" style="background-color: #ff9800; color: white; padding: 12px 20px; text-decoration: none; font-weight: bold; display: inline-block;">Click Here to Login</a>
+      </p>
+      <p>If you have any questions, feel free to reach out. We can't wait to pamper your furry friend!</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align: center; padding: 10px;">
+      <a href="https://www.facebook.com/share/15jqk6ZeSE/"><img src="https://example.com/facebook-icon.png" width="30" alt="Facebook" /></a>
+      <a href="https://instagram.com/BigPawsPetHotel"><img src="https://example.com/instagram-icon.png" width="30" alt="Instagram" /></a>
+      <a href="https://www.facebook.com/108561992234737/"><img src="https://example.com/messenger-icon.png" width="30" alt="Messenger" /></a>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align: center; font-size: 12px; color: #666; padding: 10px;">
+      <p>📍 Bonifacio St., in front of Philhealth, Tagum City, Philippines, 8100</p>
+      <p>📞 +63 950 189 0933 | ✉️ galojanlloyn18@gmail.com</p>
+      <p>&copy; Big Paws Pet Hotel. All rights reserved.</p>
+    </td>
+  </tr>
+</table>
+</body>
 </html>

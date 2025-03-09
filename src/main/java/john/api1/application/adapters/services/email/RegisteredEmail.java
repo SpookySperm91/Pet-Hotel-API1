@@ -1,8 +1,5 @@
 package john.api1.application.adapters.services.email;
 
-import john.api1.application.adapters.services.EmailBaseSend;
-import john.api1.application.components.enums.EmailType;
-import john.api1.application.ports.repositories.ILoggingRepository;
 import john.api1.common.config.MailGunConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

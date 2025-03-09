@@ -1,4 +1,4 @@
-package john.api1.application.adapters.services;
+package john.api1.application.adapters.services.email;
 
 import john.api1.application.dto.mapper.EmailResponseDTO;
 import john.api1.application.ports.services.ISendEmail;
@@ -66,7 +66,7 @@ public abstract class EmailBaseSend implements ISendEmail {
 
     private MultiValueMap<String, String> buildEmailRequest(String email, String username, String emailBody) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("from", "Mailgun Service <bigpaws@bigpawspethotel.tech>");
+        formData.add("from", "BigPaws <bigpaws@bigpawspethotel.tech>");
         formData.add("to", email);
         formData.add("subject", "Hello " + username);
         formData.add("html", emailBody);

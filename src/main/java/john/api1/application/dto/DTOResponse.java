@@ -10,15 +10,19 @@ import java.time.Instant;
 public class DTOResponse<T> {
     private int status;
     private Instant requestAt;
-    private T dtoObject;
+    private T data;
     private String message;
 
-
-    public static <T> DTOResponse<T> success(int status, T data) {
+    public static <T> DTOResponse<T> of(int status, T data) {
         return new DTOResponse<>(status, Instant.now(), data, null);
     }
 
-    public static <T> DTOResponse<T> error(int status, String errorMessage) {
+    public static <T> DTOResponse<T> of(int status, T data, String message) {
+        return new DTOResponse<>(status, Instant.now(), data, message);
+    }
+
+    public static <T> DTOResponse<T> message(int status, String errorMessage) {
         return new DTOResponse<>(status, Instant.now(), null, errorMessage);
     }
+
 }

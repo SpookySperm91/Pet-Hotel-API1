@@ -2,6 +2,7 @@ package john.api1.application.adapters.repositories;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -12,7 +13,8 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@Document(collection = "client-accounts")
+@NoArgsConstructor
+@Document(collection = "client_accounts")
 public class ClientEntity {
     @Id
     private ObjectId id;

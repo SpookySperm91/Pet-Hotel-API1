@@ -1,7 +1,5 @@
 package john.api1.application.adapters.repositories;
 
-import john.api1.application.components.enums.EmailStatus;
-import john.api1.application.components.enums.EmailType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +17,9 @@ import java.time.Instant;
 public class EmailLogsEntity {
     @Id
     private ObjectId id;
+
+    @Indexed
+    private ObjectId ownerId;
 
     @Indexed
     private String recipientEmail;

@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class DomainResponse<T> {
-    private T domainObject;
+    private T data;
     private String message;
     private boolean success;
 
@@ -16,6 +16,18 @@ public class DomainResponse<T> {
 
     public static <T> DomainResponse<T> success(T data, String message) {
         return new DomainResponse<>(data, message, true);
+    }
+
+    public static <T> DomainResponse<T> success(String message) {
+        return new DomainResponse<>(null, message, true);
+    }
+
+    public static <T> DomainResponse<T> error(T data) {
+        return new DomainResponse<>(data, null, false);
+    }
+
+    public static <T> DomainResponse<T> error(T data, String message) {
+        return new DomainResponse<>(data, message, false);
     }
 
     public static <T> DomainResponse<T> error(String errorMessage) {

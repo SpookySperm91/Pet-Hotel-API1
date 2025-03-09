@@ -7,7 +7,8 @@ import lombok.Getter;
 @Getter
 public enum EmailType {
     REGISTERED("Registered"),
-    RESET_PASSWORD("ResetPassword");
+    RESET_PASSWORD_LINK("ResetPasswordLink"),
+    RESET_PASSWORD_CODE("ResetPasswordCode");
 
     private final String emailType;
 }

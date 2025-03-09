@@ -5,25 +5,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "failed-emails")
-public class LogFailedEmailEntity {
+@NoArgsConstructor
+@Document(collection = "sms_logs")
+public class SmsLogEntity {
     @Id
     private ObjectId id;
 
-    private String recipientEmail;
-    private String recipientUsername;
-    private String emailType;
+    private ObjectId ownerId;
+
+    private String username;
+    @Indexed
+    private String phoneNumber;
+    private String smsType;
     private String body;
 
-    private Instant failedAt;
+    private String status;
+    private String statusReason;
+
+    @Indexed
+    private Instant sendAt;
     private Instant updatedAt;
-    private boolean resend;
-    private String errorMessage;
 }

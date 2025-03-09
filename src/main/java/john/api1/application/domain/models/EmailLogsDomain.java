@@ -1,76 +1,61 @@
 package john.api1.application.domain.models;
 
-import john.api1.application.components.enums.EmailStatus;
+import john.api1.application.components.enums.SendStatus;
 import john.api1.application.components.enums.EmailType;
-import john.api1.application.components.exception.InvalidEmailLogException;
+import john.api1.application.components.exception.InvalidLogException;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class EmailLogsDomain {
     private String id;
+
+    private String ownerId;
 
     private String recipientEmail;
     private String recipientUsername;
     private EmailType emailType;
     private String body;
 
-    private EmailStatus status;
+    private SendStatus status;
     private String errorReason; // important details in-case of error
 
     private Instant sendAt;
     private Instant updatedAt;
 
-    public EmailLogsDomain(String id,
-                           String recipientEmail,
-                           String recipientUsername,
-                           EmailType emailType,
-                           String body,
-                           EmailStatus status,
-                           String errorReason,
-                           Instant sendAt,
-                           Instant updatedAt) {
-        this.id = id;
-        this.recipientEmail = recipientEmail;
-        this.recipientUsername = recipientUsername;
-        this.body = body;
-        this.errorReason = errorReason;
-        this.sendAt = sendAt;
-        this.updatedAt = updatedAt;
 
-        this.emailType = emailType;
-        this.status = status;
-    }
-
-
-    public static EmailLogsDomain createNewLog(String recipientEmail,
+    public static EmailLogsDomain createNewLog(String ownerId,
+                                               String recipientEmail,
                                                String recipientUsername,
                                                EmailType emailType,
                                                String body) {
 
         if (recipientEmail == null || recipientEmail.isEmpty()) {
-            throw new InvalidEmailLogException("Recipient email is missing");
+            throw new InvalidLogException("Recipient email is missing");
         }
         if (recipientUsername == null || recipientUsername.isEmpty()) {
-            throw new InvalidEmailLogException("Recipient username is missing");
+            throw new InvalidLogException("Recipient username is missing");
         }
         if (emailType == null) {
-            throw new InvalidEmailLogException("Email type is missing");
+            throw new InvalidLogException("Email type is missing");
         }
         if (body == null || body.isEmpty()) {
-            throw new InvalidEmailLogException("Email body is missing");
+            throw new InvalidLogException("Email body is missing");
         }
 
         return new EmailLogsDomain(
                 null,
+                ownerId,
                 recipientEmail,
                 recipientUsername,
                 emailType,
                 body,
-                EmailStatus.PENDING,
+                SendStatus.PENDING,
                 null,
                 Instant.now(),
                 Instant.now()
@@ -80,6 +65,7 @@ public class EmailLogsDomain {
     public EmailLogsDomain updateTimestamp() {
         return new EmailLogsDomain(
                 this.id,
+                this.ownerId,
                 this.recipientEmail,
                 this.recipientUsername,
                 this.emailType,

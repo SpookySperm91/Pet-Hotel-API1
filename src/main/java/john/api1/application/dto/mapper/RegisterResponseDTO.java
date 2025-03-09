@@ -6,7 +6,5 @@ import org.springframework.http.HttpStatus;
 import java.time.Instant;
 
 
-public record RegisterResponseDTO(
-        RegisterResponse data
-) {
+public record RegisterResponseDTO(String clientId, String username, String email, String phoneNumber, String smsMessage) {
 }
