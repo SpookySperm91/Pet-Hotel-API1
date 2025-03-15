@@ -159,6 +159,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+
         <!-- Annotation Processor -->
         <dependency>
             <groupId>org.jetbrains</groupId>

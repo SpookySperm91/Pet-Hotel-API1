@@ -22,7 +22,6 @@ public class ClientEntity {
     @Indexed(unique = true)
     private String email;
 
-    @Indexed
     private String phoneNumber;
 
     private boolean accountLock;

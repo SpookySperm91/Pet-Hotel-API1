@@ -33,9 +33,7 @@ public class ClientLoginAS implements ILoginPetOwner {
         return searchRepository.getAccountByEmail(email);
     }
 
-    private Optional<ClientAccountDomain> checkPhoneNumber(String phoneNumber) {
-        return searchRepository.getAccountByPhoneNumber(phoneNumber);
-    }
+    private Optional<ClientAccountDomain> checkPhoneNumber(String phoneNumber) { return searchRepository.getAccountByPhoneNumber(phoneNumber);}
 
     // Check if email or phone number
     // Login with password

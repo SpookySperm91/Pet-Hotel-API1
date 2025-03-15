@@ -27,11 +27,6 @@ public class PasswordManagement {
         boolean containsNumber = password.matches(".*\\d.*"); // Checks if it has a number
         boolean containsUppercase = password.matches(".*[A-Z].*"); // Checks if it has a capital letter
 
-        System.out.println("Checking password: [" + password + "]");
-        System.out.println("Length check: " + lengthCheck);
-        System.out.println("Contains number: " + containsNumber);
-        System.out.println("Contains uppercase letter: " + containsUppercase);
-
         return lengthCheck && (containsNumber || containsUppercase);
     }
 

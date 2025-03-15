@@ -16,11 +16,11 @@ import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/api/v1/admin/")
-public class ControllerAdmin {
+public class AdminController {
     private final IRegisterNewClient register;
 
     @Autowired
-    public ControllerAdmin(IRegisterNewClient register) {
+    public AdminController(IRegisterNewClient register) {
         this.register = register;
     }
 
