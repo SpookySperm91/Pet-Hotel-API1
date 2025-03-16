@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 @Service
 public class PetUpdateAS implements IPetUpdate {
     private static final Logger logger = Logger.getLogger(PetUpdateAS.class.getName());
-
     private final IPetUpdateRepository petUpdate;
     private final IPetsSearchRepository petSearch;
 

@@ -2,6 +2,7 @@ package john.api1.application.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PetRequestDTO {
-    @NotBlank(message = "Owner's id cannot be empty")
+    @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid owner ID format")
     private String ownerId;
     @NotBlank(message = "Pet's name cannot be empty")
     private String petName;
@@ -22,5 +23,4 @@ public class PetRequestDTO {
     @NotBlank(message = "Size cannot be empty")
     private String size;
     private String specialDescription;
-    private String profilePictureUrl;
 }

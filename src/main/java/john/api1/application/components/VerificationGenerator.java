@@ -18,6 +18,12 @@ public class VerificationGenerator {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 
+    public static String generateToken() {
+        byte[] randomBytes = new byte[TOKEN_LENGTH];
+        RANDOM.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+    }
+
     // 6 Random characters code
     public static String generateCode() {
         char[] code = new char[CODE_LENGTH];
