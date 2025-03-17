@@ -35,7 +35,7 @@ public class PetRegistrationAS implements IPetRegister {
                     registerPet.getBreed(),
                     registerPet.getSize(),
                     registerPet.getSpecialDescription(),
-                    registerPet.getProfilePictureUrl()
+                    null
             );
 
             String petId = petCreate.createNewPet(petDomain)

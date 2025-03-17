@@ -11,7 +11,5 @@ public enum EndpointType {
     UPLOAD_REQUEST_PHOTO("/api/v1/admin/pets/request/{id}/upload-photo/{token}"),
     UPLOAD_REQUEST_VIDEO("/api/v1/admin/pets/request/{id}/upload-video/{token}");
 
-
-
     private final String endpoint;
 }
