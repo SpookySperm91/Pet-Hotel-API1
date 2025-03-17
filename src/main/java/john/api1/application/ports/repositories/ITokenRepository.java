@@ -10,7 +10,7 @@ public interface ITokenRepository {
     TokenDomain save(TokenDomain token);
     Optional<TokenDomain> findByToken(String token);
     Optional<TokenDomain> findValidToken(String token, String authorizedId, String endpoint);
-    void markAsUsed(String token);
+    boolean markAsUsed(String token, String authorizedId, String endpoint);
     void deleteByExpiredAtBefore(Instant now);
 }
 

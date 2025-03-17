@@ -23,4 +23,5 @@ public class PetRequestDTO {
     @NotBlank(message = "Size cannot be empty")
     private String size;
     private String specialDescription;
+
 }

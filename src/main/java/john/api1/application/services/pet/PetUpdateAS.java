@@ -32,7 +32,7 @@ public class PetUpdateAS implements IPetUpdate {
     // Mapped to domain
     // Save to db and return boolean response
     @Override
-    public DomainResponse<String> updatePet(String petId, PetRequestDTO pet) {
+    public DomainResponse<String> updatePet(String petId, PetRequestDTO pet, String profilePicUrl) {
         try {
             if (!isValidId(petId)) return DomainResponse.error("Invalid pet ID format.");
             if (!petSearch.existsById(petId)) return DomainResponse.error("Pet does not exist.");
@@ -45,7 +45,7 @@ public class PetUpdateAS implements IPetUpdate {
                     pet.getBreed(),
                     pet.getSize(),
                     pet.getSpecialDescription(),
-                    pet.getProfilePictureUrl()
+                    profilePicUrl
             );
 
             return petUpdate.updatePet(petDomain) ?

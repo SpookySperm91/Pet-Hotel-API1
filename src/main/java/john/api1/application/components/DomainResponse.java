@@ -10,6 +10,10 @@ public class DomainResponse<T> {
     private String message;
     private boolean success;
 
+    public static <T> DomainResponse<T> success() {
+        return new DomainResponse<>(null, null, true);
+    }
+
     public static <T> DomainResponse<T> success(T data) {
         return new DomainResponse<>(data, null, true);
     }

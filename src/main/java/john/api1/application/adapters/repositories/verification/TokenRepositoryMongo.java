@@ -1,5 +1,6 @@
 package john.api1.application.adapters.repositories.verification;
 
+import com.mongodb.client.result.UpdateResult;
 import john.api1.application.adapters.repositories.TokenEntity;
 import john.api1.application.domain.models.TokenDomain;
 import john.api1.application.ports.repositories.ITokenRepository;
@@ -59,11 +60,20 @@ public class TokenRepositoryMongo implements ITokenRepository {
     }
 
     @Override
-    public void markAsUsed(String token) {
-        Query query = new Query(Criteria.where("token").is(token));
+    public boolean markAsUsed(String token, String authorizedId, String endpoint) {
+        Query query = new Query(
+                Criteria.where("token").is(token)
+                        .and("authorizedId").is(authorizedId)
+                        .and("endpoint").is(endpoint)
+                        .and("used").is(false) // Ensures we only update unused tokens
+        );
+
         Update update = new Update().set("used", true);
-        mongoTemplate.updateFirst(query, update, TokenEntity.class);
+        UpdateResult result = mongoTemplate.updateFirst(query, update, TokenEntity.class);
+
+        return result.getModifiedCount() > 0; // Returns true if a document was updated
     }
+
 
     @Override
     public void deleteByExpiredAtBefore(Instant now) {

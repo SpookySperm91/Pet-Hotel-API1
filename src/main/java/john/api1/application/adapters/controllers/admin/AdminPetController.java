@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -50,7 +47,7 @@ public class AdminPetController {
         }
 
         // api for uploading profile picture
-        String api = registerPet.getData() + "/upload-photo?token=";
+        String api = registerPet.getData() + "/upload-photo/";
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DTOResponse.of(
                         HttpStatus.OK.value(),
@@ -60,6 +57,20 @@ public class AdminPetController {
                         registerPet.getMessage()
                 ));
     }
+
+
+    @PostMapping("register/{id}/upload-photo/{token}")
+    public ResponseEntity<DTOResponse<PetRegisterResponseDTO>> updatePetPhoto(
+            @PathVariable String id,
+            @PathVariable String token
+    ){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DTOResponse.message(
+                        HttpStatus.OK.value(),
+                        ""
+                ));
+    }
+
 
     private <T> ResponseEntity<DTOResponse<T>> buildErrorResponse(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(DTOResponse.message(status.value(), message));
