@@ -37,7 +37,6 @@ public class AdminPetController {
                     result.getFieldError().getDefaultMessage());
         }
 
-
         var registerPet = petRegister.registerPet(petRequest);
         if (!registerPet.isSuccess()) {
             return buildErrorResponse(

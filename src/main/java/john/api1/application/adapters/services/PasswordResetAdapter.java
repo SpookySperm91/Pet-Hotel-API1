@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PasswordResetService {
+public class PasswordResetAdapter {
     private static String domainUrl;
     private static final String tempUrl = "http://localhost:5000";
 

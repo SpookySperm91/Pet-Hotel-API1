@@ -1,6 +1,16 @@
 package john.api1.application.components.enums;
 
-public enum BucketType {
-    PROFILE_PHOTO, REQUEST_PHOTO, REQUEST_VIDEO, SERVICE_PHOTO, SERVICE_VIDEO
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@AllArgsConstructor
+@Getter
+public enum BucketType {
+    PROFILE_PHOTO(10),
+    REQUEST_PHOTO(120),
+    REQUEST_VIDEO(120),
+    SERVICE_PHOTO(120),
+    SERVICE_VIDEO(120);
+
+    private final int minuteExpire;
 }

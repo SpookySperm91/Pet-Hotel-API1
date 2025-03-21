@@ -1,7 +1,7 @@
 package john.api1.application.services.user;
 
 import com.mongodb.MongoException;
-import john.api1.application.adapters.services.PasswordResetService;
+import john.api1.application.adapters.services.PasswordResetAdapter;
 import john.api1.application.async.AsyncEmailService;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.VerificationGenerator;
@@ -67,7 +67,7 @@ public class ResetPasswordRequestAS {
             logger.info("Verification entry saved for userId: {}", userId);
 
             // Generate reset link
-            String resetLink = PasswordResetService.generateResetLink(userId, verification.getData());
+            String resetLink = PasswordResetAdapter.generateResetLink(userId, verification.getData());
             sendEmail(email, username, resetLink);
 
             // Success

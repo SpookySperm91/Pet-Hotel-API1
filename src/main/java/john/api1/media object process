@@ -1,0 +1,37 @@
+Media load strategy.
+
+Pre-signed URL
+Expires every 1 hour
+Auto generate every expired
+
+Store to Redis
+Pre-signed URl
+and media Id
+
+If Expired (every 1h before 10m)
+Quietly call api to refresh
+Update redis with new url
+Update current metadata?
+
+Frontend POV
+Load media with pre-signed urls
+Call api to fetch more data?
+
+
+
+API Process                       [Redis]              [Minio]
+                                     |                    |
+                                     |             (Pre-signed url)
+                                     |                    |
+[UI] <-(partial batch url)---[API Controller] <-------[Service]
+                                                          |
+                                                    (All metadata)
+                                                          |
+                                                      [Database]
+
+
+                              [Redis]                         [Minio]
+                                 |                               |
+                              (1)|                         (Pre-signed url)
+                                 |                               |
+[UI] ---(get more url)--->[API Controller]----(Expired)----->[Service]

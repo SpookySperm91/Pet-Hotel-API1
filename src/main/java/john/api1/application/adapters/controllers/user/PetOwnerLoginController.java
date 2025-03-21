@@ -41,6 +41,12 @@ public class PetOwnerLoginController {
     public ResponseEntity<DTOResponse<String>> loginWithPhone(
             @Valid @RequestBody LoginPhoneNumberRequestDTO request,
             BindingResult result) {
+
+
+        // Redis get username and password()
+        // Check input compare to redis
+        // return ok.
+
         return validateAndLogin(
                 result,
                 AccountCredentialType.PHONE_NUMBER,
