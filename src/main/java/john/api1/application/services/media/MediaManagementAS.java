@@ -27,6 +27,10 @@ public class MediaManagementAS implements IMediaManagement {
     }
 
 
+    public String generateMediaObjectName(String name, String id) {
+        return name + ":" + id;
+    }
+
     public DomainResponse<PreSignedUrlResponse> generateMediaFile(String ownerId, String fileName, BucketType bucketType) {
         if (!ObjectId.isValid(ownerId)) return DomainResponse.error("Invalid ownerId");
 
@@ -54,8 +58,8 @@ public class MediaManagementAS implements IMediaManagement {
                                 mediaDomain.id(),
                                 mediaDomain.description(),
                                 mediaDomain.bucketType(),
-                                mediaDomain.fileUrl(),
-                                mediaDomain.uploadedAt()
+                                mediaDomain.fileName(),
+                                mediaDomain.preSignedUrlExpire()
                         )
                 );
             }

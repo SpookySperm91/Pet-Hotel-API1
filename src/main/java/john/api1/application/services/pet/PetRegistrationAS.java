@@ -1,12 +1,17 @@
 package john.api1.application.services.pet;
 
 import john.api1.application.components.DomainResponse;
+import john.api1.application.components.enums.BucketType;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.domain.models.PetDomain;
+import john.api1.application.dto.mapper.ProfileResponseDTO;
 import john.api1.application.dto.request.PetRequestDTO;
 import john.api1.application.ports.repositories.pet.IPetCreateRepository;
+import john.api1.application.ports.services.IMediaManagement;
 import john.api1.application.ports.services.IPetRegister;
+import john.api1.application.ports.services.IPetUpdate;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +20,11 @@ import org.springframework.stereotype.Service;
 public class PetRegistrationAS implements IPetRegister {
     private final IPetCreateRepository petCreate;
 
+
     @Autowired
     public PetRegistrationAS(IPetCreateRepository petCreate) {
         this.petCreate = petCreate;
+
     }
 
     @Override

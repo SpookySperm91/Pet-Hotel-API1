@@ -10,6 +10,6 @@ public record MediaPreview(
         @Nullable
         String description,
         BucketType bucketType,
-        String fileUrl,
-        Instant uploadedAt) {
+        String preSignedUrl,
+        Instant expiredAt) {
 }

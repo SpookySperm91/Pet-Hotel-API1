@@ -81,9 +81,9 @@ public class PetUpdateAS implements IPetUpdate {
     }
 
     @Override
-    public DomainResponse<PetUpdateResponse> updatePetProfilePicture(String petId, String profilePicUrl) {
-        return update(petId, () -> petUpdate.updatePetProfilePicture(petId, profilePicUrl),
-                new PetUpdateResponse(petId, null, null, null, profilePicUrl),
+    public DomainResponse<PetUpdateResponse> updatePetProfilePicture(String petId, String profilePicName) {
+        return update(petId, () -> petUpdate.updatePetProfilePicture(petId, profilePicName),
+                new PetUpdateResponse(petId, null, null, null, profilePicName),
                 "Unable to update pet profile picture. Please try again later.");
     }
 

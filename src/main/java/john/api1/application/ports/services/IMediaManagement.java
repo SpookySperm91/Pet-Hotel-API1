@@ -6,12 +6,11 @@ import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.ports.repositories.records.MediaPreview;
 import john.api1.application.ports.repositories.records.PreSignedUrlResponse;
 import org.bson.types.ObjectId;
-import org.springframework.expression.spel.ast.OpAnd;
-
-import java.util.Optional;
 
 public interface IMediaManagement {
     // return url link
+    String generateMediaObjectName(String name, String id);
+
     DomainResponse<PreSignedUrlResponse> generateMediaFile(String ownerId, String fileName, BucketType bucketType);
 
     DomainResponse<MediaPreview> saveMediaFile(MediaDomain media);
