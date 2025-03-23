@@ -2,7 +2,7 @@ package john.api1.application.ports.services;
 
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
-import john.api1.application.ports.repositories.records.MediaPreview;
+import john.api1.application.ports.repositories.wrapper.MediaPreview;
 
 import java.time.Instant;
 import java.util.List;

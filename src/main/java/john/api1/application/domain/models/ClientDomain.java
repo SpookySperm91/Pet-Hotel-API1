@@ -47,6 +47,18 @@ public class ClientDomain {
         this.updatedAt = this.createdAt;
     }
 
+    public ClientDomain(String accountId, String fullName, List<String> petsId, String streetAddress, String cityAddress, String stateAddress, String emergencyPhoneNumber, Instant createdAt, Instant updatedAt) {
+        this.accountId = accountId;
+        this.fullName = fullName;
+        this.petsId = new ArrayList<>(Optional.ofNullable(petsId).orElse(Collections.emptyList()));
+        this.streetAddress = streetAddress;
+        this.cityAddress = cityAddress;
+        this.stateAddress = stateAddress;
+        this.emergencyPhoneNumber = emergencyPhoneNumber;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public boolean addPet(String petId) {
         return Optional.ofNullable(petId)
                 .filter(id -> !id.isBlank())

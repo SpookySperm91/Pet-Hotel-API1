@@ -70,7 +70,7 @@ public class ClientLoginAS implements ILoginPetOwner {
             return DomainResponse.error(false, "Invalid user ID");
         }
 
-        var account = searchRepository.getAccountById(new ObjectId(userId));
+        var account = searchRepository.getAccountById(userId);
         return account.isPresent()
                 ? DomainResponse.success(true, "Logout successful")
                 : DomainResponse.error(false, "Account does not exist");

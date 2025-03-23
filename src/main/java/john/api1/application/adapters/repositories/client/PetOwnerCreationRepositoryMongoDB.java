@@ -13,11 +13,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Qualifier("MongoCreateRepo")
-public class ClientCreationRepositoryMongoDB implements IAccountCreateRepository {
+public class PetOwnerCreationRepositoryMongoDB implements IAccountCreateRepository {
     private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public ClientCreationRepositoryMongoDB(MongoTemplate mongoTemplate) {
+    public PetOwnerCreationRepositoryMongoDB(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

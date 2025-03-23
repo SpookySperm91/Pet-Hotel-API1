@@ -1,4 +1,4 @@
-package john.api1.application.ports.repositories.records;
+package john.api1.application.ports.repositories.wrapper;
 
 import jakarta.annotation.Nullable;
 import john.api1.application.components.enums.BucketType;

@@ -4,8 +4,8 @@ import john.api1.application.adapters.repositories.media.MinioSearchRepositoryMo
 import john.api1.application.adapters.services.MinioAdapter;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
-import john.api1.application.ports.repositories.records.MediaEntityPreview;
-import john.api1.application.ports.repositories.records.MediaPreview;
+import john.api1.application.ports.repositories.wrapper.MediaEntityPreview;
+import john.api1.application.ports.repositories.wrapper.MediaPreview;
 import john.api1.application.ports.services.IMediaSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

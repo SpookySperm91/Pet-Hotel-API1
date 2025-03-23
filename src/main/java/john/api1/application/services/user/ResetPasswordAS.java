@@ -33,7 +33,7 @@ public class ResetPasswordAS {
             // 🔹 Step 1: Fetch the user account
             if(!ObjectId.isValid(id)) return DomainResponse.error("Id cannot be read");
 
-            var userAccount = searchRepository.getAccountById(new ObjectId(id));
+            var userAccount = searchRepository.getAccountById(id);
             if (userAccount.isEmpty()) {
                 return DomainResponse.error("User not found!");
             }

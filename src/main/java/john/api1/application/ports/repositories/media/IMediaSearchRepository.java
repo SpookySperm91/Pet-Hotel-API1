@@ -1,10 +1,8 @@
 package john.api1.application.ports.repositories.media;
 
 import john.api1.application.components.enums.BucketType;
-import john.api1.application.domain.models.MediaDomain;
-import john.api1.application.ports.repositories.records.MediaEntityPreview;
-import john.api1.application.ports.repositories.records.MediaPreview;
-import john.api1.application.ports.repositories.records.MediaUrlAndId;
+import john.api1.application.ports.repositories.wrapper.MediaEntityPreview;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

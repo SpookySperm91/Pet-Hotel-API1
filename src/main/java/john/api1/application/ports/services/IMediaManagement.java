@@ -3,8 +3,8 @@ package john.api1.application.ports.services;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
 import john.api1.application.domain.models.MediaDomain;
-import john.api1.application.ports.repositories.records.MediaPreview;
-import john.api1.application.ports.repositories.records.PreSignedUrlResponse;
+import john.api1.application.ports.repositories.wrapper.MediaPreview;
+import john.api1.application.ports.repositories.wrapper.PreSignedUrlResponse;
 import org.bson.types.ObjectId;
 
 public interface IMediaManagement {

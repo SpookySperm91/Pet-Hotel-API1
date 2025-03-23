@@ -3,7 +3,7 @@ package john.api1.application.adapters.repositories.media;
 import john.api1.application.adapters.repositories.MinioEntity;
 import john.api1.application.components.enums.BucketType;
 import john.api1.application.ports.repositories.media.IMediaSearchRepository;
-import john.api1.application.ports.repositories.records.MediaEntityPreview;
+import john.api1.application.ports.repositories.wrapper.MediaEntityPreview;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;

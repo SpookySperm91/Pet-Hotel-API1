@@ -1,14 +1,15 @@
 package john.api1.application.ports.repositories.account;
 
 import john.api1.application.domain.models.ClientAccountDomain;
-import john.api1.application.ports.repositories.records.UsernameAndId;
+import john.api1.application.ports.repositories.wrapper.ClientFullAccount;
+import john.api1.application.ports.repositories.wrapper.UsernameAndId;
 import org.bson.types.ObjectId;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IAccountSearchRepository {
-    Optional<ClientAccountDomain> getAccountById(ObjectId id);
+    Optional<ClientAccountDomain> getAccountById(String id);
 
     Optional<ClientAccountDomain> getAccountByEmail(String email);
 
@@ -19,4 +20,7 @@ public interface IAccountSearchRepository {
     // ReadOnly
     Optional<UsernameAndId> getUsernameIdByEmail(String email);
 
+    // Full Domain Object
+    // 🔹 Full Profile (Used for login & profile retrieval)
+    Optional<ClientFullAccount> getFullAccountById(String id);
 }
