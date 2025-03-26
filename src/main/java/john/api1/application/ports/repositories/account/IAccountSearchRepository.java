@@ -23,4 +23,7 @@ public interface IAccountSearchRepository {
     // Full Domain Object
     // 🔹 Full Profile (Used for login & profile retrieval)
     Optional<ClientFullAccount> getFullAccountById(String id);
+
+    // If exist
+    boolean existById(String id);
 }

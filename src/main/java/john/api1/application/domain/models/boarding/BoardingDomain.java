@@ -6,6 +6,7 @@ import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bson.types.ObjectId;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -22,7 +23,25 @@ public class BoardingDomain {
     private BoardingStatus boardingStatus;
     private double initialPayment;
     private PaymentStatus paymentStatus;
+    private final String notes;
     private Instant updatedAt;
+
+    public BoardingDomain(String petId, String ownerId, BoardingType boardingType, Instant boardingStart, Instant boardingEnd, double initialPayment, PaymentStatus paymentStatus, String notes) {
+        if (ObjectId.isValid(petId)) throw new DomainArgumentException("Invalid pet-id format");
+        if (ObjectId.isValid(ownerId)) throw new DomainArgumentException("Invalid owner-id format");
+
+        this.id = null;
+        this.petId = petId;
+        this.ownerId = ownerId;
+        this.boardingType = boardingType;
+        this.boardingStart = boardingStart;
+        this.boardingEnd = boardingEnd;
+        this.boardingStatus = BoardingStatus.BOARDING;
+        this.initialPayment = initialPayment;
+        this.paymentStatus = paymentStatus;
+        this.notes = notes;
+    }
+
     private boolean active;
 
     public void extendBoarding(long extraDays, boolean requiresAdditionalPayment) {

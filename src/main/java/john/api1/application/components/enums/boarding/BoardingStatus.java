@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum BoardingStatus {
     BOARDING("BOARDING"),
     DONE_BOARDING("DONE_BOARDING"),
+    OVERDUE("OVERDUE"),
     RELEASED("RELEASED");
 
     private final String boardingStatus;

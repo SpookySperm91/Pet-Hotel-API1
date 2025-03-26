@@ -84,6 +84,16 @@ public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository 
                 ));
     }
 
+    // Check if exist
+    public boolean existById(String id) {
+        if (!ObjectId.isValid(id)) return false;
+
+
+        return mongoTemplate.exists(
+                Query.query(Criteria.where("_id").is(new ObjectId(id))),
+                ClientEntity.class
+        );    }
+
 
     private ClientAccountDomain mapToClientAccount(ClientEntity account) {
         return new ClientAccountDomain(
