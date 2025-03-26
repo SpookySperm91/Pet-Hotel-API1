@@ -47,6 +47,7 @@ public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository 
     @Override
     public Optional<ClientAccountDomain> getAccountByPhoneNumber(String phoneNumber) {
         Query query = new Query(Criteria.where("phoneNumber").is(phoneNumber));
+
         return Optional.ofNullable(mongoTemplate.findOne(query, ClientEntity.class))
                 .map(this::mapToClientAccount);
     }
@@ -62,7 +63,8 @@ public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository 
     // ReadOnly
     @Override
     public Optional<UsernameAndId> getUsernameIdByEmail(String email) {
-        Query query = new Query(Criteria.where("email").is(email));
+        Query query = new Query(
+                Criteria.where("email").is(email));
         query.fields().include("clientName").include("_id");
         ClientEntity result = mongoTemplate.findOne(query, ClientEntity.class);
 

@@ -3,10 +3,10 @@ package john.api1.application.services.pet;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.domain.models.PetDomain;
-import john.api1.application.dto.request.PetRequestDTO;
+import john.api1.application.dto.request.PetRDTO;
 import john.api1.application.ports.repositories.pet.IPetUpdateRepository;
 import john.api1.application.ports.repositories.pet.IPetsSearchRepository;
-import john.api1.application.ports.services.IPetUpdate;
+import john.api1.application.ports.services.pet.IPetUpdate;
 import john.api1.application.services.response.PetUpdateResponse;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class PetUpdateAS implements IPetUpdate {
     // Mapped to domain
     // Save to db and return boolean response
     @Override
-    public DomainResponse<String> updatePet(String petId, PetRequestDTO pet, String profilePicUrl) {
+    public DomainResponse<String> updatePet(String petId, PetRDTO pet, String profilePicUrl) {
         try {
             if (!isValidId(petId)) return DomainResponse.error("Invalid pet ID format.");
             if (!petSearch.existsById(petId)) return DomainResponse.error("Pet does not exist.");

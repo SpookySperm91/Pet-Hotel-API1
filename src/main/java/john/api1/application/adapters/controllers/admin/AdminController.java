@@ -2,12 +2,11 @@ package john.api1.application.adapters.controllers.admin;
 
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.RegisterResponseDTO;
-import john.api1.application.dto.request.RegisterRequestDTO;
+import john.api1.application.dto.request.RegisterRtDTO;
 import john.api1.application.ports.services.IRegisterNewClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +25,7 @@ public class AdminController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<DTOResponse<RegisterResponseDTO>> registerPetOwner(@Valid @RequestBody RegisterRequestDTO request) {
+    public ResponseEntity<DTOResponse<RegisterResponseDTO>> registerPetOwner(@Valid @RequestBody RegisterRtDTO request) {
         // Call registration service
         var response = register.registerNewClient(request);
 
@@ -34,7 +33,11 @@ public class AdminController {
             RegisterResponseDTO dto = response.getData().toDTO();
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(DTOResponse.of(HttpStatus.CREATED.value(), dto, response.getMessage()));
+                    .body(
+                            DTOResponse.of(
+                                    HttpStatus.CREATED.value(),
+                                    dto,
+                                    response.getMessage()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(DTOResponse.message(HttpStatus.BAD_REQUEST.value(), response.getMessage()));

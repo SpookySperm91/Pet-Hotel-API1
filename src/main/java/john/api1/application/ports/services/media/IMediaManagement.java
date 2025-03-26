@@ -1,4 +1,4 @@
-package john.api1.application.ports.services;
+package john.api1.application.ports.services.media;
 
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;

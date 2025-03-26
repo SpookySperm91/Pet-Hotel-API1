@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PetRequestDTO {
+public class PetRDTO {
     @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid owner ID format")
     private String ownerId;
     @NotBlank(message = "Pet's name cannot be empty")

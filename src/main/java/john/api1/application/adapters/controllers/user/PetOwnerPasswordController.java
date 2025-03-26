@@ -3,8 +3,8 @@ package john.api1.application.adapters.controllers.user;
 import john.api1.application.components.ExternalReferencesUrls;
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.VerifyLinkResponseDTO;
-import john.api1.application.dto.request.EmailRequestDTO;
-import john.api1.application.dto.request.NewPasswordRequestDTO;
+import john.api1.application.dto.request.EmailRDTO;
+import john.api1.application.dto.request.NewPasswordRDTO;
 import john.api1.application.services.user.ResetPasswordAS;
 import john.api1.application.services.user.ResetPasswordRequestAS;
 import john.api1.application.services.user.ResetPasswordValidateAS;
@@ -26,6 +26,7 @@ public class PetOwnerPasswordController {
     private final ResetPasswordAS resetPassword;
     private final ExternalReferencesUrls referencesUrls;
 
+
     @Autowired
     public PetOwnerPasswordController(ResetPasswordValidateAS passwordValidate,
                                       ResetPasswordRequestAS passwordRequest,
@@ -37,10 +38,10 @@ public class PetOwnerPasswordController {
         this.referencesUrls = referencesUrls;
     }
 
-    // Request reset password link
+    // RequestRDTO reset password link
     @PostMapping("request/verification-link")
     public ResponseEntity<DTOResponse<String>> requestResetLink(
-            @Valid @RequestBody EmailRequestDTO email,
+            @Valid @RequestBody EmailRDTO email,
             BindingResult result) {
 
         if (result.hasErrors()) {
@@ -105,7 +106,7 @@ public class PetOwnerPasswordController {
     public ResponseEntity<DTOResponse<String>> changePassword(
             @PathVariable String id,
             @PathVariable String token,
-            @Valid @RequestBody NewPasswordRequestDTO newPassword,
+            @Valid @RequestBody NewPasswordRDTO newPassword,
             BindingResult result) {
 
         // Validate password input

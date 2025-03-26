@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class ExternalReferencesUrls {
 
     @Value("${app.frontend.url}")
-    public  String frontendDomainUrl;
+    public String frontendDomainUrl;
 
     @Value("${app.springboot.url}")
     public String springbootApiUrl;

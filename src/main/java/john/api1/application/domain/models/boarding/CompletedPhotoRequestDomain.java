@@ -6,8 +6,7 @@ import lombok.Getter;
 import java.time.Instant;
 import java.util.List;
 
-@AllArgsConstructor
-@Getter
+
 public record CompletedPhotoRequestDomain(
         String id,
         String requestId,

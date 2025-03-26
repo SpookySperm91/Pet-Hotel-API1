@@ -14,3 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*"); // Allow all headers
     }
 }
+
+
+
+

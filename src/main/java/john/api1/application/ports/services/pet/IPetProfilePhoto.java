@@ -1,4 +1,4 @@
-package john.api1.application.ports.services;
+package john.api1.application.ports.services.pet;
 
 import john.api1.application.components.DomainResponse;
 import john.api1.application.dto.mapper.ProfileResponseDTO;

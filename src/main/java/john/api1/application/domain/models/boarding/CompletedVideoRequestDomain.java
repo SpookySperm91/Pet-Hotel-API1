@@ -6,8 +6,6 @@ import lombok.Getter;
 import java.time.Instant;
 
 
-@AllArgsConstructor
-@Getter
 public record CompletedVideoRequestDomain(
         String id,
         String requestId,

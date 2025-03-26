@@ -1,12 +1,13 @@
 package john.api1.application.adapters.controllers.admin;
 
+import john.api1.application.components.ExternalReferencesUrls;
 import john.api1.application.components.enums.EndpointType;
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.PetRegisterResponseDTO;
 import john.api1.application.dto.mapper.ProfileResponseDTO;
-import john.api1.application.dto.request.PetRequestDTO;
-import john.api1.application.ports.services.IPetProfilePhoto;
-import john.api1.application.ports.services.IPetRegister;
+import john.api1.application.dto.request.PetRDTO;
+import john.api1.application.ports.services.pet.IPetProfilePhoto;
+import john.api1.application.ports.services.pet.IPetRegister;
 import john.api1.application.services.TokenAS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -24,17 +25,20 @@ public class AdminPetController {
     private final IPetRegister petRegister;
     private final IPetProfilePhoto petProfilePic;
     private final TokenAS tokenService;
+    private final ExternalReferencesUrls referencesUrls;
+
 
     @Autowired
-    public AdminPetController(IPetRegister petRegister, IPetProfilePhoto petProfilePic, TokenAS tokenService) {
+    public AdminPetController(IPetRegister petRegister, IPetProfilePhoto petProfilePic, TokenAS tokenService, ExternalReferencesUrls referencesUrls) {
         this.petRegister = petRegister;
-        this.petProfilePic=petProfilePic;
+        this.petProfilePic = petProfilePic;
         this.tokenService = tokenService;
+        this.referencesUrls = referencesUrls;
     }
 
     @PostMapping("register")
     public ResponseEntity<DTOResponse<PetRegisterResponseDTO>> registerPet(
-            @Valid @RequestBody PetRequestDTO petRequest,
+            @Valid @RequestBody PetRDTO petRequest,
             BindingResult result) {
 
         // Handle validation errors properly
@@ -62,7 +66,7 @@ public class AdminPetController {
         }
 
         // Format the API URL
-        String requestUploadUrl = EndpointType.UPLOAD_PET_PHOTO.getFormattedEndpoint(
+        String requestUploadUrl = referencesUrls.getSpringbootApiUrl() + EndpointType.UPLOAD_PET_PHOTO.getFormattedEndpoint(
                 petId, petRequest.getPetName(), tokenResponse.getData().getToken()
         );
 

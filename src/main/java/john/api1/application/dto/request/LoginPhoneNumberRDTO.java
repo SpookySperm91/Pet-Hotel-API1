@@ -5,15 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+
+import jakarta.validation.constraints.NotBlank;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewPasswordRequestDTO {
+public class LoginPhoneNumberRDTO {
+    @NotBlank(message = "Phone number cannot be empty")
+    private String phoneNumber;
+
     @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
-    private String newPassword;
+    private String password;
 }

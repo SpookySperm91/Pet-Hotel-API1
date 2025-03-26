@@ -7,7 +7,7 @@ import john.api1.application.components.enums.BucketType;
 import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.ports.repositories.wrapper.MediaPreview;
 import john.api1.application.ports.repositories.wrapper.PreSignedUrlResponse;
-import john.api1.application.ports.services.IMediaManagement;
+import john.api1.application.ports.services.media.IMediaManagement;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

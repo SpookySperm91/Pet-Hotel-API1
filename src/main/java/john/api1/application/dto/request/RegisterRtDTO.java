@@ -4,18 +4,26 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmailRequestDTO {
-    @NotNull
-    @Email(message = "Invalid email format. Please provide a valid email address.")
+public class RegisterRtDTO {
+    @Email(message = "Invalid email format")
     @NotBlank(message = "Email cannot be empty")
     private String email;
+
+    @NotEmpty(message = "Phone number cannot be empty")
+    private String phoneNumber;
+
+    private String fullName;
+    private String streetAddress;
+    private String cityAddress;
+    private String stateAddress;
+    private String emergencyPhoneNumber;
 }

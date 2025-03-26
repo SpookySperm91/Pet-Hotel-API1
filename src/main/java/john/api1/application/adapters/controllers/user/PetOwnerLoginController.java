@@ -2,8 +2,8 @@ package john.api1.application.adapters.controllers.user;
 
 import john.api1.application.components.enums.AccountCredentialType;
 import john.api1.application.dto.DTOResponse;
-import john.api1.application.dto.request.LoginEmailRequestDTO;
-import john.api1.application.dto.request.LoginPhoneNumberRequestDTO;
+import john.api1.application.dto.request.LoginEmailRDTO;
+import john.api1.application.dto.request.LoginPhoneNumberRDTO;
 import john.api1.application.ports.services.ILoginPetOwner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +28,7 @@ public class PetOwnerLoginController {
 
     @PostMapping("/login/email")
     public ResponseEntity<DTOResponse<String>> loginWithEmail(
-            @Valid @RequestBody LoginEmailRequestDTO request,
+            @Valid @RequestBody LoginEmailRDTO request,
             BindingResult result) {
         return validateAndLogin(
                 result,
@@ -39,7 +39,7 @@ public class PetOwnerLoginController {
 
     @PostMapping("/login/phone-number")
     public ResponseEntity<DTOResponse<String>> loginWithPhone(
-            @Valid @RequestBody LoginPhoneNumberRequestDTO request,
+            @Valid @RequestBody LoginPhoneNumberRDTO request,
             BindingResult result) {
 
 

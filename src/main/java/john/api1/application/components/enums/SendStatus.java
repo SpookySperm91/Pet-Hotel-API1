@@ -16,8 +16,4 @@ public enum SendStatus {
     VALID("Valid");
 
     private final String responseStatus;
-
-    public String getResponseStatusUpper() {
-        return responseStatus.toUpperCase();
-    }
 }

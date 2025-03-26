@@ -40,3 +40,6 @@ public class ClientEntity {
     private Instant createAt;
     private Instant updateAt;
 }
+
+
+

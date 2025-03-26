@@ -20,6 +20,7 @@ public class BoardingDomain {
     private Instant boardingStart;
     private Instant boardingEnd;
     private BoardingStatus boardingStatus;
+    private double initialPayment;
     private PaymentStatus paymentStatus;
     private Instant updatedAt;
     private boolean active;
@@ -41,7 +42,7 @@ public class BoardingDomain {
 
     public void updateBoardingStatus(BoardingStatus status) {
         if (!this.active) {
-            throw new IllegalStateException("Cannot update status of an inactive boarding.");
+            throw new IllegalStateException("Cannot update status of an inactive BoardingAS.");
         }
 
         this.boardingStatus = status;

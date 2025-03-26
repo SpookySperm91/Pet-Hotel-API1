@@ -5,16 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginEmailRequestDTO {
-    @Email(message = "Invalid email format")
-    @NotBlank(message = "Email cannot be empty")
-    private String email;
-    private String password;
+public class RequestRDTO {
 }
