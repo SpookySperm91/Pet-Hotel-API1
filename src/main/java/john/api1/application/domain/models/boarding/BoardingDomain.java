@@ -24,25 +24,31 @@ public class BoardingDomain {
     private double initialPayment;
     private PaymentStatus paymentStatus;
     private final String notes;
+    private final Instant createdAt;
     private Instant updatedAt;
+    private boolean active;
 
-    public BoardingDomain(String petId, String ownerId, BoardingType boardingType, Instant boardingStart, Instant boardingEnd, double initialPayment, PaymentStatus paymentStatus, String notes) {
+    public BoardingDomain create(String petId, String ownerId, BoardingType boardingType, Instant boardingStart, Instant boardingEnd, double initialPayment, PaymentStatus paymentStatus, String notes) {
         if (ObjectId.isValid(petId)) throw new DomainArgumentException("Invalid pet-id format");
         if (ObjectId.isValid(ownerId)) throw new DomainArgumentException("Invalid owner-id format");
 
-        this.id = null;
-        this.petId = petId;
-        this.ownerId = ownerId;
-        this.boardingType = boardingType;
-        this.boardingStart = boardingStart;
-        this.boardingEnd = boardingEnd;
-        this.boardingStatus = BoardingStatus.BOARDING;
-        this.initialPayment = initialPayment;
-        this.paymentStatus = paymentStatus;
-        this.notes = notes;
+        return new BoardingDomain(
+                null,
+                petId,
+                ownerId,
+                boardingType,
+                boardingStart,
+                boardingEnd,
+                BoardingStatus.BOARDING,
+                initialPayment,
+                paymentStatus,
+                notes,
+                Instant.now(),
+                Instant.now(),
+                true
+        );
     }
 
-    private boolean active;
 
     public void extendBoarding(long extraDays, boolean requiresAdditionalPayment) {
         if (extraDays <= 0) {
