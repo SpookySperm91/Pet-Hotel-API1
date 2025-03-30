@@ -1,0 +1,15 @@
+package john.api1.application.ports.repositories.pet;
+
+public record PetCQRS(
+        String petName,
+        String animalType,
+        String breed,
+        String size,
+        int age,
+        String specialDescription) {
+
+
+    public static PetCQRS mapNameTypeBreed(String name, String type, String breed) {
+        return new PetCQRS(name, type, breed, null, 0, null);
+    }
+}

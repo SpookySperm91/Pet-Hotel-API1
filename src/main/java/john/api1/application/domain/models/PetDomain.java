@@ -15,36 +15,38 @@ public class PetDomain {
     private String animalType;
     private String breed;
     private String size;
+    private int age;
     private String specialDescription;
     private String profilePictureUrl;
     private Instant createdAt;
     private Instant updatedAt;
+    private boolean boarding = false;
 
-    public static PetDomain create(String ownerId, String petName, String animalType) {
+    public static PetDomain create(String ownerId, String petName, String animalType, int age) {
         validateNotEmpty(ownerId, "Owner ID cannot be empty");
         validateNotEmpty(petName, "Pet name cannot be empty");
         validateNotEmpty(animalType, "Animal type cannot be empty");
 
-        return new PetDomain(null, ownerId, petName, animalType, null, null, null, null, Instant.now(), Instant.now());
+        return new PetDomain(null, ownerId, petName, animalType, null, null, age, null, null, Instant.now(), Instant.now(), false);
     }
 
     public static PetDomain createFull(String ownerId, String petName, String animalType,
-                                       String breed, String size, String specialDescription, String profilePictureUrl) {
+                                       String breed, String size, int age, String specialDescription, String profilePictureUrl) {
         validateNotEmpty(ownerId, "Owner ID cannot be empty");
         validateNotEmpty(petName, "Pet name cannot be empty");
         validateNotEmpty(animalType, "Animal type cannot be empty");
 
-        return new PetDomain(null, ownerId, petName, animalType, breed, size, specialDescription, profilePictureUrl, Instant.now(), Instant.now());
+        return new PetDomain(null, ownerId, petName, animalType, breed, size, age, specialDescription, profilePictureUrl, Instant.now(), Instant.now(), false);
     }
 
     public static PetDomain updateFull(String id, String ownerId, String petName, String animalType,
-                                       String breed, String size, String specialDescription, String profilePictureUrl) {
+                                       String breed, String size, int age, String specialDescription, String profilePictureUrl) {
         validateNotEmpty(id, "Pet ID cannot be empty");
         validateNotEmpty(ownerId, "Owner ID cannot be empty");
         validateNotEmpty(petName, "Pet name cannot be empty");
         validateNotEmpty(animalType, "Animal type cannot be empty");
 
-        return new PetDomain(id, ownerId, petName, animalType, breed, size, specialDescription, profilePictureUrl, Instant.now(), Instant.now());
+        return new PetDomain(id, ownerId, petName, animalType, breed, size, age, specialDescription, profilePictureUrl, Instant.now(), Instant.now(), false);
     }
 
     public void updatePetName(String petName) {
@@ -79,5 +81,17 @@ public class PetDomain {
         if (value == null || value.isBlank()) {
             throw new DomainArgumentException(message);
         }
+    }
+
+    public void boardPet() {
+        if (boarding) throw new DomainArgumentException("Pet is currently boarding");
+        this.boarding = true;
+        this.updatedAt = Instant.now();
+    }
+
+    public void unBoardPet() {
+        if (!boarding) throw new DomainArgumentException("Pet is not currently boarding");
+        this.boarding = false;
+        this.updatedAt = Instant.now();
     }
 }

@@ -3,7 +3,9 @@ package john.api1.application.adapters.repositories.client;
 import john.api1.application.adapters.repositories.ClientEntity;
 import john.api1.application.domain.models.ClientAccountDomain;
 import john.api1.application.domain.models.ClientDomain;
-import john.api1.application.ports.repositories.account.IAccountSearchRepository;
+import john.api1.application.ports.repositories.owner.IAccountSearchRepository;
+import john.api1.application.ports.repositories.owner.IPetOwnerCQRSRepository;
+import john.api1.application.ports.repositories.owner.PetOwnerCQRS;
 import john.api1.application.ports.repositories.wrapper.ClientFullAccount;
 import john.api1.application.ports.repositories.wrapper.UsernameAndId;
 import org.bson.types.ObjectId;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @Qualifier("MongoAccountSearchRepo")
-public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository {
+public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository, IPetOwnerCQRSRepository {
     private final MongoTemplate mongoTemplate;
 
     @Autowired
@@ -92,7 +94,8 @@ public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository 
         return mongoTemplate.exists(
                 Query.query(Criteria.where("_id").is(new ObjectId(id))),
                 ClientEntity.class
-        );    }
+        );
+    }
 
 
     private ClientAccountDomain mapToClientAccount(ClientEntity account) {
@@ -124,4 +127,15 @@ public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository 
         );
     }
 
+
+    // CQRS METHODS
+    //
+
+
+    public Optional<PetOwnerCQRS> getDetails(String id){
+        return Optional.empty();
+    }
+    public Optional<PetOwnerCQRS> getNameContactAddress(String id){
+        return Optional.empty();
+    }
 }

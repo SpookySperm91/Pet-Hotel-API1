@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface IPetsSearchRepository {
     Optional<PetDomain> getPetById(String petId);
     boolean existsById(String petId);
+    boolean isPetBoarding(String id);
 
     List<String> getAllPetsIdByOwner(String petOwnerId);
 

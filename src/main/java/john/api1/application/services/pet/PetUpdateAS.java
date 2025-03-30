@@ -44,6 +44,7 @@ public class PetUpdateAS implements IPetUpdate {
                     pet.getAnimalType(),
                     pet.getBreed(),
                     pet.getSize(),
+                    pet.getAge(),
                     pet.getSpecialDescription(),
                     profilePicUrl
             );

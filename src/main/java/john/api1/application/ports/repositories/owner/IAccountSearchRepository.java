@@ -1,9 +1,8 @@
-package john.api1.application.ports.repositories.account;
+package john.api1.application.ports.repositories.owner;
 
 import john.api1.application.domain.models.ClientAccountDomain;
 import john.api1.application.ports.repositories.wrapper.ClientFullAccount;
 import john.api1.application.ports.repositories.wrapper.UsernameAndId;
-import org.bson.types.ObjectId;
 
 import java.util.List;
 import java.util.Optional;

@@ -5,9 +5,7 @@ import john.api1.application.adapters.repositories.PetEntity;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.PetDomain;
-import john.api1.application.ports.repositories.pet.IPetCreateRepository;
-import john.api1.application.ports.repositories.pet.IPetUpdateRepository;
-import john.api1.application.ports.repositories.pet.IPetsSearchRepository;
+import john.api1.application.ports.repositories.pet.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,7 +20,7 @@ import java.util.Optional;
 
 
 @Repository
-public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepository, IPetUpdateRepository {
+public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepository, IPetUpdateRepository, IPetCQRSRepository {
     private final MongoTemplate mongoTemplate;
 
     @Autowired
@@ -46,10 +44,12 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
                 pet.getAnimalType(),
                 pet.getBreed(),
                 pet.getSize(),
+                pet.getAge(),
                 pet.getSpecialDescription(),
                 pet.getProfilePictureUrl(),
                 Instant.now(),
-                Instant.now()
+                Instant.now(),
+                pet.isBoarding()
         );
 
         PetEntity savedPet = mongoTemplate.save(petEntity);
@@ -77,10 +77,12 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
                 petEntity.getAnimalType(),
                 petEntity.getBreed(),
                 petEntity.getSize(),
+                petEntity.getAge(),
                 petEntity.getSpecialDescription(),
                 petEntity.getProfilePictureUrl(),
-                petEntity.getCreateAt(),
-                petEntity.getUpdateAt()
+                petEntity.getCreatedAt(),
+                petEntity.getUpdatedAt(),
+                petEntity.isBoarding()
         );
     }
 
@@ -92,6 +94,17 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
         return mongoTemplate.exists(query, PetEntity.class);
     }
 
+    // Check if boarding or not
+    public boolean isPetBoarding(String petId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(new ObjectId(petId)));
+        query.fields().include("boarding");
+
+        return Boolean.TRUE.equals(mongoTemplate.findOne(query, Boolean.class,
+                "pets")); // Collection name. Update this in the future to use global variable!!!
+    }
+
+    // List
     @Override
     public List<String> getAllPetsIdByOwner(String petOwnerId) {
         Query query = new Query(Criteria.where("ownerId").is(petOwnerId));
@@ -179,5 +192,59 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
             throw new PersistenceException("Pet with ID " + petId + " not found.");
         }
         return result.getModifiedCount() > 0;
+    }
+
+
+    // CQRS METHODS
+    @Override
+    public Optional<PetCQRS> getPetDetails(String id) {
+        if (!ObjectId.isValid(id)) {
+            throw new DomainArgumentException("Invalid Owner ID format");
+        }
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
+
+        // Include all fields in PetCQRS
+        query.fields().include(
+                "petName",
+                "ownerName",
+                "animalType",
+                "breed",
+                "age",
+                "specialDescription");
+
+        return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
+                .map(entity -> new PetCQRS(
+                        entity.getPetName(),
+                        entity.getAnimalType(),
+                        entity.getBreed(),
+                        entity.getSize(),
+                        entity.getAge(),
+                        entity.getSpecialDescription()
+                ));
+    }
+
+    @Override
+    public Optional<PetCQRS> getPetNameBreedType(String id) {
+        if (!ObjectId.isValid(id)) {
+            throw new DomainArgumentException("Invalid Owner ID format");
+        }
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
+
+        // Include all fields in PetCQRS
+        query.fields().include(
+                "petName",
+                "animalType",
+                "breed");
+
+        return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
+                .map(entity -> PetCQRS.mapNameTypeBreed(
+                        entity.getPetName(),
+                        entity.getAnimalType(),
+                        entity.getBreed()
+                ));
     }
 }

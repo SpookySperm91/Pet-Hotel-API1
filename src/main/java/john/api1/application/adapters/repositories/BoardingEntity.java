@@ -1,5 +1,6 @@
 package john.api1.application.adapters.repositories;
 
+import john.api1.application.domain.models.boarding.BoardingDomain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,4 +35,23 @@ public class BoardingEntity {
     private Instant createdAt;
     @LastModifiedDate
     private Instant updatedAt;
+    private boolean active;
+
+    public static BoardingEntity createWithDomain(BoardingDomain domain) {
+        return new BoardingEntity(
+                null,
+                new ObjectId(domain.getPetId()),
+                new ObjectId(domain.getOwnerId()),
+                domain.getBoardingType().getBoardingType(),
+                domain.getBoardingStart(),
+                domain.getBoardingEnd(),
+                domain.getBoardingStatus().getBoardingStatus(),
+                domain.getInitialPayment(),
+                domain.getPaymentStatus().getPaymentStatus(),
+                domain.getNotes(),
+                domain.getCreatedAt(),
+                domain.getUpdatedAt(),
+                domain.isActive()
+        );
+    }
 }

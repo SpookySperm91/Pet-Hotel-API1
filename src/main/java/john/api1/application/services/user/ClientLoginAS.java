@@ -6,7 +6,7 @@ import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.cores.ClientLoginDS;
 import john.api1.application.domain.models.ClientAccountDomain;
-import john.api1.application.ports.repositories.account.IAccountSearchRepository;
+import john.api1.application.ports.repositories.owner.IAccountSearchRepository;
 import john.api1.application.ports.services.ILoginPetOwner;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;

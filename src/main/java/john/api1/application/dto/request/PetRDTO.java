@@ -22,6 +22,8 @@ public class PetRDTO {
     private String breed;
     @NotBlank(message = "Size cannot be empty")
     private String size;
+    @NotBlank(message = "Age cannot be empty")
+    private int age;
     private String specialDescription;
 
 }

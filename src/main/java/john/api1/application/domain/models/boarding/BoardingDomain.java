@@ -28,7 +28,7 @@ public class BoardingDomain {
     private Instant updatedAt;
     private boolean active;
 
-    public BoardingDomain create(String petId, String ownerId, BoardingType boardingType, Instant boardingStart, Instant boardingEnd, double initialPayment, PaymentStatus paymentStatus, String notes) {
+    public static BoardingDomain create(String petId, String ownerId, BoardingType boardingType, Instant boardingStart, Instant boardingEnd, double initialPayment, PaymentStatus paymentStatus, String notes) {
         if (ObjectId.isValid(petId)) throw new DomainArgumentException("Invalid pet-id format");
         if (ObjectId.isValid(ownerId)) throw new DomainArgumentException("Invalid owner-id format");
 
@@ -48,7 +48,6 @@ public class BoardingDomain {
                 true
         );
     }
-
 
     public void extendBoarding(long extraDays, boolean requiresAdditionalPayment) {
         if (extraDays <= 0) {

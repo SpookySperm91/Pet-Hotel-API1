@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.sql.Date;
 import java.time.Instant;
 
 @Data
@@ -23,11 +22,12 @@ public class PetEntity {
     private String animalType;
     private String breed;
     private String size;
+    private int age;
     private String specialDescription;
     private String profilePictureUrl;
 
-    private Instant createAt;
-    private Instant updateAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
-
+    private boolean boarding;
 }

@@ -5,7 +5,7 @@ import john.api1.application.adapters.repositories.ClientEntity;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.ClientAccountDomain;
 import john.api1.application.domain.models.ClientDomain;
-import john.api1.application.ports.repositories.account.IAccountCreateRepository;
+import john.api1.application.ports.repositories.owner.IAccountCreateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;

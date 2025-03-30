@@ -5,8 +5,8 @@ import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.PetDomain;
 import john.api1.application.dto.request.PetRDTO;
-import john.api1.application.ports.repositories.account.IAccountSearchRepository;
-import john.api1.application.ports.repositories.account.IPetOwnerUpdateRepository;
+import john.api1.application.ports.repositories.owner.IAccountSearchRepository;
+import john.api1.application.ports.repositories.owner.IPetOwnerUpdateRepository;
 import john.api1.application.ports.repositories.pet.IPetCreateRepository;
 import john.api1.application.ports.services.pet.IPetRegister;
 import org.bson.types.ObjectId;
@@ -46,6 +46,7 @@ public class PetRegistrationAS implements IPetRegister {
                     registerPet.getAnimalType(),
                     registerPet.getBreed(),
                     registerPet.getSize(),
+                    registerPet.getAge(),
                     registerPet.getSpecialDescription(),
                     null
             );

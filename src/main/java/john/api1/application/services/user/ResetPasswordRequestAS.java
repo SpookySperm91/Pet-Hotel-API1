@@ -9,7 +9,7 @@ import john.api1.application.components.enums.EmailType;
 import john.api1.application.components.enums.VerificationType;
 import john.api1.application.domain.models.VerificationDomain;
 import john.api1.application.ports.repositories.IVerificationRepository;
-import john.api1.application.ports.repositories.account.IAccountSearchRepository;
+import john.api1.application.ports.repositories.owner.IAccountSearchRepository;
 import john.api1.application.services.response.RequestResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

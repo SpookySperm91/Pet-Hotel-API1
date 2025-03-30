@@ -2,7 +2,7 @@ package john.api1.application.adapters.repositories.client;
 
 import com.mongodb.client.result.UpdateResult;
 import john.api1.application.adapters.repositories.ClientEntity;
-import john.api1.application.ports.repositories.account.IAccountUpdateRepository;
+import john.api1.application.ports.repositories.owner.IAccountUpdateRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
