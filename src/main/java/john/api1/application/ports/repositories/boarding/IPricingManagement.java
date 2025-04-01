@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface IPricingManagement {
     Optional<String> save(BoardingPricingDomain pricing);
-    boolean updateList(List<BoardingPricingDomain.RequestBreakdown> requestBreakdown);
+    boolean updateBreakDownList(String boardingId, List<BoardingPricingDomain.RequestBreakdown> requestBreakdown);
 
 
 }
