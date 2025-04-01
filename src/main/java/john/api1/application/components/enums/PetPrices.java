@@ -1,5 +1,6 @@
 package john.api1.application.components.enums;
 
+import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -27,13 +28,13 @@ public enum PetPrices {
     public static PetPrices fromSpeciesAndSize(SpeciesType species, PetSize size) {
         if ((species == SpeciesType.DOG && !size.isDogSize()) ||
                 (species == SpeciesType.CAT && !size.isCatSize())) {
-            throw new IllegalArgumentException("Invalid pet size for species: " + species + " " + size);
+            throw new DomainArgumentException("Invalid pet size for species: " + species + " " + size);
         }
 
         return Arrays.stream(values())
                 .filter(p -> p.species == species && p.size == size)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No pricing found for: " + species + " " + size));
+                .orElseThrow(() -> new DomainArgumentException("No pricing found for: " + species + " " + size));
     }
 
 }

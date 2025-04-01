@@ -93,7 +93,6 @@ public class BoardingSearchRepository implements IBoardingSearchRepository {
                 entity.getBoardingStart(),
                 entity.getBoardingEnd(),
                 BoardingStatus.fromStringOrDefault(entity.getBoardingStatus()),
-                entity.getInitialPayment(),
                 PaymentStatus.fromStringOrDefault(entity.getPaymentStatus()),
                 entity.getNotes(),
                 entity.getCreatedAt(),

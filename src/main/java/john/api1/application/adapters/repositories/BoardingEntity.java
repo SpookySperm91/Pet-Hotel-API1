@@ -28,7 +28,6 @@ public class BoardingEntity {
     private Instant boardingStart;
     private Instant boardingEnd;
     private String boardingStatus;  // BOARDING, DONE_BOARDING, OVERDUE, RELEASED
-    private double initialPayment;
     private String paymentStatus; // PAID, NOT_PAID, PENDING
     private String notes;
     @CreatedDate
@@ -46,7 +45,6 @@ public class BoardingEntity {
                 domain.getBoardingStart(),
                 domain.getBoardingEnd(),
                 domain.getBoardingStatus().getBoardingStatus(),
-                domain.getInitialPayment(),
                 domain.getPaymentStatus().getPaymentStatus(),
                 domain.getNotes(),
                 domain.getCreatedAt(),

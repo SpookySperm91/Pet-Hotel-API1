@@ -1,10 +1,12 @@
-package john.api1.application.dto.mapper;
+package john.api1.application.dto.mapper.boarding;
 
+import john.api1.application.domain.models.boarding.BoardingPricingDomain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 
 public record BoardingCreatedDTO(
         // O(1)
@@ -29,9 +31,15 @@ public record BoardingCreatedDTO(
         String boardingType,
         Instant boardingStart,
         Instant boardingEnd,
-        double initialPayment,
         String paymentStatus,
         String notes,
+
+        // Pricing breakdown
+        double initialPrice,
+        List<BoardingPricingDomain.RequestBreakdown> requestPrice,
+        double total,
+
+        // Created at
         Instant createdAt
 ) {
 }

@@ -21,41 +21,37 @@ public class BoardingDomain {
     private Instant boardingStart;
     private Instant boardingEnd;
     private BoardingStatus boardingStatus;
-    private double initialPayment;
     private PaymentStatus paymentStatus;
     private final String notes;
     private final Instant createdAt;
     private Instant updatedAt;
     private boolean active;
 
-    public static BoardingDomain create(String petId, String ownerId, BoardingType boardingType, Instant boardingStart, Instant boardingEnd, double initialPayment, PaymentStatus paymentStatus, String notes) {
+    public static BoardingDomain create(String petId, String ownerId, BoardingType boardingType, Instant boardingStart, Instant boardingEnd, PaymentStatus paymentStatus, String notes) {
         if (ObjectId.isValid(petId)) throw new DomainArgumentException("Invalid pet-id format");
         if (ObjectId.isValid(ownerId)) throw new DomainArgumentException("Invalid owner-id format");
 
-        return new BoardingDomain(
-                null,
-                petId,
-                ownerId,
-                boardingType,
-                boardingStart,
-                boardingEnd,
-                BoardingStatus.BOARDING,
-                initialPayment,
-                paymentStatus,
-                notes,
-                Instant.now(),
-                Instant.now(),
+        return new BoardingDomain(null, petId, ownerId,
+                boardingType, boardingStart, boardingEnd, BoardingStatus.BOARDING, paymentStatus, notes,
+                Instant.now(), Instant.now(),
                 true
         );
     }
 
-    public void extendBoarding(long extraDays, boolean requiresAdditionalPayment) {
+    public BoardingDomain withId(String id) {
+        return new BoardingDomain(
+                id, petId, ownerId, boardingType, boardingStart, boardingEnd,
+                boardingStatus, paymentStatus, notes, createdAt, updatedAt, active
+        );
+    }
+
+    public void extendBoarding(long extraDays) {
         if (extraDays <= 0) {
             throw new DomainArgumentException("Extension must be greater than zero days.");
         }
 
         this.boardingEnd = boardingEnd.plus(extraDays, ChronoUnit.DAYS);
-        this.paymentStatus = requiresAdditionalPayment ? PaymentStatus.PENDING : this.paymentStatus;
+        this.paymentStatus = PaymentStatus.PENDING;
         this.updatedAt = Instant.now();
     }
 
@@ -66,7 +62,7 @@ public class BoardingDomain {
 
     public void updateBoardingStatus(BoardingStatus status) {
         if (!this.active) {
-            throw new IllegalStateException("Cannot update status of an inactive BoardingAS.");
+            throw new IllegalStateException("Cannot update status of an inactive boarding.");
         }
 
         this.boardingStatus = status;
@@ -76,4 +72,23 @@ public class BoardingDomain {
             this.active = false; // Mark as inactive when released
         }
     }
+
+    public long getBoardingDuration() {
+        if (boardingStart == null || boardingEnd == null) {
+            throw new DomainArgumentException("Boarding start and end time must not be null.");
+        }
+
+        long duration;
+        if (boardingType == BoardingType.DAYCARE) {
+            // Calculate duration in hours for daycare
+            duration = ChronoUnit.HOURS.between(boardingStart, boardingEnd);
+        } else {
+            // Calculate duration in days for long-stay, ensuring minimum 1 day
+            duration = ChronoUnit.DAYS.between(boardingStart, boardingEnd);
+            return duration < 1 ? 1 : duration; // If less than 1 day, count as 1 day
+        }
+
+        return duration > 0 ? duration : 0; // Ensure non-negative values
+    }
+
 }

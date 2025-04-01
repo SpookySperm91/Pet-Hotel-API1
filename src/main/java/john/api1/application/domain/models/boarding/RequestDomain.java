@@ -19,10 +19,16 @@ public class RequestDomain {
     private RequestStatus requestStatus;
     private Instant requestTime;
     private Instant resolvedTime;
+    private String rejectionMessage;
 
     public void updateStatus(RequestStatus newStatus) {
         if (this.requestStatus == RequestStatus.COMPLETED) {
             throw new DomainArgumentException("Cannot change status after completion");
         }
+    }
+
+    public void stateRejectionReason(String message) {
+        if(message == null || message.isEmpty()) throw new DomainArgumentException("Message cannot be empty");
+        this.rejectionMessage = message;
     }
 }

@@ -100,8 +100,8 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
         query.addCriteria(Criteria.where("_id").is(new ObjectId(petId)));
         query.fields().include("boarding");
 
-        return Boolean.TRUE.equals(mongoTemplate.findOne(query, Boolean.class,
-                "pets")); // Collection name. Update this in the future to use global variable!!!
+        PetEntity pet = mongoTemplate.findOne(query, PetEntity.class, "pets");
+        return pet.isBoarding();
     }
 
     // List
@@ -212,7 +212,8 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
                 "animalType",
                 "breed",
                 "age",
-                "specialDescription");
+                "specialDescription",
+                "boarding");
 
         return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
                 .map(entity -> new PetCQRS(
@@ -221,7 +222,8 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
                         entity.getBreed(),
                         entity.getSize(),
                         entity.getAge(),
-                        entity.getSpecialDescription()
+                        entity.getSpecialDescription(),
+                        entity.isBoarding()
                 ));
     }
 
