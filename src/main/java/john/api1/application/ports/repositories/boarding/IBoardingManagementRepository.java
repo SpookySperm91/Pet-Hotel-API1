@@ -1,13 +1,18 @@
 package john.api1.application.ports.repositories.boarding;
 
+import john.api1.application.components.enums.boarding.PaymentStatus;
+import john.api1.application.domain.models.boarding.BoardingDomain;
+
 public interface IBoardingManagementRepository {
-    boolean updatePaidStatus(String boardingId);
+    void updateBoardingAfterRelease(BoardingDomain boarding);
 
-    boolean markAsRelease(String boardingId);
+    void updatePaidStatus(String boardingId, PaymentStatus status);
 
-    boolean markAsOverdue(String boardingId);
+    void markAsRelease(String boardingId);
 
-    boolean markAsActive(String boardingId);
+    void markAsOverdue(String boardingId);
+
+    void markAsActive(String boardingId);
 
     void deleteById(String boardingId);
 }
