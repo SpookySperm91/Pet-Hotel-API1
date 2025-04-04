@@ -1,6 +1,7 @@
 package john.api1.application.adapters.repositories.client;
 
 import john.api1.application.adapters.repositories.ClientEntity;
+import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.ClientAccountDomain;
 import john.api1.application.domain.models.ClientDomain;
 import john.api1.application.ports.repositories.owner.IAccountSearchRepository;
@@ -132,10 +133,20 @@ public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository,
     //
 
 
-    public Optional<PetOwnerCQRS> getDetails(String id){
-        return Optional.empty();
+    public Optional<PetOwnerCQRS> getDetails(String id) {
+        if (!ObjectId.isValid(id)) throw new PersistenceException("Pet-owner id cannot be mapped to ObjectId");
+
+        return Optional.ofNullable(mongoTemplate.findById(new ObjectId(id), ClientEntity.class))
+                .map(this::mapToCQRS);
     }
-    public Optional<PetOwnerCQRS> getNameContactAddress(String id){
-        return Optional.empty();
+
+    private PetOwnerCQRS mapToCQRS(ClientEntity account) {
+        return new PetOwnerCQRS(
+                account.getClientName(),
+                account.getEmail(),
+                account.getPhoneNumber(),
+                account.getStreetAddress(),
+                account.getCityAddress(),
+                account.getStateAddress());
     }
 }

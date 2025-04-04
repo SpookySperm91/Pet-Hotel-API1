@@ -20,7 +20,7 @@ import java.util.Optional;
 
 
 @Repository
-public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepository, IPetUpdateRepository, IPetCQRSRepository {
+public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepository, IPetUpdateRepository, IPetCQRSRepository {
     private final MongoTemplate mongoTemplate;
 
     @Autowired
@@ -145,7 +145,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
                 .set("size", pet.getSize())
                 .set("specialDescription", pet.getSpecialDescription())
                 .set("profilePictureUrl", pet.getProfilePictureUrl()) // Fixed: was 'profilePicUrl'
-                .set("updateAt", Instant.now());
+                .set("updatedAt", Instant.now());
 
         UpdateResult result = mongoTemplate.updateFirst(query, update, PetEntity.class);
 
@@ -158,7 +158,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
     @Override
     public boolean updatePetName(String petId, String newPetName) {
         Query query = new Query(Criteria.where("_id").is(new ObjectId(petId))); // Convert String to ObjectId
-        Update update = new Update().set("petName", newPetName).set("updateAt", Instant.now());
+        Update update = new Update().set("petName", newPetName).set("updatedAt", Instant.now());
         UpdateResult result = mongoTemplate.updateFirst(query, update, PetEntity.class);
 
         if (result.getMatchedCount() == 0) {
@@ -173,7 +173,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
         Update update = new Update()
                 .set("animalType", animalType)
                 .set("breed", breed)
-                .set("updateAt", Instant.now());
+                .set("updatedAt", Instant.now());
         UpdateResult result = mongoTemplate.updateFirst(query, update, PetEntity.class);
 
         if (result.getMatchedCount() == 0) {
@@ -185,7 +185,19 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetsSearchRepo
     @Override
     public boolean updatePetProfilePicture(String petId, String profilePictureUrl) {
         Query query = new Query(Criteria.where("_id").is(new ObjectId(petId)));
-        Update update = new Update().set("profilePictureUrl", profilePictureUrl).set("updateAt", Instant.now());
+        Update update = new Update().set("profilePictureUrl", profilePictureUrl).set("updatedAt", Instant.now());
+        UpdateResult result = mongoTemplate.updateFirst(query, update, PetEntity.class);
+
+        if (result.getMatchedCount() == 0) {
+            throw new PersistenceException("Pet with ID " + petId + " not found.");
+        }
+        return result.getModifiedCount() > 0;
+    }
+
+    @Override
+    public boolean updatePetStatus(String petId, boolean status){
+        Query query = new Query(Criteria.where("_id").is(new ObjectId(petId)));
+        Update update = new Update().set("boarding", status).set("updatedAt", Instant.now());
         UpdateResult result = mongoTemplate.updateFirst(query, update, PetEntity.class);
 
         if (result.getMatchedCount() == 0) {

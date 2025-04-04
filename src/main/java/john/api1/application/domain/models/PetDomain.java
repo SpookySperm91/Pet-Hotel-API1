@@ -20,7 +20,7 @@ public class PetDomain {
     private String profilePictureUrl;
     private Instant createdAt;
     private Instant updatedAt;
-    private boolean boarding = false;
+    private boolean boarding;
 
     public static PetDomain create(String ownerId, String petName, String animalType, int age) {
         validateNotEmpty(ownerId, "Owner ID cannot be empty");

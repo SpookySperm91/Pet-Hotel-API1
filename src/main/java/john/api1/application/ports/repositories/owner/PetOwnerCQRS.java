@@ -6,7 +6,6 @@ public record PetOwnerCQRS(
         String ownerPhoneNumber,
         String streetAddress,
         String cityAddress,
-        String stateAddress,
-        String emergencyPhoneNumber
+        String stateAddress
 ) {
 }

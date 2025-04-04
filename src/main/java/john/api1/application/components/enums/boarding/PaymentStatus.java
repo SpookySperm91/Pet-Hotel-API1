@@ -1,5 +1,6 @@
 package john.api1.application.components.enums.boarding;
 
+import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,5 +20,12 @@ public enum PaymentStatus {
                 .filter(bt -> bt.paymentStatus.equalsIgnoreCase(dbValue))
                 .findFirst()
                 .orElse(PaymentStatus.PENDING);
+    }
+
+    public static PaymentStatus safeFromStringOrDefault(String dbValue) {
+        return Arrays.stream(PaymentStatus.values())
+                .filter(bt -> bt.paymentStatus.equalsIgnoreCase(dbValue))
+                .findFirst()
+                .orElseThrow(() -> new DomainArgumentException("Invalid payment status: '" + dbValue + "'. Valid statuses are: 'PAID', 'NOT_PAID', 'PENDING'"));
     }
 }

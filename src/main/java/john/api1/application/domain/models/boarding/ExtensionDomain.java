@@ -2,6 +2,7 @@ package john.api1.application.domain.models.boarding;
 
 import john.api1.application.components.enums.PetPrices;
 import john.api1.application.components.exception.DomainArgumentException;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
@@ -10,6 +11,7 @@ import java.time.Instant;
 
 // THIS DOMAIN WILL GENERATE AFTER REQUEST APPROVED AND COMMITTED
 // MARK AS FINAL
+@AllArgsConstructor
 @Getter
 public class ExtensionDomain {
     private final String id;

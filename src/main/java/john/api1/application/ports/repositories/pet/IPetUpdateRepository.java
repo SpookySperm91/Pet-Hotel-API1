@@ -7,4 +7,5 @@ public interface IPetUpdateRepository {
     boolean updatePetName(String petId, String newPetName);
     boolean updatePetTypeAndBreed(String petId, String type, String breed);
     boolean updatePetProfilePicture(String petId, String profilePicUrl);
+    boolean updatePetStatus(String petId, boolean status);
 }

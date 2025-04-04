@@ -5,7 +5,7 @@ import john.api1.application.domain.models.PetDomain;
 import java.util.List;
 import java.util.Optional;
 
-public interface IPetsSearchRepository {
+public interface IPetSearchRepository {
     Optional<PetDomain> getPetById(String petId);
     boolean existsById(String petId);
     boolean isPetBoarding(String id);

@@ -1,11 +1,14 @@
 package john.api1.application.services.pet;
 
 import john.api1.application.components.DomainResponse;
+import john.api1.application.components.enums.boarding.BoardingStatus;
 import john.api1.application.components.exception.DomainArgumentException;
+import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.PetDomain;
 import john.api1.application.dto.request.PetRDTO;
 import john.api1.application.ports.repositories.pet.IPetUpdateRepository;
-import john.api1.application.ports.repositories.pet.IPetsSearchRepository;
+import john.api1.application.ports.repositories.pet.IPetSearchRepository;
+import john.api1.application.ports.repositories.pet.PetCQRS;
 import john.api1.application.ports.services.pet.IPetUpdate;
 import john.api1.application.services.response.PetUpdateResponse;
 import org.bson.types.ObjectId;
@@ -20,10 +23,10 @@ import java.util.logging.Logger;
 public class PetUpdateAS implements IPetUpdate {
     private static final Logger logger = Logger.getLogger(PetUpdateAS.class.getName());
     private final IPetUpdateRepository petUpdate;
-    private final IPetsSearchRepository petSearch;
+    private final IPetSearchRepository petSearch;
 
     @Autowired
-    public PetUpdateAS(IPetUpdateRepository petUpdate, IPetsSearchRepository petSearch) {
+    public PetUpdateAS(IPetUpdateRepository petUpdate, IPetSearchRepository petSearch) {
         this.petUpdate = petUpdate;
         this.petSearch = petSearch;
     }
@@ -88,6 +91,23 @@ public class PetUpdateAS implements IPetUpdate {
                 "Unable to update pet profile picture. Please try again later.");
     }
 
+    @Override
+    public DomainResponse<PetCQRS> updatePetStatus(String petId, BoardingStatus status) {
+        try {
+            if (!isValidId(petId)) return DomainResponse.error("Invalid pet ID format.");
+
+
+            boolean active = (status == BoardingStatus.RELEASED);
+            if (petUpdate.updatePetStatus(petId, active)) {
+                return DomainResponse.success("Pet successfully updated boarding status as " + active);
+            }
+
+            return DomainResponse.error("Failed to update boarding status");
+        } catch (PersistenceException e) {
+            return DomainResponse.error(e.getMessage());
+        }
+    }
+
     // privates
     private boolean isValidId(String petId) {
         return ObjectId.isValid(petId);
@@ -102,4 +122,6 @@ public class PetUpdateAS implements IPetUpdate {
         }
         return DomainResponse.success(response);
     }
+
+
 }
