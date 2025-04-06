@@ -9,6 +9,8 @@ import john.api1.application.dto.request.PaymentStatusDTO;
 
 public interface IBoardingManagement {
     DomainResponse<BoardingReleasedDTO> releasedBoarding(String boardingId); // release after completed
+    DomainResponse<BoardingReleasedDTO> forceReleasedBoarding(String boardingId); // release after completed
+
     DomainResponse<Void> updatePaidStatus(PaymentStatusDTO paymentStatus); // after paid, or new pay service
     DomainResponse<Void> updateBoardingStatus(BoardingStatusDTO boardingStatus); //overdue, active, released?
 

@@ -6,7 +6,9 @@ import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.dto.mapper.boarding.BoardingCreatedDTO;
 import john.api1.application.dto.request.BoardingRDTO;
 
+import java.time.Instant;
+
 public interface IBoardingCreate {
     // return aggregated values(?)
-    DomainResponse<BoardingCreatedDTO> createNewBoarding(BoardingRDTO boardingRequest, BoardingType boardingType, PaymentStatus paymentStatus);
+    DomainResponse<BoardingCreatedDTO> createNewBoarding(BoardingRDTO boardingRequest, BoardingType boardingType, PaymentStatus paymentStatus, Instant startAt, Instant endAt);
 }

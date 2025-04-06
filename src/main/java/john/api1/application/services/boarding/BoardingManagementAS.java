@@ -63,13 +63,33 @@ public class BoardingManagementAS implements IBoardingManagement {
     // Retrieve boarding details for aggregation return data
     @Override
     public DomainResponse<BoardingReleasedDTO> releasedBoarding(String boardingId) {
+        var boarding = boardingSearch.searchById(boardingId);
+        if (boarding.isEmpty()) return DomainResponse.error("Boarding do not exist");
+
         try {
-            var boarding = boardingSearch.searchById(boardingId)
-                    .orElseThrow(() -> new PersistenceException("Boarding do not exist"));
-
             // Check current boarding status
-            BoardingManagementDS.validateRelease(boarding);
+            BoardingManagementDS.validateRelease(boarding.get());
+            return release(boarding.get(), boardingId);
+        } catch (DomainArgumentException e) {
+            return DomainResponse.error(e.getMessage());
+        }
+    }
 
+    @Override
+    public DomainResponse<BoardingReleasedDTO> forceReleasedBoarding(String boardingId) {
+        var boarding = boardingSearch.searchById(boardingId);
+        if (boarding.isEmpty()) return DomainResponse.error("Boarding do not exist");
+
+        // Cannot release closed boarding lmao
+        if (boarding.get().getBoardingStatus() == BoardingStatus.RELEASED) {
+            return DomainResponse.error("Boarding is already released");
+        }
+        return release(boarding.get(), boardingId);
+    }
+
+
+    private DomainResponse<BoardingReleasedDTO> release(BoardingDomain boarding, String boardingId) {
+        try {
             // release, deactivate boarding and pricing
             boarding.updateBoardingStatus(BoardingStatus.RELEASED);  // RELEASED = auto set active as false
             boarding.updatePaymentStatus(PaymentStatus.PAID);
@@ -79,7 +99,7 @@ public class BoardingManagementAS implements IBoardingManagement {
 
 
             // update pet current status
-            var petUpdated = petUpdate.updatePetStatus(boarding.getPetId(), BoardingStatus.RELEASED);
+            var petUpdated = petUpdate.updatePetStatusWithResponse(boarding.getPetId(), BoardingStatus.RELEASED);
             if (!petUpdated.isSuccess()) {
                 return DomainResponse.error(petUpdated.getMessage());
             }
@@ -93,6 +113,7 @@ public class BoardingManagementAS implements IBoardingManagement {
             // Return response
             Instant now = Instant.now();
             var dto = mapping(boarding, petUpdated.getData(), ownerDetail, boardingPrice.getData(), extendedTotalTime, now);
+            System.out.println();
             String message = String.format(
                     "%s's pet '%s' is successfully released from boarding at %s"
                     , ownerDetail.ownerName(), petUpdated.getData().petName(), now);

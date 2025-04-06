@@ -10,4 +10,6 @@ public interface IPricingManagement {
     DomainResponse<String> deactivatePricing(String boardingId);
     DomainResponse<String> activatePricing(String boardingId);
     DomainResponse<BoardingPricingDomain> getPricingDetails(String boardingId);
+
+    // direct
 }

@@ -19,4 +19,12 @@ public enum BoardingType {
                 .findFirst()
                 .orElse(BoardingType.DAYCARE); // Default to DAYCARE if unknown
     }
+
+    // High usage in Controller?
+    public static BoardingType fromStringOrError(String dbValue) {
+        return Arrays.stream(BoardingType.values())
+                .filter(bt -> bt.boardingType.equalsIgnoreCase(dbValue))
+                .findFirst()
+                .orElseThrow(()-> new IllegalArgumentException ("Boarding type request value '" + dbValue + "' cannot be converted to enum"));
+    }
 }

@@ -5,6 +5,7 @@ import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.PetPrices;
 import john.api1.application.components.enums.PetSize;
 import john.api1.application.components.enums.SpeciesType;
+import john.api1.application.components.enums.boarding.BoardingStatus;
 import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.components.exception.DomainArgumentException;
@@ -21,6 +22,7 @@ import john.api1.application.ports.repositories.pet.PetCQRS;
 import john.api1.application.ports.services.IPetOwnerManagement;
 import john.api1.application.ports.services.boarding.IBoardingCreate;
 import john.api1.application.ports.services.pet.IPetSearch;
+import john.api1.application.ports.services.pet.IPetUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class BoardingCreateAS implements IBoardingCreate {
     private final IBoardingCreateRepository createRepository;
     private final IPricingManagementRepository pricingManagement;
     private final IPetSearch pet;
+    private final IPetUpdate petUpdate;
     private final IPetOwnerManagement petOwner;
 
 
@@ -38,10 +41,12 @@ public class BoardingCreateAS implements IBoardingCreate {
     public BoardingCreateAS(IBoardingCreateRepository createRepository,
                             IPricingManagementRepository pricingManagement,
                             IPetSearch pet,
+                            IPetUpdate petUpdate,
                             IPetOwnerManagement petOwner) {
         this.createRepository = createRepository;
         this.pricingManagement = pricingManagement;
         this.pet = pet;
+        this.petUpdate = petUpdate;
         this.petOwner = petOwner;
     }
 
@@ -50,38 +55,43 @@ public class BoardingCreateAS implements IBoardingCreate {
     // Get pet and owner data for aggregation
     // Create boarding domain object
     // Create pricing domain object
+    // Update pet boarding status
     // Save to DB
     // Aggregate necessary values to convert into dto
     // Return response
     public DomainResponse<BoardingCreatedDTO> createNewBoarding(BoardingRDTO boardingRequest,
                                                                 BoardingType boardingType,
-                                                                PaymentStatus paymentStatus) {
+                                                                PaymentStatus paymentStatus,
+                                                                Instant startAt,
+                                                                Instant endAt) {
         try {
             String petId = boardingRequest.getPetId();
             String ownerId = boardingRequest.getOwnerId();
-            Instant start = boardingRequest.getBoardingStart();
-            Instant end = boardingRequest.getBoardingEnd();
 
             // Validation
-            if (start.isAfter(end))
-                return DomainResponse.error("Boarding start date cannot be after end date");
+            if (startAt.isAfter(endAt)) return DomainResponse.error("Boarding start date cannot be after end date");
 
-            // Retrieve values for aggregation
+            // Check pet and owner for extra validation
+            var petExist = petOwner.safeVerifyPetOwnership(ownerId, petId);
+            if (!petExist.isSuccess()) return DomainResponse.error(petExist.getMessage());
+
             var petDetails = pet.getPetBoardingDetails(petId);
-            if (petDetails.boarding())
-                return DomainResponse.error("Pet is currently boarding");
+            if (petDetails.boarding()) return DomainResponse.error("Pet is currently boarding");
+
             var owner = petOwner.getPetOwnerBoardingDetails(ownerId);
 
-            // Boarding creation
-            BoardingDomain boarding = createBoarding(boardingRequest, boardingType, paymentStatus);
-            String boardingId = saveBoarding(boarding);
+            // Boarding creation and to DB
+            BoardingDomain boarding = createBoarding(boardingRequest, boardingType, paymentStatus, startAt, endAt);
+            String boardingId = createRepository.saveBoarding(boarding);
+            // update pet boarding as active
+            petUpdate.updatePetStatus(petId, BoardingStatus.BOARDING);
 
             // Pricing breakdown creation
             BoardingPricingDomain pricing = calculatePricing(boardingId, petDetails, boardingType, boarding.getBoardingDuration(), paymentStatus);
             pricingManagement.save(pricing);
 
             // Returns aggregated dto response
-            return createSuccessResponse(boarding.getId(), boardingRequest, petDetails, owner, pricing, boardingType, paymentStatus, boarding.getCreatedAt());
+            return createSuccessResponse(boardingId, boarding, petDetails, owner, pricing, paymentStatus, boarding.getCreatedAt());
 
         } catch (DomainArgumentException | PersistenceException e) {
             return DomainResponse.error(e.getMessage());
@@ -93,21 +103,16 @@ public class BoardingCreateAS implements IBoardingCreate {
     // Creates boarding domain
     private BoardingDomain createBoarding(BoardingRDTO boardingRequest,
                                           BoardingType boardingType,
-                                          PaymentStatus paymentStatus) {
+                                          PaymentStatus paymentStatus,
+                                          Instant startAt, Instant endAt) {
         return BoardingDomain.create(
                 boardingRequest.getPetId(),
                 boardingRequest.getOwnerId(),
                 boardingType,
-                boardingRequest.getBoardingStart(),
-                boardingRequest.getBoardingEnd(),
+                startAt, endAt,
                 paymentStatus,
                 boardingRequest.getNotes()
         );
-    }
-
-    // Save boarding to DB
-    private String saveBoarding(BoardingDomain boarding) {
-        return createRepository.saveBoarding(boarding);
     }
 
     // Calculate pricing for boarding
@@ -117,6 +122,9 @@ public class BoardingCreateAS implements IBoardingCreate {
                                                    BoardingType boardingType,
                                                    long time,
                                                    PaymentStatus paymentStatus) {
+        System.out.println("Before price rate conversion: " + pet.toString());
+
+
         PetPrices rate = PetPrices.fromSpeciesAndSize(
                 SpeciesType.fromStringToSpecies(pet.animalType()),
                 PetSize.fromStringToSize(pet.size()));
@@ -132,11 +140,10 @@ public class BoardingCreateAS implements IBoardingCreate {
 
     // Create success response
     private DomainResponse<BoardingCreatedDTO> createSuccessResponse(String boardingId,
-                                                                     BoardingRDTO boardingRequest,
+                                                                     BoardingDomain boardingRequest,
                                                                      PetCQRS pet,
                                                                      PetOwnerCQRS owner,
                                                                      BoardingPricingDomain pricing,
-                                                                     BoardingType boardingType,
                                                                      PaymentStatus paymentStatus,
                                                                      Instant createdAt) {
 
@@ -150,7 +157,7 @@ public class BoardingCreateAS implements IBoardingCreate {
                         owner.ownerName(), owner.ownerEmail(), owner.ownerPhoneNumber(),
                         String.join(", ", owner.streetAddress(), owner.cityAddress(), owner.stateAddress()),
                         // boarding
-                        boardingType.getBoardingType(),
+                        boardingRequest.getBoardingType().getBoardingType(),
                         boardingRequest.getBoardingStart(),
                         boardingRequest.getBoardingEnd(),
                         paymentStatus.getPaymentStatus(),

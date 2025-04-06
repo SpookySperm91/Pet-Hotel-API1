@@ -28,8 +28,8 @@ public class BoardingDomain {
     private boolean active;
 
     public static BoardingDomain create(String petId, String ownerId, BoardingType boardingType, Instant boardingStart, Instant boardingEnd, PaymentStatus paymentStatus, String notes) {
-        if (ObjectId.isValid(petId)) throw new DomainArgumentException("Invalid pet-id format");
-        if (ObjectId.isValid(ownerId)) throw new DomainArgumentException("Invalid owner-id format");
+        if (!ObjectId.isValid(petId)) throw new DomainArgumentException("Invalid pet-id format");
+        if (!ObjectId.isValid(ownerId)) throw new DomainArgumentException("Invalid owner-id format");
 
         return new BoardingDomain(null, petId, ownerId,
                 boardingType, boardingStart, boardingEnd, BoardingStatus.BOARDING, paymentStatus, notes,
@@ -62,7 +62,7 @@ public class BoardingDomain {
 
     public void updateBoardingStatus(BoardingStatus status) {
         if (!this.active) {
-            throw new IllegalStateException("Cannot update status of an inactive boarding.");
+            throw new DomainArgumentException("Cannot update status of an inactive boarding.");
         }
 
         this.boardingStatus = status;

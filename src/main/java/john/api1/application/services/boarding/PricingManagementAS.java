@@ -27,7 +27,8 @@ public class PricingManagementAS implements IPricingManagement {
 
     public DomainResponse<String> updateRequestBreakdown(String boardingId, List<BoardingPricingDomain.RequestBreakdown> breakdowns) {
         try {
-            if (!ObjectId.isValid(boardingId)) throw new PersistenceException("Invalid boarding ID format. It cannot be an ObjectId.");
+            if (!ObjectId.isValid(boardingId))
+                throw new PersistenceException("Invalid boarding ID format. It cannot be an ObjectId.");
 
             var boarding = pricingSearch.getRequestBreakdown(boardingId);
             if (boarding.isEmpty()) return DomainResponse.error("Boarding price breakdown cannot be found");
@@ -48,7 +49,8 @@ public class PricingManagementAS implements IPricingManagement {
 
     public DomainResponse<String> deactivatePricing(String boardingId) {
         try {
-            if (!ObjectId.isValid(boardingId)) throw new PersistenceException("Invalid boarding ID format. It cannot be an ObjectId.");
+            if (!ObjectId.isValid(boardingId))
+                throw new PersistenceException("Invalid boarding ID format. It cannot be an ObjectId.");
             pricingManagement.deactivatePricing(boardingId);
         } catch (PersistenceException e) {
             return DomainResponse.error(e.getMessage());
@@ -61,6 +63,16 @@ public class PricingManagementAS implements IPricingManagement {
     }
 
     public DomainResponse<BoardingPricingDomain> getPricingDetails(String boardingId) {
-        return DomainResponse.success();
+        try {
+            if (!ObjectId.isValid(boardingId))
+                throw new PersistenceException("Invalid boarding ID format. It cannot be an ObjectId.");
+
+            var pricingDetails = pricingSearch.getBoardingPricing(boardingId);
+            return pricingDetails.map(DomainResponse::success)
+                    .orElseGet(() -> DomainResponse.error("Failed to get pricing for boarding id: " + boardingId));
+
+        } catch (PersistenceException e) {
+            return DomainResponse.error(e.getMessage());
+        }
     }
 }

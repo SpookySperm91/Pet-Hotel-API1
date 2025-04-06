@@ -195,7 +195,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
     }
 
     @Override
-    public boolean updatePetStatus(String petId, boolean status){
+    public boolean updatePetStatus(String petId, boolean status) {
         Query query = new Query(Criteria.where("_id").is(new ObjectId(petId)));
         Update update = new Update().set("boarding", status).set("updatedAt", Instant.now());
         UpdateResult result = mongoTemplate.updateFirst(query, update, PetEntity.class);
@@ -204,6 +204,28 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
             throw new PersistenceException("Pet with ID " + petId + " not found.");
         }
         return result.getModifiedCount() > 0;
+    }
+
+    @Override
+    public Optional<PetCQRS> updatePetStatusResponse(String petId, boolean status) {
+        Query query = new Query(Criteria.where("_id").is(new ObjectId(petId)));
+        Update update = new Update().set("boarding", status).set("updatedAt", Instant.now());
+        UpdateResult result = mongoTemplate.updateFirst(query, update, PetEntity.class);
+
+        if (result.getMatchedCount() == 0) {
+            throw new PersistenceException("Pet with ID " + petId + " not found.");
+        }
+
+        return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
+                .map(entity -> new PetCQRS(
+                        entity.getPetName(),
+                        entity.getAnimalType(),
+                        entity.getBreed(),
+                        entity.getSize(),
+                        entity.getAge(),
+                        entity.getSpecialDescription(),
+                        entity.isBoarding()
+                ));
     }
 
 
@@ -223,6 +245,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
                 "ownerName",
                 "animalType",
                 "breed",
+                "size",
                 "age",
                 "specialDescription",
                 "boarding");

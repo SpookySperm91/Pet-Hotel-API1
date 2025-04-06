@@ -13,7 +13,7 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRtDTO {
+public class RegisterRDTO {
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email cannot be empty")
     private String email;

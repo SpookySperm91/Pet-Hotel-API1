@@ -131,14 +131,34 @@ public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository,
 
     // CQRS METHODS
     //
-
-
+    @Override
     public Optional<PetOwnerCQRS> getDetails(String id) {
         if (!ObjectId.isValid(id)) throw new PersistenceException("Pet-owner id cannot be mapped to ObjectId");
 
         return Optional.ofNullable(mongoTemplate.findById(new ObjectId(id), ClientEntity.class))
                 .map(this::mapToCQRS);
     }
+
+    @Override
+    public Optional<List<String>> getAllPets(String id) {
+        if (!ObjectId.isValid(id)) throw new PersistenceException("Pet-owner id cannot be mapped to ObjectId");
+
+        return Optional.ofNullable(mongoTemplate.findById(new ObjectId(id), ClientEntity.class))
+                .map(ClientEntity::getAnimalIds)
+                .filter(list -> !list.isEmpty())
+                .map(list -> list.stream().map(ObjectId::toString).toList());
+    }
+
+    @Override
+    public Optional<String> checkPetIfExist(String ownerId, String petId) {
+        if (!ObjectId.isValid(ownerId) || !ObjectId.isValid(petId))
+            throw new PersistenceException("Pet-owner or pet id cannot be mapped to ObjectId");
+
+        return Optional.ofNullable(mongoTemplate.findById(new ObjectId(ownerId), ClientEntity.class)
+                ).filter(client -> client.getAnimalIds() != null && client.getAnimalIds().contains(new ObjectId(petId)))
+                .map(client -> petId); // return the found petId as String
+    }
+
 
     private PetOwnerCQRS mapToCQRS(ClientEntity account) {
         return new PetOwnerCQRS(

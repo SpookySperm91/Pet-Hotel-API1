@@ -6,8 +6,8 @@ import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.PetDomain;
 import john.api1.application.dto.request.PetRDTO;
-import john.api1.application.ports.repositories.pet.IPetUpdateRepository;
 import john.api1.application.ports.repositories.pet.IPetSearchRepository;
+import john.api1.application.ports.repositories.pet.IPetUpdateRepository;
 import john.api1.application.ports.repositories.pet.PetCQRS;
 import john.api1.application.ports.services.pet.IPetUpdate;
 import john.api1.application.services.response.PetUpdateResponse;
@@ -92,12 +92,27 @@ public class PetUpdateAS implements IPetUpdate {
     }
 
     @Override
-    public DomainResponse<PetCQRS> updatePetStatus(String petId, BoardingStatus status) {
+    public DomainResponse<PetCQRS> updatePetStatusWithResponse(String petId, BoardingStatus status) {
         try {
             if (!isValidId(petId)) return DomainResponse.error("Invalid pet ID format.");
 
+            boolean active = (status != BoardingStatus.RELEASED);
+            var updated = petUpdate.updatePetStatusResponse(petId, active);
+            return updated.map(petCQRS -> DomainResponse.success(petCQRS, "Pet successfully updated boarding status as " + active))
+                    .orElseGet(() -> DomainResponse.error("Failed to update boarding status"));
 
-            boolean active = (status == BoardingStatus.RELEASED);
+        } catch (PersistenceException e) {
+            return DomainResponse.error(e.getMessage());
+        }
+    }
+
+
+    @Override
+    public DomainResponse<Void> updatePetStatus(String petId, BoardingStatus status) {
+        try {
+            if (!isValidId(petId)) return DomainResponse.error("Invalid pet ID format.");
+
+            boolean active = (status != BoardingStatus.RELEASED);
             if (petUpdate.updatePetStatus(petId, active)) {
                 return DomainResponse.success("Pet successfully updated boarding status as " + active);
             }
@@ -107,6 +122,7 @@ public class PetUpdateAS implements IPetUpdate {
             return DomainResponse.error(e.getMessage());
         }
     }
+
 
     // privates
     private boolean isValidId(String petId) {

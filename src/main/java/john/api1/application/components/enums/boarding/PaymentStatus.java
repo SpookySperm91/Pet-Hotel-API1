@@ -22,6 +22,14 @@ public enum PaymentStatus {
                 .orElse(PaymentStatus.PENDING);
     }
 
+    // High usage in Controller?
+    public static PaymentStatus fromStringOrError(String dbValue) {
+        return Arrays.stream(PaymentStatus.values())
+                .filter(bt -> bt.paymentStatus.equalsIgnoreCase(dbValue))
+                .findFirst()
+                .orElseThrow(()-> new IllegalArgumentException ("Boarding type request value '" + dbValue + "' cannot be converted to enum"));
+    }
+
     public static PaymentStatus safeFromStringOrDefault(String dbValue) {
         return Arrays.stream(PaymentStatus.values())
                 .filter(bt -> bt.paymentStatus.equalsIgnoreCase(dbValue))

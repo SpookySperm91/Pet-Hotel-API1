@@ -16,7 +16,7 @@ import john.api1.application.domain.models.ClientAccountDomain;
 import john.api1.application.domain.models.ClientDomain;
 import john.api1.application.domain.models.EmailLogsDomain;
 import john.api1.application.domain.models.SmsLogDomain;
-import john.api1.application.dto.request.RegisterRtDTO;
+import john.api1.application.dto.request.RegisterRDTO;
 import john.api1.application.ports.repositories.owner.IAccountSearchRepository;
 import john.api1.application.ports.repositories.owner.IAccountCreateRepository;
 import john.api1.application.ports.repositories.ILogEmailRepository;
@@ -62,7 +62,7 @@ public class RegisterNewClientAS implements IRegisterNewClient {
     // Instantiate user information then save to db
     // Log and send email to recipient
     // Return custom response(id, name, sms number and text, success)
-    public DomainResponse<RegisterResponse> registerNewClient(RegisterRtDTO request) {
+    public DomainResponse<RegisterResponse> registerNewClient(RegisterRDTO request) {
         // Check if already exist
         Optional<String> validationError = validateRequest(request);
         if (validationError.isPresent()) {
@@ -126,7 +126,7 @@ public class RegisterNewClientAS implements IRegisterNewClient {
     }
 
 
-    private Optional<String> validateRequest(RegisterRtDTO request) {
+    private Optional<String> validateRequest(RegisterRDTO request) {
         boolean emailExists = searchRepository.getAccountByEmail(request.getEmail()).isPresent();
         boolean phoneExists = searchRepository.getAccountByPhoneNumber(request.getPhoneNumber()).isPresent();
 
