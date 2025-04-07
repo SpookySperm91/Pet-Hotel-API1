@@ -17,12 +17,12 @@ public record MediaDomain(String id,
                           boolean archived
 ) {
 
-    public static MediaDomain create(String ownerId, String typeId, String fileUrl, BucketType bucketType, String description, Instant preSignedUrlExpire) {
+    public static MediaDomain create(String ownerId, String typeId, String fileName, BucketType bucketType, String description, Instant preSignedUrlExpire) {
         return new MediaDomain(
                 null,
                 ownerId,
                 typeId,
-                fileUrl,
+                fileName,
                 bucketType,
                 description,
                 Instant.now(),
@@ -31,12 +31,12 @@ public record MediaDomain(String id,
         );
     }
 
-    public static MediaDomain create(String ownerId, String fileUrl, BucketType bucketType, String description, Instant preSignedUrlExpire) {
+    public static MediaDomain create(String ownerId, String fileName, BucketType bucketType, String description, Instant preSignedUrlExpire) {
         return new MediaDomain(
                 null,
                 ownerId,
                 null,
-                fileUrl,
+                fileName,
                 bucketType,
                 description,
                 Instant.now(),
@@ -45,12 +45,12 @@ public record MediaDomain(String id,
         );
     }
 
-    public static MediaDomain create(String ownerId, String fileUrl, BucketType bucketType, Instant preSignedUrlExpire) {
+    public static MediaDomain create(String ownerId, String fileName, BucketType bucketType, Instant preSignedUrlExpire) {
         return new MediaDomain(
                 null,
                 ownerId,
                 null,
-                fileUrl,
+                fileName,
                 bucketType,
                 null,
                 Instant.now(),

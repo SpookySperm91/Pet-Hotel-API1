@@ -15,6 +15,9 @@ public record BoardingCreatedDTO(
         String ownerId,
 
         // Pet
+        String photoId,
+        String photoUrl,
+        Instant expiredAt,
         String petName,
         String petType,
         String petBreed,
@@ -36,7 +39,6 @@ public record BoardingCreatedDTO(
 
         // Pricing breakdown
         double initialPrice,
-        List<BoardingPricingDomain.RequestBreakdown> requestPrice,
         double total,
 
         // Created at

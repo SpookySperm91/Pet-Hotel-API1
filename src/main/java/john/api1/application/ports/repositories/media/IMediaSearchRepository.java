@@ -24,4 +24,8 @@ public interface IMediaSearchRepository {
 
     // 📌 RequestRDTO-Based Filtering: Find media linked to a specific request (e.g., service request, booking request).
     List<MediaEntityPreview> findByTypeId(String typeId);
+
+    // Profile photo only
+    Optional<MediaEntityPreview> findProfilePicByOwnerId(String ownerId);
+
 }

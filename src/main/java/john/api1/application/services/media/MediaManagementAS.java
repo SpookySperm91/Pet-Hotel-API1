@@ -69,20 +69,20 @@ public class MediaManagementAS implements IMediaManagement {
         }
     }
 
-    public DomainResponse<MediaPreview> updatePreSignedUrlExpire(ObjectId mediaId, ObjectId ownerId) {
+    public DomainResponse<MediaPreview> updatePreSignedUrlExpire(String mediaId, String ownerId) {
         return DomainResponse.error("");
     }
 
 
-    public DomainResponse<MediaPreview> updateTypeId(ObjectId mediaId, ObjectId ownerId, ObjectId newTypeId) {
+    public DomainResponse<MediaPreview> updateTypeId(String mediaId, String ownerId, ObjectId newTypeId) {
         return DomainResponse.error("");
     }
 
-    public DomainResponse<String> archiveMedia(ObjectId mediaId, ObjectId ownerId) {
+    public DomainResponse<String> archiveMedia(String mediaId, String ownerId) {
         return DomainResponse.error("");
     }
 
-    public DomainResponse<String> deleteMedia(ObjectId mediaId, ObjectId ownerId) {
+    public DomainResponse<String> deleteMedia(String mediaId, String ownerId) {
         return DomainResponse.error("");
     }
 }

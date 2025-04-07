@@ -1,6 +1,7 @@
 package john.api1.application.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class PetRDTO {
     private String breed;
     @NotBlank(message = "Size cannot be empty")
     private String size;
-    @NotBlank(message = "Age cannot be empty")
+    @Min(value = 0, message = "Age must be a non-negative number")
     private int age;
     private String specialDescription;
 

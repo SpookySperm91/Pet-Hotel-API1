@@ -12,6 +12,9 @@ public record BoardingReleasedDTO(
         String ownerId,
 
         // Pet
+        String photoId,
+        String photoUrl,
+        Instant expiredAt,
         String petName,
         String petType,
         String petBreed,

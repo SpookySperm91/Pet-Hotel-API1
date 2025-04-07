@@ -8,18 +8,14 @@ import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.cores.boarding.BoardingExtensionDS;
 import john.api1.application.domain.cores.boarding.BoardingManagementDS;
-import john.api1.application.domain.cores.boarding.BoardingPricingDS;
 import john.api1.application.domain.models.boarding.BoardingDomain;
-import john.api1.application.domain.models.boarding.BoardingPricingDomain;
 import john.api1.application.dto.mapper.boarding.BoardingReleasedDTO;
-import john.api1.application.dto.mapper.boarding.RequestBreakdownDTO;
-import john.api1.application.dto.request.BoardingStatusDTO;
+import john.api1.application.dto.request.BoardingStatusRDTO;
 import john.api1.application.dto.request.PaymentStatusDTO;
 import john.api1.application.ports.repositories.boarding.IBoardingManagementRepository;
 import john.api1.application.ports.repositories.boarding.IBoardingSearchRepository;
-import john.api1.application.ports.repositories.owner.PetOwnerCQRS;
-import john.api1.application.ports.repositories.pet.PetCQRS;
 import john.api1.application.ports.repositories.request.IRequestSearchRepository;
+import john.api1.application.ports.services.IBoardingAggregation;
 import john.api1.application.ports.services.IPetOwnerManagement;
 import john.api1.application.ports.services.boarding.IBoardingManagement;
 import john.api1.application.ports.services.boarding.IPricingManagement;
@@ -38,6 +34,7 @@ public class BoardingManagementAS implements IBoardingManagement {
     private final IPricingManagement pricingManagement;
     private final IPetUpdate petUpdate;
     private final IPetOwnerManagement ownerSearch;
+    private final IBoardingAggregation aggregation;
 
 
     @Autowired
@@ -48,13 +45,15 @@ public class BoardingManagementAS implements IBoardingManagement {
                                 // services
                                 IPricingManagement pricingManagement,
                                 IPetUpdate petUpdate,
-                                IPetOwnerManagement ownerSearch) {
+                                IPetOwnerManagement ownerSearch,
+                                IBoardingAggregation aggregation) {
         this.boardingSearch = boardingSearch;
         this.boardingManagement = boardingManagement;
         this.requestManagement = requestManagement;
         this.pricingManagement = pricingManagement;
         this.petUpdate = petUpdate;
         this.ownerSearch = ownerSearch;
+        this.aggregation = aggregation;
     }
 
     // Validate current boarding status
@@ -112,8 +111,9 @@ public class BoardingManagementAS implements IBoardingManagement {
 
             // Return response
             Instant now = Instant.now();
-            var dto = mapping(boarding, petUpdated.getData(), ownerDetail, boardingPrice.getData(), extendedTotalTime, now);
-            System.out.println();
+            var dto = aggregation.boardingReleasedAggregation(boarding, boardingPrice.getData(), ownerDetail, petUpdated.getData(), extendedTotalTime, now);
+
+
             String message = String.format(
                     "%s's pet '%s' is successfully released from boarding at %s"
                     , ownerDetail.ownerName(), petUpdated.getData().petName(), now);
@@ -140,7 +140,7 @@ public class BoardingManagementAS implements IBoardingManagement {
 
     // Update boarding status
     @Override
-    public DomainResponse<Void> updateBoardingStatus(BoardingStatusDTO boardingStatus) {
+    public DomainResponse<Void> updateBoardingStatus(BoardingStatusRDTO boardingStatus) {
         try {
             var status = BoardingStatus.safeFromStringOrDefault(boardingStatus.getStatus());
             switch (status) {
@@ -157,31 +157,4 @@ public class BoardingManagementAS implements IBoardingManagement {
             return DomainResponse.error("There was an issue with the database. Please try again.");
         }
     }
-
-    private BoardingReleasedDTO mapping(BoardingDomain boarding,
-                                        PetCQRS pet,
-                                        PetOwnerCQRS petOwner,
-                                        BoardingPricingDomain pricing,
-                                        Instant extensionTime,
-                                        Instant releasedAt) {
-        return new BoardingReleasedDTO(
-                // id
-                boarding.getId(), boarding.getPetId(), boarding.getOwnerId(),
-                // pet
-                pet.petName(), pet.animalType(), pet.breed(), pet.size(), pet.age(),
-                // owner
-                petOwner.ownerName(), petOwner.ownerEmail(), petOwner.ownerPhoneNumber(),
-                String.join(", ", petOwner.streetAddress(), petOwner.cityAddress(), petOwner.stateAddress()),
-                // boarding details
-                boarding.getBoardingStatus().getBoardingStatus(), boarding.getBoardingType().getBoardingType(),
-                boarding.getBoardingStart(), boarding.getBoardingEnd(), extensionTime, releasedAt, boarding.getNotes(),
-                // pricing
-                boarding.getPaymentStatus().getPaymentStatus(),
-                BoardingPricingDS.getBoardingTotal(pricing),
-                RequestBreakdownDTO.map(pricing.getRequestBreakdown()),
-                BoardingPricingDS.getFinalTotal(pricing),
-                boarding.getCreatedAt()
-        );
-    }
-
 }

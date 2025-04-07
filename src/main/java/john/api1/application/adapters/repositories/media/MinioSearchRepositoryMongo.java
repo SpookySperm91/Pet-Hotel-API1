@@ -6,6 +6,7 @@ import john.api1.application.ports.repositories.media.IMediaSearchRepository;
 import john.api1.application.ports.repositories.wrapper.MediaEntityPreview;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -75,7 +76,7 @@ public class MinioSearchRepositoryMongo implements IMediaSearchRepository {
         if (!ObjectId.isValid(ownerId)) return List.of();
         Query query = new Query(
                 Criteria.where("ownerId").is(new ObjectId(ownerId))
-                        .and("bucketType").is(bucketType)
+                        .and("bucketType").is(bucketType.getBucketType())
                         .and("uploadedAt").gte(start).lte(end)
         );
         return mongoTemplate.find(query, MinioEntity.class)
@@ -93,6 +94,34 @@ public class MinioSearchRepositoryMongo implements IMediaSearchRepository {
                 .map(MediaMapper::toMediaDomain)
                 .toList();
     }
+
+
+    @Override
+    public Optional<MediaEntityPreview> findProfilePicByOwnerId(String ownerId) {
+        if (!ObjectId.isValid(ownerId)) return Optional.empty();
+
+        Query query = new Query(
+                Criteria.where("ownerId").is(new ObjectId(ownerId))
+                        .and("bucketType").is(BucketType.PROFILE_PHOTO.getBucketType())
+        );
+        query.with(Sort.by(Sort.Direction.DESC, "uploadedAt"));
+        query.limit(1);
+
+        MinioEntity entity = mongoTemplate.findOne(query, MinioEntity.class);
+        if (entity == null) return Optional.empty();
+
+        MediaEntityPreview preview = new MediaEntityPreview(
+                entity.getId().toString(),
+                entity.getDescription(),
+                BucketType.fromString(entity.getBucketType()),
+                entity.getFileUrl(),
+                entity.getUploadedAt(),
+                entity.getPreSignedUrlExpire()
+        );
+
+
+        return Optional.of(preview);
+    }
 }
 
 class MediaMapper {
@@ -100,9 +129,10 @@ class MediaMapper {
         return new MediaEntityPreview(
                 entity.getId().toString(),
                 entity.getDescription(),
-                entity.getBucketType(),
+                BucketType.fromString(entity.getBucketType()),
                 entity.getFileUrl(),
-                entity.getUploadedAt()
+                entity.getUploadedAt(),
+                entity.getPreSignedUrlExpire()
         );
     }
 }

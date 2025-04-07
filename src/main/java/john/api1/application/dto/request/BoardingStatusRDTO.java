@@ -2,7 +2,6 @@ package john.api1.application.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Pattern;
-import john.api1.application.components.enums.boarding.BoardingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardingStatusDTO {
+public class BoardingStatusRDTO {
         @NotBlank(message = "Id cannot be empty")
         private String id;
         @NotBlank(message = "Status cannot be empty")

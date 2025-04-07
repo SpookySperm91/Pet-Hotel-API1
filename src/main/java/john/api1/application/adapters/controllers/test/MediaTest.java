@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -53,10 +54,9 @@ public class MediaTest {
                 .body(DTOResponse.message(HttpStatus.BAD_REQUEST.value(), response.getMessage()));
     }
 
-    @GetMapping("read")
-    public ResponseEntity<DTOResponse<List<MediaPreview>>> readMedia() {
-        String idTestValue = "67cd5d7ae0964d37102fa05a";
-        var response = mediaSearch.findByOwnerId(idTestValue);
+    @GetMapping("read/{id}")
+    public ResponseEntity<DTOResponse<List<MediaPreview>>> readMedia(@PathVariable String id) {
+        var response = mediaSearch.findByOwnerId(id);
 
         if (response.isSuccess()) {
             return ResponseEntity.status(HttpStatus.CREATED)

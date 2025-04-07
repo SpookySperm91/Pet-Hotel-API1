@@ -1,7 +1,9 @@
 package john.api1.application.ports.services.media;
 
+import com.google.common.base.Optional;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
+import john.api1.application.ports.repositories.wrapper.MediaIdUrlExpire;
 import john.api1.application.ports.repositories.wrapper.MediaPreview;
 
 import java.time.Instant;
@@ -23,4 +25,6 @@ public interface IMediaSearch {
 
     // Find media linked to a specific request
     DomainResponse<List<MediaPreview>> findByTypeId(String typeId);
+
+    Optional<MediaIdUrlExpire> findProfilePicByOwnerId(String ownerId);
 }

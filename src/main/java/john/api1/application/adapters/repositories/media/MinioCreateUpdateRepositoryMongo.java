@@ -2,6 +2,7 @@ package john.api1.application.adapters.repositories.media;
 
 import jakarta.annotation.Nullable;
 import john.api1.application.adapters.repositories.MinioEntity;
+import john.api1.application.components.enums.BucketType;
 import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.ports.repositories.media.IMediaCreateRepository;
 import john.api1.application.ports.repositories.media.IMediaUpdateRepository;
@@ -37,7 +38,7 @@ public class MinioCreateUpdateRepositoryMongo implements IMediaCreateRepository,
                 new ObjectId(domain.ownerId()),
                 domain.typeId() != null ? new ObjectId(domain.typeId()) : null,
                 domain.fileName(),
-                domain.bucketType(),
+                domain.bucketType().getBucketType(),
                 domain.description(),
                 domain.uploadedAt(),
                 domain.preSignedUrlExpire(),
@@ -51,7 +52,7 @@ public class MinioCreateUpdateRepositoryMongo implements IMediaCreateRepository,
                         savedEntity.getOwnerId().toString(),
                         savedEntity.getTypeId() != null ? savedEntity.getTypeId().toString() : null,
                         savedEntity.getFileUrl(),
-                        savedEntity.getBucketType(),
+                        BucketType.fromString(savedEntity.getBucketType()),
                         savedEntity.getDescription(),
                         savedEntity.getUploadedAt(),
                         savedEntity.getPreSignedUrlExpire(),

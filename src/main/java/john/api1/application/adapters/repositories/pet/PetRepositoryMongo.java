@@ -218,6 +218,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
 
         return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
                 .map(entity -> new PetCQRS(
+                        entity.getProfilePictureUrl(),
                         entity.getPetName(),
                         entity.getAnimalType(),
                         entity.getBreed(),
@@ -241,6 +242,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
 
         // Include all fields in PetCQRS
         query.fields().include(
+                "profilePictureUrl",
                 "petName",
                 "ownerName",
                 "animalType",
@@ -252,6 +254,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
 
         return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
                 .map(entity -> new PetCQRS(
+                        entity.getProfilePictureUrl(),
                         entity.getPetName(),
                         entity.getAnimalType(),
                         entity.getBreed(),

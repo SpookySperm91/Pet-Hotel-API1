@@ -23,8 +23,8 @@ public class PetProfilePhotoAS implements IPetProfilePhoto {
     public DomainResponse<ProfileResponseDTO> processProfilePhoto(String id, String petName) {
 
         // Step 1: Create pre-signed url
-        String fileName = mediaManagement.generateMediaObjectName(petName, id);
-        var generateMedia = mediaManagement.generateMediaFile(id, fileName, BucketType.PROFILE_PHOTO);
+        String objectName = mediaManagement.generateMediaObjectName(petName, id);
+        var generateMedia = mediaManagement.generateMediaFile(id, objectName, BucketType.PROFILE_PHOTO);
         if (!generateMedia.isSuccess()) {
             return DomainResponse.error(generateMedia.getMessage(), DomainResponse.ErrorType.SERVER_ERROR);
         }
@@ -32,7 +32,7 @@ public class PetProfilePhotoAS implements IPetProfilePhoto {
         // Step 2: Create media domain object and parse pre-signed url
         MediaDomain mediaDomain = MediaDomain.create(
                 id,
-                generateMedia.getData().preSignedUrl(),
+                objectName,
                 BucketType.PROFILE_PHOTO,
                 generateMedia.getData().expiresAt()
         );
@@ -43,7 +43,7 @@ public class PetProfilePhotoAS implements IPetProfilePhoto {
             return DomainResponse.error(saveMediaResponse.getMessage(), DomainResponse.ErrorType.SERVER_ERROR);
         }
 
-        var updatePetResponse = petUpdate.updatePetProfilePicture(id, fileName);
+        var updatePetResponse = petUpdate.updatePetProfilePicture(id, objectName);
         if (!updatePetResponse.isSuccess()) {
             return DomainResponse.error(updatePetResponse.getMessage(), DomainResponse.ErrorType.SERVER_ERROR);
         }
@@ -52,7 +52,7 @@ public class PetProfilePhotoAS implements IPetProfilePhoto {
         return DomainResponse.success(
                 new ProfileResponseDTO(
                         saveMediaResponse.getData().id(),
-                        saveMediaResponse.getData().preSignedUrl(),
+                        generateMedia.getData().preSignedUrl(),
                         saveMediaResponse.getData().expiredAt()
                 )
         );

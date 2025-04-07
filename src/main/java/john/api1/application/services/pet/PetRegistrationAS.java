@@ -56,9 +56,7 @@ public class PetRegistrationAS implements IPetRegister {
             // update pet owner with new registered pet
             ownerUpdate.addNewPet(registerPet.getOwnerId(), petId);
 
-            return DomainResponse.success(
-                    petId,
-                    "Pet '" + petDomain.getPetName() + "' has been successfully registered."
+            return DomainResponse.success(petId, "Pet '" + petDomain.getPetName() + "' has been successfully registered."
             );
         } catch (DomainArgumentException e) {
             return DomainResponse.error("Invalid input: " + e.getMessage());

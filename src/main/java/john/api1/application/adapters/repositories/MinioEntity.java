@@ -30,7 +30,7 @@ public class MinioEntity {
     @Nullable
     private ObjectId typeId; // request ID (nullable for non-request related photos)
     private String fileUrl;  // object url or final id
-    private BucketType bucketType; // bucket type(request type)
+    private String bucketType; // bucket type(request type)
     private String description;
     private Instant uploadedAt;
     private Instant preSignedUrlExpire;

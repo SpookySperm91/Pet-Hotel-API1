@@ -9,5 +9,6 @@ public record MediaEntityPreview(String id,
                                  @Nullable String description,
                                  BucketType bucketType,
                                  String fileUrl,  // Raw URL from MongoDB
-                                 Instant uploadedAt) {
+                                 Instant uploadedAt,
+                                 Instant expiredAt) {
 }

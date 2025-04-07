@@ -15,11 +15,11 @@ public interface IMediaManagement {
 
     DomainResponse<MediaPreview> saveMediaFile(MediaDomain media);
 
-    DomainResponse<MediaPreview> updatePreSignedUrlExpire(ObjectId mediaId, ObjectId ownerId);
+    DomainResponse<MediaPreview> updatePreSignedUrlExpire(String mediaId, String ownerId);
 
-    DomainResponse<MediaPreview> updateTypeId(ObjectId mediaId, ObjectId ownerId, ObjectId newTypeId);
+    DomainResponse<MediaPreview> updateTypeId(String mediaId, String ownerId, ObjectId newTypeId);
 
-    DomainResponse<String> archiveMedia(ObjectId mediaId, ObjectId ownerId);
+    DomainResponse<String> archiveMedia(String mediaId, String ownerId);
 
-    DomainResponse<String> deleteMedia(ObjectId mediaId, ObjectId ownerId);
+    DomainResponse<String> deleteMedia(String mediaId, String ownerId);
 }
