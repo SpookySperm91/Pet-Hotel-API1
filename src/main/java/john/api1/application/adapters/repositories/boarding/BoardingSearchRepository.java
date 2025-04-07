@@ -4,6 +4,7 @@ import john.api1.application.adapters.repositories.BoardingEntity;
 import john.api1.application.components.enums.boarding.BoardingStatus;
 import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.enums.boarding.PaymentStatus;
+import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.ports.repositories.boarding.IBoardingSearchRepository;
 import org.bson.types.ObjectId;
@@ -76,6 +77,23 @@ public class BoardingSearchRepository implements IBoardingSearchRepository {
         Query query = new Query(Criteria.where("boardingStatus").is(status.getBoardingStatus()));
         return fetchBoardings(query);
     }
+
+    @Override
+    public Optional<BoardingStatus> checkBoardingCurrentStatus(String id) {
+        if (!ObjectId.isValid(id))
+            throw new PersistenceException("Invalid boarding id cannot be converted to ObjectId.");
+
+        Query query = new Query(Criteria.where("_id").is(id));
+        query.fields().include("boardingStatus");
+
+        var entity = mongoTemplate.findOne(query, BoardingEntity.class);
+        if (entity == null || entity.getBoardingStatus() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(BoardingStatus.safeFromStringOrDefault(entity.getBoardingStatus()));
+    }
+
 
     private List<BoardingDomain> fetchBoardings(Query query) {
         return mongoTemplate.find(query, BoardingEntity.class)

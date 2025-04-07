@@ -79,10 +79,11 @@ public class BoardingManagementAS implements IBoardingManagement {
         var boarding = boardingSearch.searchById(boardingId);
         if (boarding.isEmpty()) return DomainResponse.error("Boarding do not exist");
 
-        // Cannot release closed boarding lmao
-        if (boarding.get().getBoardingStatus() == BoardingStatus.RELEASED) {
+        // Cannot release if not paid
+        if (boarding.get().getBoardingStatus() == BoardingStatus.RELEASED)
             return DomainResponse.error("Boarding is already released");
-        }
+        if (boarding.get().getPaymentStatus() != PaymentStatus.PAID)
+            return DomainResponse.error("Boarding is not paid yet");
         return release(boarding.get(), boardingId);
     }
 
@@ -127,10 +128,20 @@ public class BoardingManagementAS implements IBoardingManagement {
     @Override
     public DomainResponse<Void> updatePaidStatus(PaymentStatusDTO paymentStatus) {
         try {
+            // Check boarding status
+            var boardingStatusOpt = boardingSearch.checkBoardingCurrentStatus(paymentStatus.getId());
+            if (boardingStatusOpt.isEmpty()) {
+                return DomainResponse.error("Boarding status cannot be found");
+            }
+
+            if (boardingStatusOpt.get().equals(BoardingStatus.RELEASED)) {
+                return DomainResponse.error("Boarding is already released. It cannot be updated!");
+            }
+
             var status = PaymentStatus.safeFromStringOrDefault(paymentStatus.getStatus());
             boardingManagement.updatePaidStatus(paymentStatus.getId(), status);
 
-            return DomainResponse.success("Successfully update payment status to '" + status.getPaymentStatus() + "'");
+            return DomainResponse.success("Successfully updated payment status to '" + status.getPaymentStatus() + "'");
         } catch (PersistenceException | DomainArgumentException e) {
             return DomainResponse.error(e.getMessage());
         } catch (MongoException e) {
@@ -142,6 +153,16 @@ public class BoardingManagementAS implements IBoardingManagement {
     @Override
     public DomainResponse<Void> updateBoardingStatus(BoardingStatusRDTO boardingStatus) {
         try {
+            // Check boarding status
+            var boardingStatusOpt = boardingSearch.checkBoardingCurrentStatus(boardingStatus.getId());
+            if (boardingStatusOpt.isEmpty()) {
+                return DomainResponse.error("Boarding status cannot be found");
+            }
+
+            if (boardingStatusOpt.get().equals(BoardingStatus.RELEASED)) {
+                return DomainResponse.error("Boarding is already released. It cannot be updated!");
+            }
+
             var status = BoardingStatus.safeFromStringOrDefault(boardingStatus.getStatus());
             switch (status) {
                 case BOARDING -> boardingManagement.markAsActive(boardingStatus.getId());

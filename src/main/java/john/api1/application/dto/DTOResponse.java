@@ -17,6 +17,10 @@ public class DTOResponse<T> {
         return new DTOResponse<>(status, Instant.now(), data, null);
     }
 
+    public static <T> DTOResponse<T> of(int status, String message) {
+        return new DTOResponse<>(status, Instant.now(), null, message);
+    }
+
     public static <T> DTOResponse<T> of(int status, T data, String message) {
         return new DTOResponse<>(status, Instant.now(), data, message);
     }

@@ -7,13 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentStatusDTO {
-    @NotBlank(message = "Id cannot be empty")
+    @NotEmpty(message = "Boarding id cannot be empty")
     private String id;
     @NotBlank(message = "Status cannot be empty")
     @Pattern(regexp = "(?i)PAID|NOT_PAID|PENDING", message = "Status must be one of: PAID, NOT_PAID, PENDING")

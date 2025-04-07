@@ -6,6 +6,8 @@ import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.boarding.BoardingCreatedDTO;
 import john.api1.application.dto.mapper.boarding.BoardingReleasedDTO;
 import john.api1.application.dto.request.BoardingRDTO;
+import john.api1.application.dto.request.BoardingStatusRDTO;
+import john.api1.application.dto.request.PaymentStatusDTO;
 import john.api1.application.ports.services.boarding.IBoardingCreate;
 import john.api1.application.ports.services.boarding.IBoardingManagement;
 import org.slf4j.Logger;
@@ -108,7 +110,7 @@ public class AdminBoardingController {
 
 
     @PutMapping("/release-force/{boardingId}")
-    public ResponseEntity<DTOResponse<BoardingReleasedDTO>> forceReleaseBoarding(@Valid @PathVariable String boardingId) {
+    public ResponseEntity<DTOResponse<BoardingReleasedDTO>> forceReleaseBoarding(@PathVariable String boardingId) {
         if (boardingId == null || boardingId.trim().isEmpty()) {
             return buildErrorResponse(HttpStatus.BAD_REQUEST, "Boarding ID cannot be null, empty, or blank!");
         }
@@ -129,9 +131,56 @@ public class AdminBoardingController {
 
     }
 
+    @PutMapping("/update-status/payment")
+    public ResponseEntity<DTOResponse<Void>> updatePaymentStatus(
+            @Valid @RequestBody PaymentStatusDTO request,
+            BindingResult result) {
+
+        if (result.hasErrors()) return handleValidationErrors(result);
+
+        // Session and magic (later)
+        ////////////////////////////
+        ////////////////////////////
+
+        var update = boardingManagement.updatePaidStatus(request);
+        if (!update.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, update.getMessage());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DTOResponse.of(
+                        HttpStatus.OK.value(),
+                        update.getMessage()));
+    }
+
+
+    @PutMapping("/update-status/boarding")
+    public ResponseEntity<DTOResponse<Void>> updateBoardingStatus(
+            @Valid @RequestBody BoardingStatusRDTO request,
+            BindingResult result) {
+        if (result.hasErrors()) return handleValidationErrors(result);
+
+        // Session and magic (later)
+        ////////////////////////////
+        ////////////////////////////
+
+        var update = boardingManagement.updateBoardingStatus(request);
+        if (!update.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, update.getMessage());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DTOResponse.of(
+                        HttpStatus.OK.value(),
+                        update.getMessage()));
+    }
 
     private <T> ResponseEntity<DTOResponse<T>> buildErrorResponse(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(DTOResponse.message(status.value(), message));
+    }
+
+    private ResponseEntity<DTOResponse<Void>> handleValidationErrors(BindingResult result) {
+        String message = result.getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
 
 }

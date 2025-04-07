@@ -19,4 +19,7 @@ public interface IBoardingSearchRepository {
 
     // Dynamic
     List<BoardingDomain> searchByStatus(BoardingStatus status);
+
+    // Status
+    Optional<BoardingStatus> checkBoardingCurrentStatus(String id);
 }
