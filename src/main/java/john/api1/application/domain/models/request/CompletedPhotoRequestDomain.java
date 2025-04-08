@@ -1,16 +1,17 @@
-package john.api1.application.domain.models.boarding;
+package john.api1.application.domain.models.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.List;
 
 
-public record CompletedVideoRequestDomain(
+public record CompletedPhotoRequestDomain(
         String id,
         String requestId,
         String ownerId,
         String mediaId,
-        String videoName,
+        List<String> photosName,
         Instant uploadedAt) {
 }

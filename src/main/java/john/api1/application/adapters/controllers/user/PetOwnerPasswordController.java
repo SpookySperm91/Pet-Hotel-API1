@@ -38,7 +38,7 @@ public class PetOwnerPasswordController {
         this.referencesUrls = referencesUrls;
     }
 
-    // RequestRDTO reset password link
+    // RequestMediaRDTO reset password link
     @PostMapping("request/verification-link")
     public ResponseEntity<DTOResponse<String>> requestResetLink(
             @Valid @RequestBody EmailRDTO email,

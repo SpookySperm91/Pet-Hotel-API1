@@ -1,4 +1,4 @@
-package john.api1.application.domain.models.boarding;
+package john.api1.application.domain.models.request;
 
 import john.api1.application.components.enums.boarding.RequestStatus;
 import john.api1.application.components.enums.boarding.RequestType;
@@ -17,9 +17,13 @@ public class RequestDomain {
     private final String boardingId;
     private RequestType requestType;
     private RequestStatus requestStatus;
+    private String description;
     private Instant requestTime;
     private Instant resolvedTime;
     private String rejectionMessage;
+    private boolean active;
+
+
 
     public void updateStatus(RequestStatus newStatus) {
         if (this.requestStatus == RequestStatus.COMPLETED) {

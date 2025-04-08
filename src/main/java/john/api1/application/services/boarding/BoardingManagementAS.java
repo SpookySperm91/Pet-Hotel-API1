@@ -14,7 +14,7 @@ import john.api1.application.dto.request.BoardingStatusRDTO;
 import john.api1.application.dto.request.PaymentStatusDTO;
 import john.api1.application.ports.repositories.boarding.IBoardingManagementRepository;
 import john.api1.application.ports.repositories.boarding.IBoardingSearchRepository;
-import john.api1.application.ports.repositories.request.IRequestSearchRepository;
+import john.api1.application.ports.repositories.request.IRequestCompletedSearchRepository;
 import john.api1.application.ports.services.IBoardingAggregation;
 import john.api1.application.ports.services.IPetOwnerManagement;
 import john.api1.application.ports.services.boarding.IBoardingManagement;
@@ -30,7 +30,7 @@ import java.time.Instant;
 public class BoardingManagementAS implements IBoardingManagement {
     private final IBoardingSearchRepository boardingSearch;
     private final IBoardingManagementRepository boardingManagement;
-    private final IRequestSearchRepository requestManagement;
+    private final IRequestCompletedSearchRepository requestManagement;
     private final IPricingManagement pricingManagement;
     private final IPetUpdate petUpdate;
     private final IPetOwnerManagement ownerSearch;
@@ -41,7 +41,7 @@ public class BoardingManagementAS implements IBoardingManagement {
     public BoardingManagementAS(// repositories
                                 IBoardingSearchRepository boardingSearch,
                                 IBoardingManagementRepository boardingManagement,
-                                IRequestSearchRepository requestManagement,
+                                IRequestCompletedSearchRepository requestManagement,
                                 // services
                                 IPricingManagement pricingManagement,
                                 IPetUpdate petUpdate,

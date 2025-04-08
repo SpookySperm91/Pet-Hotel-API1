@@ -22,7 +22,7 @@ public interface IMediaSearchRepository {
     // 📌 Filter by Bucket: Get media of a certain type (e.g., PROFILE_PHOTO, PET_PHOTO) for a user within a date range.
     List<MediaEntityPreview> findByOwnerIdAndBucketTypeAndUploadedBetween(String ownerId, BucketType bucketType, Instant start, Instant end);
 
-    // 📌 RequestRDTO-Based Filtering: Find media linked to a specific request (e.g., service request, booking request).
+    // 📌 RequestMediaRDTO-Based Filtering: Find media linked to a specific request (e.g., service request, booking request).
     List<MediaEntityPreview> findByTypeId(String typeId);
 
     // Profile photo only

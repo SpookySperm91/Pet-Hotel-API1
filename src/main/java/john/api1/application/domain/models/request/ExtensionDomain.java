@@ -1,4 +1,4 @@
-package john.api1.application.domain.models.boarding;
+package john.api1.application.domain.models.request;
 
 import john.api1.application.components.enums.PetPrices;
 import john.api1.application.components.exception.DomainArgumentException;

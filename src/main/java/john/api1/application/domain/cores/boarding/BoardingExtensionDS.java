@@ -1,8 +1,6 @@
 package john.api1.application.domain.cores.boarding;
 
-import john.api1.application.domain.models.boarding.BoardingDomain;
-import john.api1.application.domain.models.boarding.ExtensionDomain;
-import john.api1.application.domain.models.boarding.RequestDomain;
+import john.api1.application.domain.models.request.ExtensionDomain;
 
 import java.time.Duration;
 import java.time.Instant;

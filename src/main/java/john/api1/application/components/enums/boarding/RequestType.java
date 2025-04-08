@@ -13,4 +13,19 @@ public enum RequestType {
     CUSTOM_REQUEST("CUSTOM_REQUEST");
 
     private final String requestType;
+
+    public static RequestType fromString(String requestType) {
+        if (requestType == null) {
+            return null;
+        }
+
+        for (RequestType type : RequestType.values()) {
+            if (type.getRequestType().equalsIgnoreCase(requestType)) {
+                return type;
+            }
+        }
+
+        throw new IllegalArgumentException("Unknown request type: " + requestType);
+    }
+
 }

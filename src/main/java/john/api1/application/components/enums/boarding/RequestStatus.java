@@ -13,4 +13,20 @@ public enum RequestStatus {
     REJECTED("REJECTED");
 
     private final String requestStatus;
+
+    public static RequestStatus fromString(String requestStatus) {
+        if (requestStatus == null) {
+            return null;
+        }
+
+        for (RequestStatus status : RequestStatus.values()) {
+            if (status.getRequestStatus().equalsIgnoreCase(requestStatus)) {
+                return status;
+            }
+        }
+
+        throw new IllegalArgumentException("Unknown request status: " + requestStatus);
+    }
+
+
 }
