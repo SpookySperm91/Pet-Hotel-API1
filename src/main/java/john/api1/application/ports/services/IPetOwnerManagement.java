@@ -16,4 +16,7 @@ public interface IPetOwnerManagement {
     // safe wrapper
     DomainResponse<PetOwnerCQRS> safeGetPetOwnerBoardingDetails(String petOwnerId);
     DomainResponse<String> safeVerifyPetOwnership(String ownerId, String petId);
+
+    // Single fields
+    String getPetOwnerName(String ownerId);
 }

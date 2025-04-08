@@ -20,7 +20,7 @@ public class RequestGroomingRDTO {
     @NotBlank(message = "Boarding id cannot be empty")
     private String boardingId;
     @NotBlank(message = "Extension type cannot be empty")
-    @Pattern(regexp = "(?i)BASIC|FULL", message = "Grooming service should be: HOURS or DAYS")
+    @Pattern(regexp = "(?i)BASIC_WASH|FULL_GROOMING", message = "Grooming service should be: BASIC_WASH or FULL_GROOMING")
     private String groomingService;
     @NotBlank(message = "Description cannot be empty")
     private String description;

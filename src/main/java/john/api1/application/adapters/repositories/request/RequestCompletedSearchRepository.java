@@ -25,7 +25,7 @@ public class RequestCompletedSearchRepository implements IRequestCompletedSearch
 
     @Override
     public List<ExtensionDomain> getExtensionByCurrentBoarding(String boardingId) {
-        if (!ObjectId.isValid(boardingId)) throw new PersistenceException("Invalid boarding ID");
+        if (!ObjectId.isValid(boardingId)) throw new PersistenceException("Invalid boarding Id");
 
         Query query = new Query(Criteria.where("boardingId").is(boardingId));
         List<ExtensionEntity> extensionEntities = mongoTemplate.find(query, ExtensionEntity.class);
@@ -44,9 +44,9 @@ public class RequestCompletedSearchRepository implements IRequestCompletedSearch
                 entity.getAdditionalPrice(),
                 entity.getExtendedHours(),
                 entity.getDescription(),
-                entity.isPaid(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                entity.isApproved()
         );
     }
 }

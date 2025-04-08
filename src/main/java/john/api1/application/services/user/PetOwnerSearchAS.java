@@ -50,7 +50,7 @@ public class PetOwnerSearchAS implements IPetOwnerManagement {
     // Safe methods
     @Override
     public DomainResponse<PetOwnerCQRS> safeGetPetOwnerBoardingDetails(String petOwnerId) {
-        if (!ObjectId.isValid(petOwnerId)) return DomainResponse.error("Pet-owner ID is invalid");
+        if (!ObjectId.isValid(petOwnerId)) return DomainResponse.error("Pet-owner id is invalid");
 
 
         return petOwnerCQRS.getDetails(petOwnerId)
@@ -59,12 +59,24 @@ public class PetOwnerSearchAS implements IPetOwnerManagement {
     }
 
     @Override
-    public DomainResponse<String> safeVerifyPetOwnership(String ownerId, String petId){
-        if (!ObjectId.isValid(ownerId)) return DomainResponse.error("Pet-owner ID is invalid");
+    public DomainResponse<String> safeVerifyPetOwnership(String ownerId, String petId) {
+        if (!ObjectId.isValid(ownerId)) return DomainResponse.error("Pet-owner id is invalid");
 
 
         return petOwnerCQRS.checkPetIfExist(ownerId, petId)
                 .map(owner -> DomainResponse.success(owner, "Pet owner pet's exist"))
                 .orElse(DomainResponse.error("Pet-owner's pet cannot be found!"));
+    }
+
+
+    // Single fields
+    @Override
+    public String getPetOwnerName(String ownerId) {
+        if (!ObjectId.isValid(ownerId)) throw new PersistenceException("Pet-owner id is invalid");
+
+        var name = petOwnerCQRS.getPetOwnerName(ownerId);
+        if (name.isEmpty()) throw new PersistenceException("Pet name cannot be found.");
+        return name.get();
+
     }
 }

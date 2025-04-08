@@ -1,6 +1,5 @@
 package john.api1.application.services.pet;
 
-import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.ports.repositories.pet.IPetCQRSRepository;
 import john.api1.application.ports.repositories.pet.PetCQRS;
@@ -20,10 +19,30 @@ public class PetSearchAS implements IPetSearch {
 
     @Override
     public PetCQRS getPetBoardingDetails(String petId) {
-        if (!ObjectId.isValid(petId)) throw new DomainArgumentException("Pet id is invalid.");
+        if (!ObjectId.isValid(petId)) throw new PersistenceException("Pet id is invalid.");
 
         return petSearch.getPetDetails(petId)
-                .orElseThrow(()-> new PersistenceException("Pet cannot be found."));
+                .orElseThrow(() -> new PersistenceException("Pet cannot be found."));
 
     }
+
+    @Override
+    public PetCQRS getPetNameBreedSize(String petId) {
+        if (!ObjectId.isValid(petId)) throw new PersistenceException("Pet id is invalid.");
+
+        var name = petSearch.getPetNameBreedSize(petId);
+        if (name.isEmpty()) throw new PersistenceException("Pet name cannot be found.");
+        return name.get();
+    }
+
+
+    @Override
+    public String getPetName(String petId) {
+        if (!ObjectId.isValid(petId)) throw new PersistenceException("Pet id is invalid.");
+
+        var name = petSearch.getPetName(petId);
+        if (name.isEmpty()) throw new PersistenceException("Pet name cannot be found.");
+        return name.get();
+    }
+
 }

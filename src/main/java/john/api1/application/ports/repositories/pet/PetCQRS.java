@@ -15,6 +15,10 @@ public record PetCQRS(
         return new PetCQRS(null, name, type, breed, null, 0, null, false);
     }
 
+    public static PetCQRS mapNameTypeBreedSize(String name, String type, String breed, String size) {
+        return new PetCQRS(null, name, type, breed, size, 0, null, false);
+    }
+
     public static PetCQRS mapReleased(String profile, String name, String type, String breed, String size, int age) {
         return new PetCQRS(profile, name, type, breed, size, age, null, false);
     }

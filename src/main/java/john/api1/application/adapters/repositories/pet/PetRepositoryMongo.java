@@ -266,9 +266,9 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
     }
 
     @Override
-    public Optional<PetCQRS> getPetNameBreedType(String id) {
+    public Optional<PetCQRS> getPetNameBreed(String id) {
         if (!ObjectId.isValid(id)) {
-            throw new DomainArgumentException("Invalid Owner ID format");
+            throw new PersistenceException("Invalid pet id format");
         }
 
         Query query = new Query();
@@ -287,4 +287,45 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
                         entity.getBreed()
                 ));
     }
+
+    @Override
+    public Optional<PetCQRS> getPetNameBreedSize(String id) {
+        if (!ObjectId.isValid(id)) {
+            throw new DomainArgumentException("Invalid pet id format");
+        }
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
+
+        // Include all fields in PetCQRS
+        query.fields().include(
+                "petName",
+                "animalType",
+                "breed",
+                "size");
+
+        return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
+                .map(entity -> PetCQRS.mapNameTypeBreedSize(
+                        entity.getPetName(),
+                        entity.getAnimalType(),
+                        entity.getBreed(),
+                        entity.getSize()
+                ));
+    }
+
+
+    @Override
+    public Optional<String> getPetName(String id) {
+        if (!ObjectId.isValid(id)) {
+            throw new PersistenceException("Invalid pet Id format");
+        }
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
+        query.fields().include("petName");
+
+        return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
+                .map(PetEntity::getPetName);
+    }
+
 }

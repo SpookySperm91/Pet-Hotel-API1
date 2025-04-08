@@ -4,7 +4,7 @@ import john.api1.application.domain.models.request.RequestDomain;
 
 import java.time.Instant;
 
-public record RequestExtensionCreatedDTO(
+public record RequestGroomingCreatedDTO(
         // id
         String id,
         String ownerId,
@@ -14,19 +14,20 @@ public record RequestExtensionCreatedDTO(
         String ownerName,
         String petName,
         String requestType,
-        // duration
-        long duration,
-        String unit,
+        // pricing
+        double price,
+        String size,
         //
         String requestStatus,
         String description,
         Instant requestAt
 ) {
-    public static RequestExtensionCreatedDTO map(RequestDomain domain, String ownerName, String petName, long duration, String unit) {
-        return new RequestExtensionCreatedDTO(
+
+    public static RequestGroomingCreatedDTO map(RequestDomain domain, String ownerName, String petName, double price, String size) {
+        return new RequestGroomingCreatedDTO(
                 domain.getId(), domain.getOwnerId(), domain.getPetId(), domain.getBoardingId(),
                 ownerName, petName, domain.getRequestType().getRequestType(),
-                duration, unit,
+                price, size,
                 domain.getRequestStatus().getRequestStatus(), domain.getDescription(), domain.getRequestTime()
         );
     }

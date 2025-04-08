@@ -1,5 +1,6 @@
 package john.api1.application.domain.models.request;
 
+import john.api1.application.components.enums.GroomingType;
 import john.api1.application.components.enums.PetPrices;
 import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
@@ -9,24 +10,22 @@ import org.bson.types.ObjectId;
 
 import java.time.Instant;
 
-// THIS DOMAIN WILL GENERATE AFTER REQUEST APPROVED AND COMMITTED
-// MARK AS FINAL
 @AllArgsConstructor
 @Getter
-public class ExtensionDomain {
+public class GroomingDomain {
     private final String id;
     private final String requestId;
     private final String boardingId;
-    private double additionalPrice;
-    private long extendedHours;
+    private GroomingType groomingType;
+    private double groomingPrice;
     @Setter
     private String description;
     private final Instant createdAt;
     private Instant updatedAt;
     private boolean approved = false;
 
-    public ExtensionDomain(String requestId, String boardingId, String description) {
-        if ( !ObjectId.isValid(requestId) || !ObjectId.isValid(boardingId))
+    public GroomingDomain(String requestId, String boardingId, String description) {
+        if (!ObjectId.isValid(requestId) || !ObjectId.isValid(boardingId))
             throw new DomainArgumentException("Id is invalid format");
 
         this.id = null;
@@ -38,13 +37,15 @@ public class ExtensionDomain {
         this.approved = false;
     }
 
-    public void setAdditionalPrice(PetPrices petPrices, long extendedHours) {
-        if (extendedHours <= 0) {
-            throw new IllegalArgumentException("Extended hours must be greater than zero.");
-        }
 
-        this.additionalPrice = extendedHours * petPrices.getBoardingPrice();
-        this.extendedHours = extendedHours;
+    public void setGroomingAndPrice(GroomingType groomingType, PetPrices petPrices) {
+        switch (groomingType) {
+            case BASIC_WASH -> this.groomingPrice = petPrices.getBasicGroomingPrice();
+            case FULL_GROOMING -> this.groomingPrice = petPrices.getFullGroomingPrice();
+            default -> throw new DomainArgumentException("Invalid grooming type: " + groomingType);
+        }
+        this.groomingType = groomingType;
+        this.updatedAt = Instant.now();
     }
 
     public void markAsApproved() {
@@ -53,6 +54,6 @@ public class ExtensionDomain {
             this.updatedAt = Instant.now();
             return;
         }
-        throw new DomainArgumentException("Extension already approved");
+        throw new DomainArgumentException("Grooming request is already approved");
     }
 }

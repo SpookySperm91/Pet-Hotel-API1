@@ -12,17 +12,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
-@Document(collection = "boarding_extension")
+@Document(collection = "grooming_request")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ExtensionEntity {
+public class GroomingEntity {
     @Id
     private ObjectId id;
     private ObjectId requestId;
     private ObjectId boardingId;
-    private double additionalPrice;
-    private long extendedHours;
+    private String serviceType;
+    private double groomingPrice;
     @Nullable
     private String description;
     @CreatedDate
@@ -31,7 +31,9 @@ public class ExtensionEntity {
     private Instant updatedAt;
     private boolean approved;
 
-    public static ExtensionEntity create(ObjectId requestId, ObjectId boardingId, double additionalPrice, long extendedHours, String description, Instant createdAt, Instant updatedAt, boolean approved) {
-        return new ExtensionEntity(null, requestId, boardingId, additionalPrice, extendedHours, description, createdAt, updatedAt, approved);
+    public static GroomingEntity create(ObjectId requestId, ObjectId boardingId, String serviceType, double groomingPrice, String description, Instant createdAt, Instant updatedAt, boolean approved) {
+        return new GroomingEntity(null, requestId, boardingId, serviceType, groomingPrice, description, createdAt, updatedAt, approved);
     }
 }
+
+

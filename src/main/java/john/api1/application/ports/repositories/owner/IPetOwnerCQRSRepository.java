@@ -8,4 +8,6 @@ public interface IPetOwnerCQRSRepository {
     Optional<PetOwnerCQRS> getDetails(String id);
     Optional<List<String>> getAllPets(String id);
     Optional<String> checkPetIfExist(String owner, String pet);
+
+    Optional<String> getPetOwnerName(String ownerId);
 }
