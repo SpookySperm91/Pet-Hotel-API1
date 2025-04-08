@@ -1,4 +1,4 @@
-package john.api1.application.dto.request;
+package john.api1.application.dto.request.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
@@ -17,6 +17,8 @@ public class RequestExtensionRDTO {
     private String ownerId;
     @NotBlank(message = "Pet id cannot be empty")
     private String petId;
+    @NotBlank(message = "Boarding id cannot be empty")
+    private String boardingId;
     @NotBlank(message = "Extension type cannot be empty")
     @Pattern(regexp = "(?i)HOURS|DAYS", message = "Extension type should be: HOURS or DAYS")
     private String extensionType;

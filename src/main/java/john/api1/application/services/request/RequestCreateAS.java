@@ -3,8 +3,9 @@ package john.api1.application.services.request;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
-import john.api1.application.dto.request.RequestExtensionRDTO;
-import john.api1.application.dto.request.RequestMediaRDTO;
+import john.api1.application.dto.request.request.RequestExtensionRDTO;
+import john.api1.application.dto.request.request.RequestGroomingRDTO;
+import john.api1.application.dto.request.request.RequestMediaRDTO;
 import john.api1.application.ports.services.media.IMediaManagement;
 import john.api1.application.ports.services.request.IRequestCreate;
 import org.bson.types.ObjectId;
@@ -26,7 +27,6 @@ public class RequestCreateAS implements IRequestCreate {
             validateId(request.getOwnerId(), request.getPetId());
 
 
-
             return DomainResponse.success();
         } catch (PersistenceException | DomainArgumentException e) {
             return DomainResponse.error(e.getMessage());
@@ -38,6 +38,12 @@ public class RequestCreateAS implements IRequestCreate {
     @Override
     public DomainResponse<String> createRequestExtension(RequestExtensionRDTO request) {
         validateId(request.getOwnerId(), request.getPetId());
+        return DomainResponse.success();
+    }
+
+
+    @Override
+    public DomainResponse<String> createRequestGrooming(RequestGroomingRDTO request) {
         return DomainResponse.success();
     }
 
