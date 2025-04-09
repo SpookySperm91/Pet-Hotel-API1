@@ -36,10 +36,15 @@ public class RequestDomain {
         Instant now = Instant.now();
         boolean isCompleted = this.requestStatus == RequestStatus.COMPLETED;
         boolean isLateRejected = this.requestStatus == RequestStatus.REJECTED &&
+                this.resolvedTime != null &&
                 this.resolvedTime.isBefore(now.minus(5, ChronoUnit.MINUTES));
 
-        if (isCompleted || isLateRejected) {
-            throw new DomainArgumentException("Cannot change status after completion or after 5 minutes of rejection");
+        if (isCompleted) {
+            throw new DomainArgumentException("Cannot change status after completion");
+        }
+
+        if (isLateRejected) {
+            throw new DomainArgumentException("Cannot change status 5 minutes of rejection");
         }
 
         this.requestStatus = newStatus;
@@ -50,7 +55,7 @@ public class RequestDomain {
         }
     }
 
-    public void stateRejectionReason(String message)    {
+    public void stateRejectionReason(String message) {
         if (message == null || message.trim().isEmpty()) throw new DomainArgumentException("Message cannot be empty");
         this.rejectionMessage = message;
         this.resolvedTime = Instant.now();

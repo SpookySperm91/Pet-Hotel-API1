@@ -6,6 +6,7 @@ import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.request.RequestDomain;
 import john.api1.application.ports.repositories.request.IRequestUpdateRepository;
+import john.api1.application.ports.repositories.request.RequestCQRS;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -45,7 +46,7 @@ public class RequestUpdateRepository implements IRequestUpdateRepository {
     }
 
     @Override
-    public Optional<RequestDomain> updateAfterReject(String id, RequestStatus status, String rejectedDescription) {
+    public Optional<RequestDomain> updateToReject(String id, RequestStatus status, String rejectedDescription) {
         validateId(id);
 
         Query query = createQuery(id);
@@ -54,6 +55,37 @@ public class RequestUpdateRepository implements IRequestUpdateRepository {
         RequestEntity updatedEntity = mongoTemplate.findAndModify(query, update, RequestEntity.class);
         return Optional.ofNullable(updatedEntity).map(this::toDomain);
     }
+
+    @Override
+    public Optional<RequestCQRS> updateRequestStatusReturnId(String id, RequestStatus status) {
+        validateId(id);
+
+        Query query = createQuery(id);
+        Update update = createUpdate(status, null);
+        RequestEntity updatedEntity = mongoTemplate.findAndModify(query, update, RequestEntity.class);
+
+        if (updatedEntity == null)
+            throw new PersistenceException("No documents were updated. The request may not exist or has already been updated.");
+
+        return Optional.of(updatedEntity)
+                .map(this::toCQRS);
+    }
+
+    @Override
+    public Optional<RequestCQRS> updateRequestStatusAndActiveReturnId(String id, RequestStatus status, boolean active) {
+        validateId(id);
+
+        Query query = createQuery(id);
+        Update update = createUpdate(status, null).set("active", active);
+        RequestEntity updatedEntity = mongoTemplate.findAndModify(query, update, RequestEntity.class);
+
+        if (updatedEntity == null)
+            throw new PersistenceException("No documents were updated. The request may not exist or has already been updated.");
+
+        return Optional.of(updatedEntity)
+                .map(this::toCQRS);
+    }
+
 
     ////////////////////
     // Helper methods //
@@ -98,5 +130,15 @@ public class RequestUpdateRepository implements IRequestUpdateRepository {
                 entity.getRejectDescription(),
                 entity.isActive()
         );
+    }
+
+    private RequestCQRS toCQRS(RequestEntity entity) {
+        return RequestCQRS.mapIds(
+                entity.getId().toString(),
+                entity.getOwnerId().toString(),
+                entity.getPetId().toString(),
+                entity.getBoardingId().toString()
+        );
+
     }
 }
