@@ -25,7 +25,7 @@ import java.time.ZoneId;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/admin/boarding")
+@RequestMapping("/api/v1/admin/manage/boarding")
 public class AdminBoardingController {
     private static final Logger logger = LoggerFactory.getLogger(AdminBoardingController.class);
     private final IBoardingCreate boardingCreate;
