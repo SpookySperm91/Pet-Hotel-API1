@@ -1,12 +1,9 @@
 package john.api1.application.domain.models.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.time.Instant;
 
 
-public record CompletedVideoRequestDomain(
+public record VideoRequestDomain(
         String id,
         String requestId,
         String ownerId,

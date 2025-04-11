@@ -34,15 +34,19 @@ public class RequestDomain {
 
     public void markStatus(RequestStatus newStatus) {
         Instant now = Instant.now();
-        boolean isCompleted = this.requestStatus == RequestStatus.COMPLETED;
+        boolean isLockedAfterCompleted = this.requestStatus == RequestStatus.COMPLETED &&
+                newStatus != RequestStatus.ARCHIVED;
+        boolean isArchived = this.requestStatus == RequestStatus.ARCHIVED;
         boolean isLateRejected = this.requestStatus == RequestStatus.REJECTED &&
                 this.resolvedTime != null &&
                 this.resolvedTime.isBefore(now.minus(5, ChronoUnit.MINUTES));
 
-        if (isCompleted) {
+        if (isLockedAfterCompleted) {
             throw new DomainArgumentException("Cannot change status after completion");
         }
-
+        if (isArchived) {
+            throw new DomainArgumentException("Cannot change status of already archived");
+        }
         if (isLateRejected) {
             throw new DomainArgumentException("Cannot change status 5 minutes of rejection");
         }
@@ -50,9 +54,15 @@ public class RequestDomain {
         this.requestStatus = newStatus;
         this.resolvedTime = Instant.now();
 
-        if (newStatus == RequestStatus.COMPLETED) {
+        if (newStatus == RequestStatus.COMPLETED || newStatus == RequestStatus.ARCHIVED) {
             this.active = false;
         }
+    }
+
+    public boolean deletable() {
+        return this.getRequestStatus() == RequestStatus.ARCHIVED
+                || this.getRequestStatus() == RequestStatus.REJECTED
+                || this.getRequestStatus() == RequestStatus.CANCELLED;
     }
 
     public void stateRejectionReason(String message) {

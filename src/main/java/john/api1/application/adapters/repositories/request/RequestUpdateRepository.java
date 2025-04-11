@@ -95,7 +95,7 @@ public class RequestUpdateRepository implements IRequestUpdateRepository {
 
     private Update createUpdate(RequestStatus status, String rejectedDescription) {
         Update update = new Update()
-                .set("requestStatus", status.toString())
+                .set("requestStatus", status.getRequestStatus())
                 .set("updatedAt", Instant.now());
 
         if (rejectedDescription != null) {

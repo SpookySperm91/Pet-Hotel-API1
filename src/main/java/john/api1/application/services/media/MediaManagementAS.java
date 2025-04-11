@@ -4,6 +4,7 @@ import john.api1.application.adapters.repositories.media.MinioCreateUpdateReposi
 import john.api1.application.adapters.services.MinioAdapter;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
+import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.ports.repositories.wrapper.MediaPreview;
 import john.api1.application.ports.repositories.wrapper.PreSignedUrlResponse;
@@ -33,13 +34,14 @@ public class MediaManagementAS implements IMediaManagement {
 
     public DomainResponse<PreSignedUrlResponse> generateMediaFile(String ownerId, String fileName, BucketType bucketType) {
         if (!ObjectId.isValid(ownerId)) return DomainResponse.error("Invalid ownerId");
+        if (fileName == null || fileName.isBlank()) return DomainResponse.error("Filename cannot be empty");
 
         try {
             String newUrl = minioAdapter.getUploadUrl(bucketType, fileName);
             Instant expirationTime = Instant.now().plus(bucketType.getMinuteExpire(), ChronoUnit.MINUTES);
             return DomainResponse.success(new PreSignedUrlResponse(newUrl, expirationTime));
-        } catch (RuntimeException e) {
-            return DomainResponse.error(e.getMessage());
+        } catch (Exception e) {
+            return DomainResponse.error("Something wrong. Try again");
         }
     }
 
@@ -85,4 +87,20 @@ public class MediaManagementAS implements IMediaManagement {
     public DomainResponse<String> deleteMedia(String mediaId, String ownerId) {
         return DomainResponse.error("");
     }
+
+    // Unsafe
+    public PreSignedUrlResponse unwrappedGenerateMediaFile(String ownerId, String fileName, BucketType bucketType) {
+        if (!ObjectId.isValid(ownerId)) throw new PersistenceException("Invalid owner id");
+        if (fileName == null || fileName.isBlank()) throw new PersistenceException("Filename cannot be empty");
+
+        try {
+            String newUrl = minioAdapter.getUploadUrl(bucketType, fileName);
+            Instant expirationTime = Instant.now().plus(bucketType.getMinuteExpire(), ChronoUnit.MINUTES);
+            return new PreSignedUrlResponse(newUrl, expirationTime);
+        } catch (Exception e) {
+            throw new PersistenceException("Something wrong. Try again");
+        }
+    }
+
+
 }

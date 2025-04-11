@@ -10,7 +10,8 @@ public enum RequestStatus {
     IN_PROGRESS("IN_PROGRESS"),
     CANCELLED("CANCELLED"),
     COMPLETED("COMPLETED"),
-    REJECTED("REJECTED");
+    REJECTED("REJECTED"),
+    ARCHIVED("ARCHIVED");
 
     private final String requestStatus;
 

@@ -22,4 +22,9 @@ public interface IMediaManagement {
     DomainResponse<String> archiveMedia(String mediaId, String ownerId);
 
     DomainResponse<String> deleteMedia(String mediaId, String ownerId);
+
+
+    // Unsafe
+    PreSignedUrlResponse unwrappedGenerateMediaFile(String ownerId, String fileName, BucketType bucketType);
+
 }
