@@ -1,5 +1,6 @@
 package john.api1.application.services.request.commit;
 
+import com.mongodb.MongoException;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
 import john.api1.application.components.exception.DomainArgumentException;
@@ -24,36 +25,38 @@ import john.api1.application.services.aggregation.IAggregationCompletedRequest;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 
 @Service
+@Transactional(rollbackFor = {DomainArgumentException.class, PersistenceException.class, MongoException.class})
 public class CommitRequestMediasAS implements ICommitRequestMedia {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CommitRequestMediasAS.class);
     private final IRequestCompletedCreateRepository createRepository;
     private final IRequestCompletedDeleteRepository deleteRepository;
     private final IMediaManagement mediaManagement;
+    private final IRequestUpdate requestUpdate;
     private final IBoardingSearch boardingSearch;
     private final IRequestSearch requestSearch;
-    private final IRequestUpdate requestUpdate;
     private final IAggregationCompletedRequest aggregation;
 
     @Autowired
     public CommitRequestMediasAS(IRequestCompletedCreateRepository createRepository,
                                  IRequestCompletedDeleteRepository deleteRepository,
                                  IMediaManagement mediaManagement,
+                                 IRequestUpdate requestUpdate,
                                  IBoardingSearch boardingSearch,
                                  IRequestSearch requestSearch,
-                                 IRequestUpdate requestUpdate,
                                  IAggregationCompletedRequest aggregation) {
         this.createRepository = createRepository;
         this.deleteRepository = deleteRepository;
         this.mediaManagement = mediaManagement;
+        this.requestUpdate = requestUpdate;
         this.boardingSearch = boardingSearch;
         this.requestSearch = requestSearch;
-        this.requestUpdate = requestUpdate;
         this.aggregation = aggregation;
     }
 
@@ -104,7 +107,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
             String photoId = saved
                     .orElseThrow(() -> new PersistenceException("Failed to save video domain..."));
             if (!update.isSuccess())
-                throw new PersistenceException("Failed to update request as complete. Rollback all current changes");
+                return DomainResponse.error(update.getMessage());
 
             // DTO
             photo = photo.mapWithId(photoId);
@@ -112,14 +115,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
             return DomainResponse.success(dto, "Photo request successfully completed");
         } catch (DomainArgumentException | PersistenceException e) {
-            try {
-                // Rollback changes
-                rollbackPhotoOperation(request.getRequestId());
                 return DomainResponse.error(e.getMessage());
-            } catch (Exception f) {
-                log.error("Rollback failed for requestId {}: {}", request.getRequestId(), f.getMessage(), f);
-                return DomainResponse.error("Rollback failed. Something wrong check the system.");
-            }
         }
     }
 
@@ -173,14 +169,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
             return DomainResponse.success(dto, "Video request successfully completed");
         } catch (DomainArgumentException | PersistenceException e) {
-            try {
-                // Rollback changes
-                rollbackVideoOperation(request.getRequestId());
                 return DomainResponse.error(e.getMessage());
-            } catch (Exception f) {
-                log.error("Rollback failed for requestId {}: {}", request.getRequestId(), f.getMessage(), f);
-                return DomainResponse.error("Rollback failed. Something wrong check the system.");
-            }
         }
     }
 
@@ -200,51 +189,5 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
         if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid id cannot be converted to ObjectId");
     }
 
-    // Delete medias
-    // Delete completed request
-    // Set request as pending
-    private void rollbackPhotoOperation(String requestId) {
-        log.warn("Initiating rollback for requestId: {}", requestId);
 
-        try {
-            deleteRepository.deletePhotoByRequestId(requestId);
-            log.info("Completed request deletion successful for requestId: {}", requestId);
-        } catch (Exception e) {
-            log.error("Failed to delete photo request entry for requestId: {}", requestId, e);
-        }
-
-        rollBack(requestId);
-        log.warn("Rollback process completed for requestId: {}", requestId);
-    }
-
-
-    private void rollbackVideoOperation(String requestId) {
-        log.warn("Initiating rollback for requestId: {}", requestId);
-
-        try {
-            deleteRepository.deleteVideoByRequestId(requestId);
-            log.info("Completed request deletion successful for requestId: {}", requestId);
-        } catch (Exception e) {
-            log.error("Failed to delete photo request entry for requestId: {}", requestId, e);
-        }
-        rollBack(requestId);
-        log.warn("Rollback process completed for requestId: {}", requestId);
-    }
-
-
-    private void rollBack(String requestId) {
-        try {
-            mediaManagement.deleteMediasByRequest(requestId);
-            log.info("Medias deletion successful for requestId: {}", requestId);
-        } catch (Exception e) {
-            log.error("Failed to delete medias for requestId: {}", requestId, e);
-        }
-
-        try {
-            requestUpdate.rollbackAsActive(requestId);
-            log.info("Request status rolled back to active for requestId: {}", requestId);
-        } catch (Exception e) {
-            log.error("Failed to rollback request status for requestId: {}", requestId, e);
-        }
-    }
 }

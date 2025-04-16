@@ -19,12 +19,12 @@ import java.time.Instant;
 import java.util.Optional;
 
 @Repository
-public class MinioCreateUpdateRepositoryMongo implements IMediaCreateRepository, IMediaUpdateRepository {
+public class MinioCreateUpdateRepository implements IMediaCreateRepository, IMediaUpdateRepository {
 
     private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public MinioCreateUpdateRepositoryMongo(MongoTemplate mongoTemplate) {
+    public MinioCreateUpdateRepository(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

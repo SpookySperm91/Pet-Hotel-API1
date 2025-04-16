@@ -42,13 +42,13 @@ public class RequestDomain {
                 this.resolvedTime.isBefore(now.minus(5, ChronoUnit.MINUTES));
 
         if (isLockedAfterCompleted) {
-            throw new DomainArgumentException("Cannot change status after completion");
+            throw new DomainArgumentException("Request cannot change status after completion");
         }
         if (isArchived) {
-            throw new DomainArgumentException("Cannot change status of already archived");
+            throw new DomainArgumentException("Request cannot change status of already archived");
         }
         if (isLateRejected) {
-            throw new DomainArgumentException("Cannot change status 5 minutes of rejection");
+            throw new DomainArgumentException("Request cannot change status 5 minutes of rejection");
         }
 
         this.requestStatus = newStatus;

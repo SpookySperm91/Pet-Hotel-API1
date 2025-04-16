@@ -1,9 +1,11 @@
 package john.api1.application.services.media;
 
-import john.api1.application.adapters.repositories.media.MinioCreateUpdateRepositoryMongo;
+import com.mongodb.MongoException;
+import john.api1.application.adapters.repositories.media.MinioCreateUpdateRepository;
 import john.api1.application.adapters.services.MinioAdapter;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
+import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.ports.repositories.wrapper.MediaPreview;
@@ -12,17 +14,19 @@ import john.api1.application.ports.services.media.IMediaManagement;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @Service
+@Transactional(rollbackFor = {DomainArgumentException.class, PersistenceException.class, MongoException.class})
 public class MediaManagementAS implements IMediaManagement {
     private final MinioAdapter minioAdapter;
-    private final MinioCreateUpdateRepositoryMongo mediaRepository;
+    private final MinioCreateUpdateRepository mediaRepository;
 
     @Autowired
-    public MediaManagementAS(MinioAdapter minioAdapter, MinioCreateUpdateRepositoryMongo mediaRepository) {
+    public MediaManagementAS(MinioAdapter minioAdapter, MinioCreateUpdateRepository mediaRepository) {
         this.minioAdapter = minioAdapter;
         this.mediaRepository = mediaRepository;
     }

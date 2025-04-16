@@ -3,8 +3,10 @@ package john.api1.application.adapters.controllers.admin;
 import jakarta.validation.Valid;
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.request.commit.RequestCompletedPhotoDTO;
+import john.api1.application.dto.mapper.request.commit.RequestCompletedServiceDTO;
 import john.api1.application.dto.mapper.request.commit.RequestCompletedVideoDTO;
 import john.api1.application.dto.request.request.admin.RequestCompletePhotoRDTO;
+import john.api1.application.dto.request.request.admin.RequestCompleteServiceRDTO;
 import john.api1.application.dto.request.request.admin.RequestCompleteVideoRDTO;
 import john.api1.application.ports.services.request.admin.ICommitRequestMedia;
 import john.api1.application.ports.services.request.admin.ICommitRequestServices;
@@ -88,6 +90,62 @@ public class AdminRequestCommitController {
             return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong. Try again!");
         }
     }
+
+
+    @PostMapping("/service-extension")
+    public ResponseEntity<DTOResponse<RequestCompletedServiceDTO>> completeExtensionRequest(
+            @Valid @RequestBody RequestCompleteServiceRDTO request,
+            BindingResult result
+    ) {
+        // Check for errors
+        var error = checkValidation(result);
+        if (error != null) return buildErrorResponse(HttpStatus.BAD_REQUEST, error);
+
+        try {
+            //////////////////////////
+            // Session and magic shits
+            //////////////////////////
+
+            var commit = commitRequestServices.commitExtensionRequest(request);
+            if (!commit.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, commit.getMessage());
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(DTOResponse.of(
+                            HttpStatus.OK.value(),
+                            commit.getData(),
+                            commit.getMessage()));
+        } catch (Exception e) {
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong. Try again!");
+        }
+    }
+
+    @PostMapping("/service-grooming")
+    public ResponseEntity<DTOResponse<RequestCompletedServiceDTO>> completeGroomingRequest(
+            @Valid @RequestBody RequestCompleteServiceRDTO request,
+            BindingResult result
+    ) {
+        // Check for errors
+        var error = checkValidation(result);
+        if (error != null) return buildErrorResponse(HttpStatus.BAD_REQUEST, error);
+
+        try {
+            //////////////////////////
+            // Session and magic shits
+            //////////////////////////
+
+            var commit = commitRequestServices.commitGroomingRequest(request);
+            if (!commit.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, commit.getMessage());
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(DTOResponse.of(
+                            HttpStatus.OK.value(),
+                            commit.getData(),
+                            commit.getMessage()));
+        } catch (Exception e) {
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong. Try again!");
+        }
+    }
+
 
     private String checkValidation(BindingResult result) {
         if (result.hasErrors()) {
