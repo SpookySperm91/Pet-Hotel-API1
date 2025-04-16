@@ -23,4 +23,7 @@ public interface IRequestSearchRepository {
     // pet history
     List<RequestDomain> findAllByPetId(String petId);
 
+    // CQRS
+
+
 }

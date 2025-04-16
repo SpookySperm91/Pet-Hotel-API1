@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/admin/manage/request/status")
+    @RequestMapping("/api/v1/admin/manage/request/status")
 public class AdminRequestStatusController {
     private final IRequestStatusManagement statusService;
 

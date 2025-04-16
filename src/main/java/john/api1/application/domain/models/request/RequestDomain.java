@@ -65,6 +65,38 @@ public class RequestDomain {
                 || this.getRequestStatus() == RequestStatus.CANCELLED;
     }
 
+    public void isValidToCommit() {
+        mustNotBeFinalized("commit");
+    }
+
+    public void isValidToApprove() {
+        mustNotBeFinalized("approve");
+        if (this.requestStatus == RequestStatus.IN_PROGRESS)
+            throw new DomainArgumentException("Request was already approved and is in progress");
+    }
+
+    public void isValidToRevert() {
+        if (this.requestStatus != RequestStatus.IN_PROGRESS)
+            throw new DomainArgumentException("Cannot revert to pending. Request status is not in progress");
+    }
+
+    public void isValidToUndoReject() {
+        if (this.requestStatus != RequestStatus.REJECTED)
+            throw new DomainArgumentException("Cannot revert to pending. Request status is not in progress");
+        if (this.resolvedTime.isBefore(Instant.now().minus(5, ChronoUnit.MINUTES)))
+            throw new DomainArgumentException("Request cannot change status 5 minutes of rejection");
+    }
+
+    private void mustNotBeFinalized(String context) {
+        if (this.requestStatus == RequestStatus.REJECTED)
+            throw new DomainArgumentException("Cannot " + context + ": rejected at " + this.resolvedTime);
+        if (this.requestStatus == RequestStatus.CANCELLED)
+            throw new DomainArgumentException("Cannot " + context + ": cancelled at " + this.resolvedTime);
+        if (this.requestStatus == RequestStatus.COMPLETED)
+            throw new DomainArgumentException("Cannot " + context + ": already completed");
+    }
+
+
     public void stateRejectionReason(String message) {
         if (message == null || message.trim().isEmpty()) throw new DomainArgumentException("Message cannot be empty");
         this.rejectionMessage = message;

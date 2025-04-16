@@ -3,18 +3,20 @@ package john.api1.application.services.request.commit;
 import com.mongodb.MongoException;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
+import john.api1.application.components.enums.boarding.RequestStatus;
+import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.request.PhotoRequestDomain;
+import john.api1.application.domain.models.request.RequestDomain;
 import john.api1.application.domain.models.request.VideoRequestDomain;
 import john.api1.application.dto.mapper.request.commit.RequestCompletedPhotoDTO;
 import john.api1.application.dto.mapper.request.commit.RequestCompletedVideoDTO;
 import john.api1.application.dto.request.request.admin.RequestCompletePhotoRDTO;
 import john.api1.application.dto.request.request.admin.RequestCompleteVideoRDTO;
 import john.api1.application.ports.repositories.request.IRequestCompletedCreateRepository;
-import john.api1.application.ports.repositories.request.IRequestCompletedDeleteRepository;
 import john.api1.application.ports.repositories.wrapper.PreSignedUrlResponse;
 import john.api1.application.ports.services.boarding.IBoardingSearch;
 import john.api1.application.ports.services.media.IMediaManagement;
@@ -36,7 +38,6 @@ import java.util.stream.Collectors;
 public class CommitRequestMediasAS implements ICommitRequestMedia {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CommitRequestMediasAS.class);
     private final IRequestCompletedCreateRepository createRepository;
-    private final IRequestCompletedDeleteRepository deleteRepository;
     private final IMediaManagement mediaManagement;
     private final IRequestUpdate requestUpdate;
     private final IBoardingSearch boardingSearch;
@@ -45,14 +46,12 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
     @Autowired
     public CommitRequestMediasAS(IRequestCompletedCreateRepository createRepository,
-                                 IRequestCompletedDeleteRepository deleteRepository,
                                  IMediaManagement mediaManagement,
                                  IRequestUpdate requestUpdate,
                                  IBoardingSearch boardingSearch,
                                  IRequestSearch requestSearch,
                                  IAggregationCompletedRequest aggregation) {
         this.createRepository = createRepository;
-        this.deleteRepository = deleteRepository;
         this.mediaManagement = mediaManagement;
         this.requestUpdate = requestUpdate;
         this.boardingSearch = boardingSearch;
@@ -71,6 +70,10 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
     public DomainResponse<RequestCompletedPhotoDTO> commitPhotoRequest(RequestCompletePhotoRDTO request) {
         try {
             validateId(request.getRequestId());
+
+            RequestDomain requestdomain = requestSearch.searchByRequestId(request.getRequestId());
+            if (requestdomain.getRequestType() != RequestType.PHOTO_REQUEST) throw new DomainArgumentException("Invalid. The request is not a photo request");
+            requestdomain.isValidToCommit();
 
             // Generate media pre-sign url
             BoardingDomain boarding = validateActiveRequest(request.getRequestId());
@@ -115,7 +118,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
             return DomainResponse.success(dto, "Photo request successfully completed");
         } catch (DomainArgumentException | PersistenceException e) {
-                return DomainResponse.error(e.getMessage());
+            return DomainResponse.error(e.getMessage());
         }
     }
 
@@ -129,6 +132,10 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
     public DomainResponse<RequestCompletedVideoDTO> commitVideoRequest(RequestCompleteVideoRDTO request) {
         try {
             validateId(request.getRequestId());
+
+            RequestDomain requestdomain = requestSearch.searchByRequestId(request.getRequestId());
+            if (requestdomain.getRequestType() != RequestType.VIDEO_REQUEST) throw new DomainArgumentException("Invalid. The request is not a video request");
+            requestdomain.isValidToCommit();
 
             // Generate video media
             BoardingDomain boarding = validateActiveRequest(request.getRequestId());
@@ -169,18 +176,22 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
             return DomainResponse.success(dto, "Video request successfully completed");
         } catch (DomainArgumentException | PersistenceException e) {
-                return DomainResponse.error(e.getMessage());
+            return DomainResponse.error(e.getMessage());
         }
     }
 
     private BoardingDomain validateActiveRequest(String requestId) {
         validateId(requestId);
+
         var request = requestSearch.searchByRequestId(requestId);
+        request.isValidToCommit();
+
         var active = boardingSearch.findBoardingById(request.getBoardingId());
         if (!active.isSuccess())
             throw new DomainArgumentException(active.getMessage());
         if (!active.getData().isActive())
             throw new DomainArgumentException("Boarding of the request is inactive");
+
         return active.getData();
     }
 

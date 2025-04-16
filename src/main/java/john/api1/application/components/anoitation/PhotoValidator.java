@@ -8,6 +8,7 @@ public class PhotoValidator implements ConstraintValidator<ValidPhoto, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null || value.isEmpty()) {
+            context.buildConstraintViolationWithTemplate("Filename cannot be empty").addConstraintViolation();
             return false; // Reject null or empty filenames
         }
 
@@ -21,3 +22,4 @@ public class PhotoValidator implements ConstraintValidator<ValidPhoto, String> {
         return false; // Not a valid photo file extension
     }
 }
+
