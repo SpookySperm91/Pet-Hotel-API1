@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class PhotoFile {
-    @NotBlank(message = "Photo file name cannot be blank")
+    @NotBlank(message = "Photo file fileName cannot be blank")
     @ValidPhoto(message = "Please provide a valid image file with one of the supported extensions (.jpg, .jpeg, .png, .gif).")
     private String name;
 }

@@ -5,14 +5,17 @@ import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.bson.types.ObjectId;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @AllArgsConstructor
 @Getter
+@Builder(toBuilder = true)
 public class BoardingDomain {
     private final String id;
     private final String petId;
@@ -38,6 +41,10 @@ public class BoardingDomain {
         );
     }
 
+    public BoardingDomain copy(){
+        return this.toBuilder().build();
+    }
+
     public BoardingDomain withId(String id) {
         return new BoardingDomain(
                 id, petId, ownerId, boardingType, boardingStart, boardingEnd,
@@ -46,13 +53,23 @@ public class BoardingDomain {
     }
 
     public void extendBoarding(long extraDays) {
-        if (extraDays <= 0) {
-            throw new DomainArgumentException("Extension must be greater than zero days.");
-        }
+        if (extraDays <= 0) throw new DomainArgumentException("Extension must be greater than zero days.");
+
 
         this.boardingEnd = boardingEnd.plus(extraDays, ChronoUnit.DAYS);
         this.paymentStatus = PaymentStatus.PENDING;
         this.updatedAt = Instant.now();
+    }
+
+    public void daycareToLongDay() {
+        if (this.boardingStart == null || this.boardingEnd == null)
+            throw new DomainArgumentException("Boarding start or end time is missing.");
+
+        Duration duration = Duration.between(this.boardingStart, this.boardingEnd);
+        if (this.boardingType == BoardingType.DAYCARE && duration.toHours() >= 24) {
+            this.boardingType = BoardingType.LONG_STAY;
+            this.updatedAt = Instant.now();
+        }
     }
 
     public void updatePaymentStatus(PaymentStatus newPaymentStatus) {
@@ -61,9 +78,7 @@ public class BoardingDomain {
     }
 
     public void updateBoardingStatus(BoardingStatus status) {
-        if (!this.active) {
-            throw new DomainArgumentException("Cannot update status of an inactive boarding.");
-        }
+        if (!this.active) throw new DomainArgumentException("Cannot update status of an inactive boarding.");
 
         this.boardingStatus = status;
         this.updatedAt = Instant.now();
@@ -74,9 +89,9 @@ public class BoardingDomain {
     }
 
     public long getBoardingDuration() {
-        if (boardingStart == null || boardingEnd == null) {
+        if (boardingStart == null || boardingEnd == null)
             throw new DomainArgumentException("Boarding start and end time must not be null.");
-        }
+
 
         long duration;
         if (boardingType == BoardingType.DAYCARE) {

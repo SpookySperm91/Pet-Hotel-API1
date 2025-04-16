@@ -61,7 +61,7 @@ public class RegisterNewClientAS implements IRegisterNewClient {
     // Create account credential first
     // Instantiate user information then save to db
     // Log and send email to recipient
-    // Return custom response(id, name, sms number and text, success)
+    // Return custom response(id, fileName, sms number and text, success)
     public DomainResponse<RegisterResponse> registerNewClient(RegisterRDTO request) {
         // Check if already exist
         Optional<String> validationError = validateRequest(request);

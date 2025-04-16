@@ -59,5 +59,8 @@ public record MediaDomain(String id,
         );
     }
 
+    public MediaDomain mapWithId(String id) {
+        return new MediaDomain(id, this.ownerId, this.typeId, this.fileName, this.bucketType, this.description, this.uploadedAt, this.preSignedUrlExpire, this.archived);
+    }
 }
 

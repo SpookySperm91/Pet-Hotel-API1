@@ -75,7 +75,7 @@ public class PetOwnerSearchAS implements IPetOwnerManagement {
         if (!ObjectId.isValid(ownerId)) throw new PersistenceException("Pet-owner id is invalid");
 
         var name = petOwnerCQRS.getPetOwnerName(ownerId);
-        if (name.isEmpty()) throw new PersistenceException("Pet name cannot be found.");
+        if (name.isEmpty()) throw new PersistenceException("Pet fileName cannot be found.");
         return name.get();
 
     }

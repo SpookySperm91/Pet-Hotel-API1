@@ -88,6 +88,16 @@ public class MediaManagementAS implements IMediaManagement {
         return DomainResponse.error("");
     }
 
+
+    public void deleteMediasByRequest(String requestId) {
+        if (!ObjectId.isValid(requestId))
+            throw new PersistenceException("Invalid request id cannot be convert to ObjectId");
+
+        var delete = mediaRepository.deleteMediaByRequest(requestId);
+        if(!delete) throw new PersistenceException("Failed to delete medias of this request: " + requestId);
+
+    }
+
     // Unsafe
     public PreSignedUrlResponse unwrappedGenerateMediaFile(String ownerId, String fileName, BucketType bucketType) {
         if (!ObjectId.isValid(ownerId)) throw new PersistenceException("Invalid owner id");
@@ -99,6 +109,24 @@ public class MediaManagementAS implements IMediaManagement {
             return new PreSignedUrlResponse(newUrl, expirationTime);
         } catch (Exception e) {
             throw new PersistenceException("Something wrong. Try again");
+        }
+    }
+
+    public String unwrappedSaveMediaFile(MediaDomain media) {
+        if (!ObjectId.isValid(media.ownerId()) ||
+                media.typeId() != null && !ObjectId.isValid(media.typeId())) {    // if not null, check if valid
+            throw new PersistenceException("Invalid ownerId or typeId.");
+        }
+
+        try {
+            var savedMedia = mediaRepository.save(media);
+            if (savedMedia.isPresent()) {
+                return savedMedia.get().id().toString();
+            }
+
+            throw new PersistenceException("Failed to save media to database.");
+        } catch (RuntimeException e) {
+            throw new PersistenceException("Failed to save media to database.");
         }
     }
 

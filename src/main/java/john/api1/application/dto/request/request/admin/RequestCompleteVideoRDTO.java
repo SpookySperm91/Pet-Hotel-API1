@@ -17,9 +17,9 @@ import java.time.Instant;
 public class RequestCompleteVideoRDTO {
     @NotBlank(message = "Request id cannot be empty")
     private String requestId;
-    @NotBlank(message = "Video file name cannot be empty")
+    @NotBlank(message = "Video file fileName cannot be empty")
     @ValidVideo(message = "Please provide a valid video file with one of the supported extensions (.mp4, .avi, .mov).")
-    private String video;
+    private String videoFile;
     @Nullable
     private String notes;
     private Instant requestAt;

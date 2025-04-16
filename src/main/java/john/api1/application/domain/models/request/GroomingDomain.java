@@ -4,6 +4,7 @@ import john.api1.application.components.enums.GroomingType;
 import john.api1.application.components.enums.PetPrices;
 import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
@@ -12,6 +13,7 @@ import java.time.Instant;
 
 @AllArgsConstructor
 @Getter
+@Builder(toBuilder = true)
 public class GroomingDomain {
     private final String id;
     private final String requestId;
@@ -35,6 +37,15 @@ public class GroomingDomain {
         this.createdAt = Instant.now();
         this.updatedAt = createdAt;
         this.approved = false;
+    }
+
+    public GroomingDomain copy(){
+        return this.toBuilder().build();
+    }
+
+
+    public GroomingDomain mapWithId(String id) {
+        return new GroomingDomain(id, this.requestId, this.boardingId, this.groomingType, this.groomingPrice, this.description, this.createdAt, this.updatedAt, this.approved);
     }
 
 

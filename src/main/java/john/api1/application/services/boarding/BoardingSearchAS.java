@@ -9,6 +9,7 @@ import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.ports.repositories.boarding.IBoardingSearchRepository;
 import john.api1.application.ports.services.boarding.IBoardingSearch;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 public class BoardingSearchAS implements IBoardingSearch {
     private final IBoardingSearchRepository searchRepository;
 
+    @Autowired
     public BoardingSearchAS(IBoardingSearchRepository searchRepository) {
         this.searchRepository = searchRepository;
     }

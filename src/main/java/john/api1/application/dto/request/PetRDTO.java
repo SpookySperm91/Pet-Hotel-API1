@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class PetRDTO {
     @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid owner ID format")
     private String ownerId;
-    @NotBlank(message = "Pet's name cannot be empty")
+    @NotBlank(message = "Pet's fileName cannot be empty")
     private String petName;
     @NotBlank(message = "Pet's type cannot be empty")
     private String animalType;

@@ -3,6 +3,7 @@ package john.api1.application.adapters.repositories.media;
 import jakarta.annotation.Nullable;
 import john.api1.application.adapters.repositories.MinioEntity;
 import john.api1.application.components.enums.BucketType;
+import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.ports.repositories.media.IMediaCreateRepository;
 import john.api1.application.ports.repositories.media.IMediaUpdateRepository;
@@ -104,4 +105,14 @@ public class MinioCreateUpdateRepositoryMongo implements IMediaCreateRepository,
 
         return mongoTemplate.remove(query, MinioEntity.class).getDeletedCount() > 0;
     }
+
+    @Override
+    public boolean deleteMediaByRequest(String requestId) {
+        if (!ObjectId.isValid(requestId))
+            throw new PersistenceException("Invalid request id cannot be convert to ObjectId");
+
+        Query query = new Query(Criteria.where("typeId").is(new ObjectId(requestId)));
+        return mongoTemplate.remove(query, MinioEntity.class).getDeletedCount() > 0;
+    }
+
 }

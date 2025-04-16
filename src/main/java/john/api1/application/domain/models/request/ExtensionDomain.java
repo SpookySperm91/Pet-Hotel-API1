@@ -23,10 +23,10 @@ public class ExtensionDomain {
     private String description;
     private final Instant createdAt;
     private Instant updatedAt;
-    private boolean approved = false;
+    private boolean approved;
 
     public ExtensionDomain(String requestId, String boardingId, String description) {
-        if ( !ObjectId.isValid(requestId) || !ObjectId.isValid(boardingId))
+        if (!ObjectId.isValid(requestId) || !ObjectId.isValid(boardingId))
             throw new DomainArgumentException("Id is invalid format");
 
         this.id = null;
@@ -36,6 +36,10 @@ public class ExtensionDomain {
         this.createdAt = Instant.now();
         this.updatedAt = createdAt;
         this.approved = false;
+    }
+
+    public ExtensionDomain mapWithId(String id) {
+        return new ExtensionDomain(id, this.requestId, this.boardingId, this.additionalPrice, this.extendedHours, this.description, this.createdAt, this.updatedAt, this.approved);
     }
 
     public void setAdditionalPrice(PetPrices petPrices, long extendedHours) {
@@ -48,11 +52,20 @@ public class ExtensionDomain {
     }
 
     public void markAsApproved() {
-        if (!approved) {
-            this.approved = true;
-            this.updatedAt = Instant.now();
-            return;
+        if (approved) {
+            throw new DomainArgumentException("Extension already approved.");
         }
-        throw new DomainArgumentException("Extension already approved");
+
+        this.approved = true;
+        this.updatedAt = Instant.now();
+    }
+    
+    public void markAsNotApproved() {
+        if (!approved) {
+            throw new DomainArgumentException("Extension already not approved.");
+        }
+
+        this.approved = false;
+        this.updatedAt = Instant.now();
     }
 }

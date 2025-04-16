@@ -6,8 +6,20 @@ import john.api1.application.domain.models.boarding.BoardingPricingDomain;
 import java.util.List;
 
 public interface IPricingManagement {
-    DomainResponse<String> updateRequestBreakdown(String boardingId, List<BoardingPricingDomain.RequestBreakdown> breakdowns); // add new request breakdown
+    DomainResponse<Void> updateRequestBreakdown(String boardingId, BoardingPricingDomain.RequestBreakdown breakdowns); // add new request breakdown
+
     DomainResponse<String> deactivatePricing(String boardingId);
+
     DomainResponse<String> activatePricing(String boardingId);
+
+    // Unsafe
+    void unwrappedUpdateRequestBreakdown(String boardingId, BoardingPricingDomain.RequestBreakdown breakdowns); // add new request breakdown
+
+    void unwrappedUpdateRequestBreakdown(String boardingId, List<BoardingPricingDomain.RequestBreakdown> breakdowns);
+
+
+    // Readonly
     DomainResponse<BoardingPricingDomain> getPricingDetails(String boardingId);
+
+    List<BoardingPricingDomain.RequestBreakdown> getBreakdown(String boardingId);
 }

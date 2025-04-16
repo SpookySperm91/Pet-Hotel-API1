@@ -2,6 +2,7 @@ package john.api1.application.domain.cores.boarding;
 
 import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.exception.DomainArgumentException;
+import john.api1.application.domain.models.boarding.BoardingPricingDomain;
 import john.api1.application.domain.models.request.ExtensionDomain;
 
 import java.math.BigDecimal;

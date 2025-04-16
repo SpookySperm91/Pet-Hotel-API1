@@ -23,8 +23,13 @@ public interface IMediaManagement {
 
     DomainResponse<String> deleteMedia(String mediaId, String ownerId);
 
+    void deleteMediasByRequest(String requestId);
+
+
 
     // Unsafe
     PreSignedUrlResponse unwrappedGenerateMediaFile(String ownerId, String fileName, BucketType bucketType);
+
+    String unwrappedSaveMediaFile(MediaDomain media);
 
 }

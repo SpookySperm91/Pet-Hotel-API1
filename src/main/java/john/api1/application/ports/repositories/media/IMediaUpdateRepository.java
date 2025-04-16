@@ -14,6 +14,9 @@ public interface IMediaUpdateRepository {
 
     // Delete media permanently from DB
     boolean deleteMedia(ObjectId mediaId, ObjectId ownerId);
+
+    boolean deleteMediaByRequest(String requestId);
+
 }
 
 

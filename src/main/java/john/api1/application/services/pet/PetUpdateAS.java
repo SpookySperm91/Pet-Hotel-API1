@@ -74,7 +74,7 @@ public class PetUpdateAS implements IPetUpdate {
     public DomainResponse<PetUpdateResponse> updatePetName(String petId, String newPetName) {
         return update(petId, () -> petUpdate.updatePetName(petId, newPetName),
                 new PetUpdateResponse(petId, newPetName, null, null, null),
-                "Unable to update pet name. Please try again later.");
+                "Unable to update pet fileName. Please try again later.");
     }
 
     @Override

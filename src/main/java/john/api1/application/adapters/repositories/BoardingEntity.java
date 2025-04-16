@@ -52,4 +52,21 @@ public class BoardingEntity {
                 domain.isActive()
         );
     }
+
+    public static BoardingEntity map(BoardingDomain domain) {
+        return new BoardingEntity(
+                new ObjectId(domain.getId()),
+                new ObjectId(domain.getPetId()),
+                new ObjectId(domain.getOwnerId()),
+                domain.getBoardingType().getBoardingType(),
+                domain.getBoardingStart(),
+                domain.getBoardingEnd(),
+                domain.getBoardingStatus().getBoardingStatus(),
+                domain.getPaymentStatus().getPaymentStatus(),
+                domain.getNotes(),
+                domain.getCreatedAt(),
+                domain.getUpdatedAt(),
+                domain.isActive()
+        );
+    }
 }

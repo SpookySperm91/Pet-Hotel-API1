@@ -24,7 +24,7 @@ public class PetDomain {
 
     public static PetDomain create(String ownerId, String petName, String animalType, int age) {
         validateNotEmpty(ownerId, "Owner ID cannot be empty");
-        validateNotEmpty(petName, "Pet name cannot be empty");
+        validateNotEmpty(petName, "Pet fileName cannot be empty");
         validateNotEmpty(animalType, "Animal type cannot be empty");
 
         return new PetDomain(null, ownerId, petName, animalType, null, null, age, null, null, Instant.now(), Instant.now(), false);
@@ -33,7 +33,7 @@ public class PetDomain {
     public static PetDomain createFull(String ownerId, String petName, String animalType,
                                        String breed, String size, int age, String specialDescription, String profilePictureUrl) {
         validateNotEmpty(ownerId, "Owner ID cannot be empty");
-        validateNotEmpty(petName, "Pet name cannot be empty");
+        validateNotEmpty(petName, "Pet fileName cannot be empty");
         validateNotEmpty(animalType, "Animal type cannot be empty");
 
         return new PetDomain(null, ownerId, petName, animalType, breed, size, age, specialDescription, profilePictureUrl, Instant.now(), Instant.now(), false);
@@ -43,14 +43,14 @@ public class PetDomain {
                                        String breed, String size, int age, String specialDescription, String profilePictureUrl) {
         validateNotEmpty(id, "Pet ID cannot be empty");
         validateNotEmpty(ownerId, "Owner ID cannot be empty");
-        validateNotEmpty(petName, "Pet name cannot be empty");
+        validateNotEmpty(petName, "Pet fileName cannot be empty");
         validateNotEmpty(animalType, "Animal type cannot be empty");
 
         return new PetDomain(id, ownerId, petName, animalType, breed, size, age, specialDescription, profilePictureUrl, Instant.now(), Instant.now(), false);
     }
 
     public void updatePetName(String petName) {
-        validateNotEmpty(petName, "Pet name cannot be empty");
+        validateNotEmpty(petName, "Pet fileName cannot be empty");
         this.petName = petName;
         this.updatedAt = Instant.now();
     }

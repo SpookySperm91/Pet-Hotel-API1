@@ -56,7 +56,7 @@ public class BoardingPricingDomain {
 
         public static RequestBreakdown createNew(String id, String requestName, double total, Instant time) {
             if (!ObjectId.isValid(id)) throw new DomainArgumentException("Request id cannot be instantiated as ObjectId");
-            if (requestName == null || requestName.trim().isEmpty()) throw new DomainArgumentException("Request name cannot be empty");
+            if (requestName == null || requestName.trim().isEmpty()) throw new DomainArgumentException("Request fileName cannot be empty");
             if (total <= 0) throw new DomainArgumentException("Total price must be greater than 0");
             if (time == null) throw new DomainArgumentException("Creation time cannot be null");
             return new RequestBreakdown(new ObjectId(id), requestName, total, time);

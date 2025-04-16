@@ -11,11 +11,12 @@ import john.api1.application.ports.repositories.pet.PetCQRS;
 import john.api1.application.ports.services.IBoardingAggregation;
 import john.api1.application.ports.services.media.IMediaSearch;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
-@Service
+@Component
 public class AggregationBoarding implements IBoardingAggregation {
     private final IMediaSearch mediaSearch;
 

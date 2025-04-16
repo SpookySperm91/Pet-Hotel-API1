@@ -3,7 +3,10 @@ package john.api1.application.services.request;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.domain.models.request.ExtensionDomain;
+import john.api1.application.domain.models.request.GroomingDomain;
 import john.api1.application.domain.models.request.RequestDomain;
+import john.api1.application.ports.repositories.request.IRequestCompletedSearchRepository;
 import john.api1.application.ports.repositories.request.IRequestSearchRepository;
 import john.api1.application.ports.services.request.IRequestSearch;
 import org.bson.types.ObjectId;
@@ -15,14 +18,17 @@ import java.util.List;
 @Service
 public class RequestSearch implements IRequestSearch {
     private final IRequestSearchRepository searchRepository;
+    private final IRequestCompletedSearchRepository searchCompletedRepository;
 
     @Autowired
-    public RequestSearch(IRequestSearchRepository searchRepository) {
+    public RequestSearch(IRequestSearchRepository searchRepository,
+                         IRequestCompletedSearchRepository searchCompletedRepository) {
         this.searchRepository = searchRepository;
+        this.searchCompletedRepository = searchCompletedRepository;
     }
 
     @Override
-    public RequestDomain searchById(String requestId) {
+    public RequestDomain searchByRequestId(String requestId) {
         validateId(requestId);
         return searchRepository.findById(requestId)
                 .orElseThrow(() -> new PersistenceException("Request cannot be found"));
@@ -49,6 +55,22 @@ public class RequestSearch implements IRequestSearch {
         } catch (Exception e) {
             return DomainResponse.error("Something went wrong. Please try again later.");
         }
+    }
+
+    // Specifics
+    @Override
+    public GroomingDomain searchGroomingById(String id) {
+        validateId(id);
+        return searchCompletedRepository.getGroomingById(id)
+                .orElseThrow(() -> new PersistenceException("Grooming request cannot be found"));
+    }
+
+    @Override
+    public ExtensionDomain searchExtensionById(String id) {
+        validateId(id);
+        validateId(id);
+        return searchCompletedRepository.getExtensionById(id)
+                .orElseThrow(() -> new PersistenceException("Extension request cannot be found"));
     }
 
     private void validateId(String id) {

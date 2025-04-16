@@ -31,7 +31,7 @@ public class PetSearchAS implements IPetSearch {
         if (!ObjectId.isValid(petId)) throw new PersistenceException("Pet id is invalid.");
 
         var name = petSearch.getPetNameBreedSize(petId);
-        if (name.isEmpty()) throw new PersistenceException("Pet name cannot be found.");
+        if (name.isEmpty()) throw new PersistenceException("Pet fileName cannot be found.");
         return name.get();
     }
 
@@ -41,7 +41,7 @@ public class PetSearchAS implements IPetSearch {
         if (!ObjectId.isValid(petId)) throw new PersistenceException("Pet id is invalid.");
 
         var name = petSearch.getPetName(petId);
-        if (name.isEmpty()) throw new PersistenceException("Pet name cannot be found.");
+        if (name.isEmpty()) throw new PersistenceException("Pet fileName cannot be found.");
         return name.get();
     }
 

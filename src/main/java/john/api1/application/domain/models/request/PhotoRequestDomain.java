@@ -15,8 +15,12 @@ public record PhotoRequestDomain(
         return new PhotoRequestDomain(null, requestId, ownerId, photosName, Instant.now());
     }
 
+    public PhotoRequestDomain mapWithId(String id){
+        return new PhotoRequestDomain(id, requestId, ownerId, photo, Instant.now());
+    }
+
     public record MediaFile(
-            String id, String name
+            String id, String fileName
     ) {
     }
 }

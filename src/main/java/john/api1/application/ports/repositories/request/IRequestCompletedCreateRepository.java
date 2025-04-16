@@ -7,6 +7,6 @@ import john.api1.application.domain.models.request.VideoRequestDomain;
 import java.util.Optional;
 
 public interface IRequestCompletedCreateRepository {
-    Optional<String> createPhotoRequest(PhotoRequestDomain extension);
-    Optional<String> createVideoRequest(VideoRequestDomain extension);
+    Optional<String> createPhotoRequest(PhotoRequestDomain photo);
+    Optional<String> createVideoRequest(VideoRequestDomain video);
 }

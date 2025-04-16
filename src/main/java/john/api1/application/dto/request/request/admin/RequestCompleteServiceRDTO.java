@@ -15,6 +15,8 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestCompleteServiceRDTO {
+    @NotBlank(message = "Grooming/Extension id cannot be empty")
+    private String serviceId;
     @NotBlank(message = "Request id cannot be empty")
     private String requestId;
     @Nullable

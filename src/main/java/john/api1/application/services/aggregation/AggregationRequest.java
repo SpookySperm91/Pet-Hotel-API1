@@ -5,9 +5,10 @@ import john.api1.application.dto.mapper.request.RequestExtensionCreatedDTO;
 import john.api1.application.dto.mapper.request.RequestGroomingCreatedDTO;
 import john.api1.application.dto.mapper.request.RequestMediaCreatedDTO;
 import john.api1.application.ports.services.IRequestAggregation;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Service
+@Component
 public class AggregationRequest implements IRequestAggregation {
 
     public RequestMediaCreatedDTO requestCreateMediaAggregation(RequestDomain domain, String ownerName, String petName) {

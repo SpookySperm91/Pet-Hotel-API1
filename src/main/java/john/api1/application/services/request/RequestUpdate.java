@@ -1,5 +1,6 @@
 package john.api1.application.services.request;
 
+import com.mongodb.MongoException;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.boarding.RequestStatus;
 import john.api1.application.components.exception.DomainArgumentException;
@@ -12,8 +13,10 @@ import john.api1.application.ports.services.request.IRequestUpdate;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(rollbackFor = {DomainArgumentException.class, PersistenceException.class, MongoException.class})
 public class RequestUpdate implements IRequestUpdate {
     private final IRequestUpdateRepository updateRepository;
     private final IRequestDeleteRepository deleteRepository;
@@ -91,6 +94,12 @@ public class RequestUpdate implements IRequestUpdate {
         } catch (Exception e) {
             return DomainResponse.error("Unable to complete the request. Please try again.");
         }
+    }
+
+    // Rollback
+    public void rollbackAsActive(String requestId){
+        validateId(requestId);
+        updateRepository.updateRequestStatusAndActive(requestId, RequestStatus.PENDING, true);
     }
 
     private void validateId(String id) {

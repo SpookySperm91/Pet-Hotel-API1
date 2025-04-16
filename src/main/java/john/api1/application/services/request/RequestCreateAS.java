@@ -120,7 +120,10 @@ public class RequestCreateAS implements IRequestCreate {
                     request.getBoardingId(),
                     request.getDescription());
             extensionDomain.setAdditionalPrice(priceRate, extendedHours);
-            requestCreate.createInitialRequestExtension(extensionDomain);
+
+            var domainId = requestCreate.createInitialRequestExtension(extensionDomain);
+            if (domainId.isEmpty()) return DomainResponse.error("Failed to save initial request extension");
+            extensionDomain = extensionDomain.mapWithId(domainId.get());
 
             // Aggregation DTO
             var dto = aggregation.requestCreateExtensionAggregation(domain, ownerName, pet.petName(), extensionDomain.getExtendedHours(), request.getExtensionType());
@@ -167,7 +170,10 @@ public class RequestCreateAS implements IRequestCreate {
                     request.getBoardingId(),
                     request.getDescription());
             groomingDomain.setGroomingAndPrice(groomingType, priceRate);
-            requestCreate.createInitialRequestGrooming(groomingDomain);
+
+            var domainId = requestCreate.createInitialRequestGrooming(groomingDomain);
+            if (domainId.isEmpty()) return DomainResponse.error("Failed to save initial grooming request");
+            groomingDomain = groomingDomain.mapWithId(domainId.get());
 
             // Aggregation DTO
             var dto = aggregation.requestCreateGroomingAggregation(domain, ownerName, pet.petName(), groomingDomain.getGroomingPrice(), pet.size());

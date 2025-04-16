@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
@@ -34,6 +35,21 @@ public class BoardingManageRepository implements IBoardingCreateRepository, IBoa
         BoardingEntity entity = BoardingEntity.createWithDomain(boarding);
         return mongoTemplate.save(entity).getId().toString();
     }
+
+    public void updateBoarding(BoardingDomain domain) {
+        if (!ObjectId.isValid(domain.getId()))
+            throw new PersistenceException("Invalid boarding id cannot convert to ObjectId");
+
+        ObjectId objectId = new ObjectId(domain.getId());
+        Query query = new Query(Criteria.where("_id").is(objectId));
+        boolean exists = mongoTemplate.exists(query, BoardingEntity.class);
+
+        if (!exists) throw new PersistenceException("Boarding with id " + domain.getId() + " does not exist");
+
+        BoardingEntity entity = BoardingEntity.map(domain);
+        mongoTemplate.save(entity);
+    }
+
 
     // Update after release. Assume domain object fields are already updated.
     public void updateBoardingAfterRelease(BoardingDomain boarding) {
