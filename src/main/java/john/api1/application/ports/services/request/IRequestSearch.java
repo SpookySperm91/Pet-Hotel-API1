@@ -16,6 +16,6 @@ public interface IRequestSearch {
 
 
     // Specific
-    GroomingDomain searchGroomingById(String id);
-    ExtensionDomain searchExtensionById(String id);
+    GroomingDomain searchGroomingByRequestId(String id);
+    ExtensionDomain searchExtensionByRequestId(String id);
 }

@@ -40,10 +40,10 @@ public class RequestCompletedSearchRepository implements IRequestCompletedSearch
     }
 
     @Override
-    public Optional<GroomingDomain> getGroomingById(String id) {
+    public Optional<GroomingDomain> getGroomingByRequestId(String id) {
         if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid grooming id");
 
-        Query query = new Query(Criteria.where("_id").is(new ObjectId(id)));
+        Query query = new Query(Criteria.where("requestId").is(new ObjectId(id)));
         GroomingEntity groomingEntity = mongoTemplate.findOne(query, GroomingEntity.class);
 
         return Optional.ofNullable(groomingEntity).map(this::convertToDomain);
@@ -51,10 +51,10 @@ public class RequestCompletedSearchRepository implements IRequestCompletedSearch
 
 
     @Override
-    public Optional<ExtensionDomain> getExtensionById(String id) {
+    public Optional<ExtensionDomain> getExtensionByRequestId(String id) {
         if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid extension id");
 
-        Query query = new Query(Criteria.where("_id").is(new ObjectId(id)));
+        Query query = new Query(Criteria.where("requestId").is(new ObjectId(id)));
         ExtensionEntity extensionEntity = mongoTemplate.findOne(query, ExtensionEntity.class);
 
         return Optional.ofNullable(extensionEntity).map(this::convertToDomain);
@@ -79,7 +79,7 @@ public class RequestCompletedSearchRepository implements IRequestCompletedSearch
                 entity.getId().toString(),
                 entity.getRequestId().toString(),
                 entity.getBoardingId().toString(),
-                GroomingType.safeFromStringOrDefault(entity.getServiceType()),
+                GroomingType.safeFromStringOrDefault(entity.getGroomingType()),
                 entity.getGroomingPrice(),
                 entity.getDescription(),
                 entity.getCreatedAt(),

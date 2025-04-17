@@ -21,7 +21,7 @@ public class GroomingEntity {
     private ObjectId id;
     private ObjectId requestId;
     private ObjectId boardingId;
-    private String serviceType;
+    private String groomingType;
     private double groomingPrice;
     @Nullable
     private String description;

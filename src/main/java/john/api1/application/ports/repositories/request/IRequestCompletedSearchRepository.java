@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface IRequestCompletedSearchRepository {
     List<ExtensionDomain> getExtensionByCurrentBoarding(String boardingId);
 
-    Optional<GroomingDomain> getGroomingById(String id);
+    Optional<GroomingDomain> getGroomingByRequestId(String id);
 
-    Optional<ExtensionDomain> getExtensionById(String id);
+    Optional<ExtensionDomain> getExtensionByRequestId(String id);
 
 }

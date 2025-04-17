@@ -23,4 +23,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("errors", errors));
     }
+
+    @ExceptionHandler(XSSDetectedException.class)
+    public ResponseEntity<Map<String, String>> handleXSSDetectedException(XSSDetectedException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));  // Send the error message in the response body
+    }
+
 }

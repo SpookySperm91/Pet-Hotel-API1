@@ -2,17 +2,19 @@ package john.api1.application.adapters.controllers.admin;
 
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.request.RequestStatusUpdateDTO;
+import john.api1.application.dto.request.request.admin.RejectRequestRDTO;
 import john.api1.application.ports.services.request.IRequestStatusManagement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors;
 
 @RestController
-    @RequestMapping("/api/v1/admin/manage/request/status")
+@RequestMapping("/api/v1/admin/manage/request/status")
 public class AdminRequestStatusController {
     private final IRequestStatusManagement statusService;
 
@@ -49,17 +51,19 @@ public class AdminRequestStatusController {
     // Check request id if valid
     // Call service to reject request
     // Return DTO response
-    @PutMapping("{requestId}/reject")
-    public ResponseEntity<DTOResponse<RequestStatusUpdateDTO>> rejectRequest(@PathVariable String requestId) {
-        if (requestId == null || requestId.trim().isEmpty()) {
-            return buildErrorResponse(HttpStatus.BAD_REQUEST, "request id cannot be null, empty, or blank!");
-        }
+    @PutMapping("/reject")
+    public ResponseEntity<DTOResponse<RequestStatusUpdateDTO>> rejectRequest(
+            @RequestBody RejectRequestRDTO request,
+            BindingResult result) {
+
+        var error = checkValidation(result);
+        if (error != null) return buildErrorResponse(HttpStatus.BAD_REQUEST, error);
 
         // Session magics (later)
         /////////////////////////
         /////////////////////////
 
-        var approved = statusService.rejectRequest(requestId);
+        var approved = statusService.rejectRequest(request.getRequestId(), request.getMessage());
         if (!approved.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, approved.getMessage());
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -68,6 +72,7 @@ public class AdminRequestStatusController {
                         approved.getData(),
                         approved.getMessage()));
     }
+
 
     // REVERT APPROVED REQUEST TO PENDING
     // Check request id if valid
@@ -115,6 +120,16 @@ public class AdminRequestStatusController {
                         HttpStatus.OK.value(),
                         approved.getData(),
                         approved.getMessage()));
+    }
+
+    private String checkValidation(BindingResult result) {
+        if (result.hasErrors()) {
+            return result.getAllErrors()
+                    .stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+        }
+        return null;
     }
 
     private <T> ResponseEntity<DTOResponse<T>> buildErrorResponse(HttpStatus status, String message) {

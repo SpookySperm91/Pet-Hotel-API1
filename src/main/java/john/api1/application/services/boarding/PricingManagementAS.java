@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -111,9 +112,8 @@ public class PricingManagementAS implements IPricingManagement {
             throw new PersistenceException("Invalid boarding ID format. It cannot be an ObjectId.");
 
         var breakdownListOpt = pricingSearch.getRequestBreakdown(boardingId);
-        if (breakdownListOpt.isEmpty()) throw new PersistenceException("Boarding price breakdown cannot be found");
+        if (breakdownListOpt.isEmpty()) return new ArrayList<>();
 
         return breakdownListOpt;
     }
-
 }

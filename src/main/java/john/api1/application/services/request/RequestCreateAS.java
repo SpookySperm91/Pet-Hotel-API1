@@ -126,7 +126,7 @@ public class RequestCreateAS implements IRequestCreate {
             extensionDomain = extensionDomain.mapWithId(domainId.get());
 
             // Aggregation DTO
-            var dto = aggregation.requestCreateExtensionAggregation(domain, ownerName, pet.petName(), extensionDomain.getExtendedHours(), request.getExtensionType());
+            var dto = aggregation.requestCreateExtensionAggregation(domain, extensionDomain, ownerName, pet.petName(), request.getExtensionType());
 
             return DomainResponse.success(dto, "New extension request for pet '" + pet.petName() + "' is successfully created. Currently pending to be approved!");
 

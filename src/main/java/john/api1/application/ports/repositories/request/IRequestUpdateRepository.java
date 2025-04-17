@@ -16,4 +16,7 @@ public interface IRequestUpdateRepository {
     Optional<RequestCQRS> updateRequestStatusReturnId(String id, RequestStatus status);
 
     Optional<RequestCQRS> updateRequestStatusAndActiveReturnId(String id, RequestStatus status, boolean active);
+
+    Optional<RequestCQRS> updateToRejectReturnId(String id, RequestStatus status, String rejectedDescription);
+
 }

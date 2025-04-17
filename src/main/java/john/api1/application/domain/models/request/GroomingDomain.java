@@ -24,7 +24,7 @@ public class GroomingDomain {
     private String description;
     private final Instant createdAt;
     private Instant updatedAt;
-    private boolean approved = false;
+    private boolean approved;
 
     public GroomingDomain(String requestId, String boardingId, String description) {
         if (!ObjectId.isValid(requestId) || !ObjectId.isValid(boardingId))

@@ -5,6 +5,7 @@ import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.boarding.RequestStatus;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.domain.cores.RequestStatusDS;
 import john.api1.application.domain.models.request.RequestDomain;
 import john.api1.application.ports.repositories.request.IRequestDeleteRepository;
 import john.api1.application.ports.repositories.request.IRequestSearchRepository;
@@ -82,9 +83,7 @@ public class RequestUpdate implements IRequestUpdate {
             if (request.isEmpty()) return DomainResponse.error("Request cannot be found");
 
             RequestDomain archived = request.get();
-            if (!archived.deletable())
-                return DomainResponse.error(String.format("Request is currently %s and cannot be deleted",
-                        archived.getRequestType().getRequestType().toLowerCase()));
+            RequestStatusDS.deletable(archived);
 
             deleteRepository.deleteById(new ObjectId(requestId));
             return DomainResponse.success("Request successfully deleted");
@@ -97,7 +96,7 @@ public class RequestUpdate implements IRequestUpdate {
     }
 
     // Rollback
-    public void rollbackAsActive(String requestId){
+    public void rollbackAsActive(String requestId) {
         validateId(requestId);
         updateRepository.updateRequestStatusAndActive(requestId, RequestStatus.PENDING, true);
     }

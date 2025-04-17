@@ -59,17 +59,16 @@ public class RequestSearch implements IRequestSearch {
 
     // Specifics
     @Override
-    public GroomingDomain searchGroomingById(String id) {
+    public GroomingDomain searchGroomingByRequestId(String id) {
         validateId(id);
-        return searchCompletedRepository.getGroomingById(id)
+        return searchCompletedRepository.getGroomingByRequestId(id)
                 .orElseThrow(() -> new PersistenceException("Grooming request cannot be found"));
     }
 
     @Override
-    public ExtensionDomain searchExtensionById(String id) {
+    public ExtensionDomain searchExtensionByRequestId(String id) {
         validateId(id);
-        validateId(id);
-        return searchCompletedRepository.getExtensionById(id)
+        return searchCompletedRepository.getExtensionByRequestId(id)
                 .orElseThrow(() -> new PersistenceException("Extension request cannot be found"));
     }
 

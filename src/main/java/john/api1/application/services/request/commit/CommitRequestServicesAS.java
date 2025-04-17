@@ -7,11 +7,13 @@ import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.components.enums.boarding.RequestStatus;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.domain.cores.RequestStatusDS;
 import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.boarding.BoardingPricingDomain;
 import john.api1.application.dto.mapper.request.commit.RequestCompletedServiceDTO;
 import john.api1.application.dto.request.request.admin.RequestCompleteServiceRDTO;
 import john.api1.application.ports.repositories.boarding.IBoardingManagementRepository;
+import john.api1.application.ports.repositories.request.IRequestCompletedUpdateRepository;
 import john.api1.application.ports.services.boarding.IBoardingSearch;
 import john.api1.application.ports.services.boarding.IPricingManagement;
 import john.api1.application.ports.services.pet.IPetSearch;
@@ -32,6 +34,7 @@ import java.util.List;
 public class CommitRequestServicesAS implements ICommitRequestServices {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CommitRequestServicesAS.class);
     private final IBoardingManagementRepository boardingUpdate;
+    private final IRequestCompletedUpdateRepository serviceUpdate;
     private final IPricingManagement pricingSearch;
     private final IRequestUpdate requestUpdate;
     private final IBoardingSearch boardingSearch;
@@ -39,17 +42,19 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
     private final IPetSearch petSearch;
 
     @Autowired
-    public CommitRequestServicesAS(IBoardingSearch boardingSearch,
-                                   IBoardingManagementRepository boardingUpdate,
+    public CommitRequestServicesAS(IBoardingManagementRepository boardingUpdate,
+                                   IRequestCompletedUpdateRepository serviceUpdate,
                                    IPricingManagement pricingSearch,
-                                   IRequestSearch requestSearch,
                                    IRequestUpdate requestUpdate,
+                                   IBoardingSearch boardingSearch,
+                                   IRequestSearch requestSearch,
                                    IPetSearch petSearch) {
-        this.boardingSearch = boardingSearch;
         this.boardingUpdate = boardingUpdate;
+        this.serviceUpdate = serviceUpdate;
         this.pricingSearch = pricingSearch;
-        this.requestSearch = requestSearch;
         this.requestUpdate = requestUpdate;
+        this.requestSearch = requestSearch;
+        this.boardingSearch = boardingSearch;
         this.petSearch = petSearch;
     }
 
@@ -72,8 +77,11 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
 
             var check = requestSearch.searchByRequestId(request.getRequestId());
             var boarding = validateActiveRequest(check.getBoardingId());
-            var extension = requestSearch.searchExtensionById(request.getServiceId());
+            var extension = requestSearch.searchExtensionByRequestId(request.getRequestId());
             var pricing = pricingSearch.getBreakdown(check.getBoardingId());
+
+            // Check request status
+            RequestStatusDS.isValidToCommit(check);
 
             // Instantiates rollback variables
             originalBoarding = boarding.copy();
@@ -97,6 +105,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             pricing.add(breakDown);
 
             // Save all to DB
+            serviceUpdate.updateApprovalExtension(extension.getId(), extension.isApproved(), extension.getUpdatedAt());
             requestUpdate.markRequestAsCompleted(check.getId());
             boardingUpdate.updateBoarding(boarding);
             pricingSearch.unwrappedUpdateRequestBreakdown(boarding.getId(), pricing);
@@ -146,8 +155,11 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
 
             var check = requestSearch.searchByRequestId(request.getRequestId());
             var boarding = validateActiveRequest(check.getBoardingId());
-            var grooming = requestSearch.searchGroomingById(request.getServiceId());
+            var grooming = requestSearch.searchGroomingByRequestId(request.getRequestId());
             var pricing = pricingSearch.getBreakdown(check.getBoardingId());
+
+            // Check request status
+            RequestStatusDS.isValidToCommit(check);
 
             originalBoarding = boarding.copy();
             originalPricing = new ArrayList<>(pricing);
@@ -165,6 +177,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             pricing.add(breakDown);
 
             // Save all to DB
+            serviceUpdate.updateApprovalExtension(grooming.getId(), grooming.isApproved(), grooming.getUpdatedAt());
             requestUpdate.markRequestAsCompleted(check.getId());
             boardingUpdate.updateBoarding(boarding);
             pricingSearch.unwrappedUpdateRequestBreakdown(boarding.getId(), pricing);

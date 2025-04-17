@@ -1,4 +1,4 @@
-package john.api1.application.components.anoitation;
+package john.api1.application.components.annotation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

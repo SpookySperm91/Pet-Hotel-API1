@@ -7,6 +7,7 @@ import john.api1.application.components.enums.boarding.RequestStatus;
 import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.domain.cores.RequestStatusDS;
 import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.request.PhotoRequestDomain;
@@ -73,7 +74,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
             RequestDomain requestdomain = requestSearch.searchByRequestId(request.getRequestId());
             if (requestdomain.getRequestType() != RequestType.PHOTO_REQUEST) throw new DomainArgumentException("Invalid. The request is not a photo request");
-            requestdomain.isValidToCommit();
+            RequestStatusDS.isValidToCommit(requestdomain);
 
             // Generate media pre-sign url
             BoardingDomain boarding = validateActiveRequest(request.getRequestId());
@@ -135,7 +136,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
             RequestDomain requestdomain = requestSearch.searchByRequestId(request.getRequestId());
             if (requestdomain.getRequestType() != RequestType.VIDEO_REQUEST) throw new DomainArgumentException("Invalid. The request is not a video request");
-            requestdomain.isValidToCommit();
+            RequestStatusDS.isValidToCommit(requestdomain);
 
             // Generate video media
             BoardingDomain boarding = validateActiveRequest(request.getRequestId());
@@ -184,7 +185,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
         validateId(requestId);
 
         var request = requestSearch.searchByRequestId(requestId);
-        request.isValidToCommit();
+        RequestStatusDS.isValidToCommit(request);
 
         var active = boardingSearch.findBoardingById(request.getBoardingId());
         if (!active.isSuccess())

@@ -86,6 +86,20 @@ public class RequestUpdateRepository implements IRequestUpdateRepository {
                 .map(this::toCQRS);
     }
 
+    @Override
+    public Optional<RequestCQRS> updateToRejectReturnId(String id, RequestStatus status, String rejectedDescription) {
+        validateId(id);
+        Query query = createQuery(id);
+        Update update = createUpdate(status, rejectedDescription);
+        RequestEntity updatedEntity = mongoTemplate.findAndModify(query, update, RequestEntity.class);
+
+        if (updatedEntity == null)
+            throw new PersistenceException("No documents were updated. The request may not exist or has already been updated.");
+
+        return Optional.of(updatedEntity)
+                .map(this::toCQRS);
+    }
+
 
     ////////////////////
     // Helper methods //

@@ -3,7 +3,7 @@ package john.api1.application.dto.request.request.admin;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
-import john.api1.application.components.anoitation.ValidVideo;
+import john.api1.application.components.annotation.ValidVideo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
