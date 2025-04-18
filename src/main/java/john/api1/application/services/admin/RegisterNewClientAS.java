@@ -10,6 +10,7 @@ import john.api1.application.components.enums.SmsType;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.EmailSendingException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.components.exception.PersistenceHistoryException;
 import john.api1.application.components.record.SmsRegisterContent;
 import john.api1.application.domain.cores.ClientCreationDS;
 import john.api1.application.domain.models.ClientAccountDomain;
@@ -35,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class RegisterNewClientAS implements IRegisterNewClient {
-    private static final Logger logger = LoggerFactory.getLogger(RegisterNewClientAS.class);
+    private static final Logger log = LoggerFactory.getLogger(RegisterNewClientAS.class);
 
     private final ClientCreationDS clientCreation;
     private final AsyncEmailService emailService;
@@ -98,6 +99,14 @@ public class RegisterNewClientAS implements IRegisterNewClient {
 
             String message = String.format("New pet owner '%s' has been successfully registered.", request.getFullName());
 
+            // History log
+            try{
+                historyLog.createActivityLogOwnerRegister(information.getFullName());
+                log.info("Activity log created for new registered owner '{}'", information.getFullName());
+            } catch (PersistenceHistoryException e) {
+                log.warn("Activity log for new owner registration failed to save in class 'RegisterNewClientAS'");
+            }
+
             return DomainResponse.success(
                     new RegisterResponse(
                             registeredId,
@@ -106,9 +115,8 @@ public class RegisterNewClientAS implements IRegisterNewClient {
                             request.getPhoneNumber(),
                             smsBody), message);
 
-
         } catch (DomainArgumentException | PersistenceException | EmailSendingException e) {
-            logger.error("Error registering client: {}", e.getMessage(), e);
+            log.error("Error registering client: {}", e.getMessage(), e);
             return DomainResponse.error(exceptionMessage(e));
         }
     }
@@ -121,7 +129,7 @@ public class RegisterNewClientAS implements IRegisterNewClient {
         CompletableFuture.runAsync(() -> logEmailRepository.logEmail(emailLog));
         emailService.sendEmailAsync(EmailType.REGISTERED, fullName, email, body)
                 .doOnError(error ->
-                        logger.error("Error sending email to {}: {}", email, error.getMessage()))
+                        log.error("Error sending email to {}: {}", email, error.getMessage()))
                 .subscribe();
     }
 

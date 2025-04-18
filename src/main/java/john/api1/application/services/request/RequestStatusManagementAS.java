@@ -9,7 +9,7 @@ import john.api1.application.domain.models.request.RequestDomain;
 import john.api1.application.dto.mapper.request.RequestStatusUpdateDTO;
 import john.api1.application.ports.repositories.request.IRequestSearchRepository;
 import john.api1.application.ports.repositories.request.IRequestUpdateRepository;
-import john.api1.application.ports.services.IPetOwnerManagement;
+import john.api1.application.ports.services.IPetOwnerSearch;
 import john.api1.application.ports.services.pet.IPetSearch;
 import john.api1.application.ports.services.request.IRequestStatusManagement;
 import org.bson.types.ObjectId;
@@ -20,13 +20,13 @@ import org.springframework.stereotype.Service;
 public class RequestStatusManagementAS implements IRequestStatusManagement {
     private final IRequestUpdateRepository updateRepository;
     private final IRequestSearchRepository searchRepository;
-    private final IPetOwnerManagement ownerSearch;
+    private final IPetOwnerSearch ownerSearch;
     private final IPetSearch petSearch;
 
     @Autowired
     public RequestStatusManagementAS(IRequestUpdateRepository updateRepository,
                                      IRequestSearchRepository searchRepository,
-                                     IPetOwnerManagement ownerSearch,
+                                     IPetOwnerSearch ownerSearch,
                                      IPetSearch petSearch) {
         this.updateRepository = updateRepository;
         this.searchRepository = searchRepository;

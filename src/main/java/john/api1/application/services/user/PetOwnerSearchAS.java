@@ -5,7 +5,7 @@ import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.ports.repositories.owner.IPetOwnerCQRSRepository;
 import john.api1.application.ports.repositories.owner.PetOwnerCQRS;
-import john.api1.application.ports.services.IPetOwnerManagement;
+import john.api1.application.ports.services.IPetOwnerSearch;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PetOwnerSearchAS implements IPetOwnerManagement {
+public class PetOwnerSearchAS implements IPetOwnerSearch {
     private final IPetOwnerCQRSRepository petOwnerCQRS;
 
     @Autowired

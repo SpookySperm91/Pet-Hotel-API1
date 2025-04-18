@@ -10,6 +10,7 @@ import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.components.exception.PersistenceHistoryException;
 import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.boarding.BoardingPricingDomain;
 import john.api1.application.dto.mapper.boarding.BoardingCreatedDTO;
@@ -18,8 +19,9 @@ import john.api1.application.ports.repositories.boarding.IBoardingCreateReposito
 import john.api1.application.ports.repositories.boarding.IPricingManagementRepository;
 import john.api1.application.ports.repositories.pet.PetCQRS;
 import john.api1.application.ports.services.IBoardingAggregation;
-import john.api1.application.ports.services.IPetOwnerManagement;
+import john.api1.application.ports.services.IPetOwnerSearch;
 import john.api1.application.ports.services.boarding.IBoardingCreate;
+import john.api1.application.ports.services.history.IHistoryLogCreate;
 import john.api1.application.ports.services.pet.IPetSearch;
 import john.api1.application.ports.services.pet.IPetUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,14 @@ import java.time.Instant;
 
 @Service
 public class BoardingCreateAS implements IBoardingCreate {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BoardingManagementAS.class);
+
     private final IBoardingCreateRepository createRepository;
     private final IPricingManagementRepository pricingManagement;
     private final IPetSearch pet;
     private final IPetUpdate petUpdate;
-    private final IPetOwnerManagement petOwner;
+    private final IPetOwnerSearch petOwner;
+    private final IHistoryLogCreate historyLog;
     private final IBoardingAggregation aggregation;
 
 
@@ -42,13 +47,15 @@ public class BoardingCreateAS implements IBoardingCreate {
                             IPricingManagementRepository pricingManagement,
                             IPetSearch pet,
                             IPetUpdate petUpdate,
-                            IPetOwnerManagement petOwner,
+                            IPetOwnerSearch petOwner,
+                            IHistoryLogCreate historyLog,
                             IBoardingAggregation aggregation) {
         this.createRepository = createRepository;
         this.pricingManagement = pricingManagement;
         this.pet = pet;
         this.petUpdate = petUpdate;
         this.petOwner = petOwner;
+        this.historyLog = historyLog;
         this.aggregation = aggregation;
     }
 
@@ -95,6 +102,16 @@ public class BoardingCreateAS implements IBoardingCreate {
 
             // Returns aggregated dto response
             var dto = aggregation.boardingCreatedAggregation(boarding, pricing, owner, petDetails, boarding.getCreatedAt());
+
+            // History log
+            try {
+                historyLog.createActivityLogBoarding(boarding, owner.ownerName(), petDetails.petName());
+                log.info("Activity log created for boarding pet '{}'", petDetails.petName());
+            } catch (PersistenceHistoryException e) {
+                log.warn("Activity log for boarding pet failed to save in class 'BoardingCreateAS'");
+            }
+
+
             return DomainResponse.success(dto, "Pet '" + petDetails.petName() + "' successfully boarded");
 
         } catch (DomainArgumentException | PersistenceException e) {

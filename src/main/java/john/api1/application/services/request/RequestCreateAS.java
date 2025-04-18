@@ -21,7 +21,7 @@ import john.api1.application.dto.request.request.RequestExtensionRDTO;
 import john.api1.application.dto.request.request.RequestGroomingRDTO;
 import john.api1.application.dto.request.request.RequestMediaRDTO;
 import john.api1.application.ports.repositories.request.IRequestCreateRepository;
-import john.api1.application.ports.services.IPetOwnerManagement;
+import john.api1.application.ports.services.IPetOwnerSearch;
 import john.api1.application.ports.services.IRequestAggregation;
 import john.api1.application.ports.services.boarding.IBoardingSearch;
 import john.api1.application.ports.services.pet.IPetSearch;
@@ -32,14 +32,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RequestCreateAS implements IRequestCreate {
-    private final IPetOwnerManagement petOwnerManagement;
+    private final IPetOwnerSearch petOwnerManagement;
     private final IPetSearch petSearch;
     private final IBoardingSearch boardingSearch;
     private final IRequestCreateRepository requestCreate;
     private final IRequestAggregation aggregation;
 
     @Autowired
-    public RequestCreateAS(IPetOwnerManagement petOwnerManagement,
+    public RequestCreateAS(IPetOwnerSearch petOwnerManagement,
                            IPetSearch petSearch,
                            IBoardingSearch boardingSearch,
                            IRequestCreateRepository requestCreate,

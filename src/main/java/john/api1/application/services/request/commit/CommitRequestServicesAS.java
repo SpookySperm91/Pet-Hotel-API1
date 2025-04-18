@@ -7,6 +7,7 @@ import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.components.enums.boarding.RequestStatus;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.components.exception.PersistenceHistoryException;
 import john.api1.application.domain.cores.RequestStatusDS;
 import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.boarding.BoardingPricingDomain;
@@ -14,8 +15,10 @@ import john.api1.application.dto.mapper.request.commit.RequestCompletedServiceDT
 import john.api1.application.dto.request.request.admin.RequestCompleteServiceRDTO;
 import john.api1.application.ports.repositories.boarding.IBoardingManagementRepository;
 import john.api1.application.ports.repositories.request.IRequestCompletedUpdateRepository;
+import john.api1.application.ports.services.IPetOwnerSearch;
 import john.api1.application.ports.services.boarding.IBoardingSearch;
 import john.api1.application.ports.services.boarding.IPricingManagement;
+import john.api1.application.ports.services.history.IHistoryLogCreate;
 import john.api1.application.ports.services.pet.IPetSearch;
 import john.api1.application.ports.services.request.IRequestSearch;
 import john.api1.application.ports.services.request.IRequestUpdate;
@@ -26,13 +29,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Transactional(rollbackFor = {DomainArgumentException.class, PersistenceException.class, MongoException.class})
 public class CommitRequestServicesAS implements ICommitRequestServices {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CommitRequestServicesAS.class);
+
     private final IBoardingManagementRepository boardingUpdate;
     private final IRequestCompletedUpdateRepository serviceUpdate;
     private final IPricingManagement pricingSearch;
@@ -40,6 +43,9 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
     private final IBoardingSearch boardingSearch;
     private final IRequestSearch requestSearch;
     private final IPetSearch petSearch;
+    private final IPetOwnerSearch ownerSearch;
+    private final IHistoryLogCreate historyLog;
+
 
     @Autowired
     public CommitRequestServicesAS(IBoardingManagementRepository boardingUpdate,
@@ -48,7 +54,9 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
                                    IRequestUpdate requestUpdate,
                                    IBoardingSearch boardingSearch,
                                    IRequestSearch requestSearch,
-                                   IPetSearch petSearch) {
+                                   IPetSearch petSearch,
+                                   IPetOwnerSearch ownerSearch,
+                                   IHistoryLogCreate historyLog) {
         this.boardingUpdate = boardingUpdate;
         this.serviceUpdate = serviceUpdate;
         this.pricingSearch = pricingSearch;
@@ -56,6 +64,8 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
         this.requestSearch = requestSearch;
         this.boardingSearch = boardingSearch;
         this.petSearch = petSearch;
+        this.ownerSearch = ownerSearch;
+        this.historyLog = historyLog;
     }
 
 
@@ -68,10 +78,6 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
     // Return aggregated DTO response
     @Override
     public DomainResponse<RequestCompletedServiceDTO> commitExtensionRequest(RequestCompleteServiceRDTO request) {
-        // Rollback variables
-        BoardingDomain originalBoarding = null;
-        List<BoardingPricingDomain.RequestBreakdown> originalPricing = null;
-
         try {
             validateId(request.getRequestId());
 
@@ -83,10 +89,6 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             // Check request status
             RequestStatusDS.isValidToCommit(check);
 
-            // Instantiates rollback variables
-            originalBoarding = boarding.copy();
-            originalPricing = new ArrayList<>(pricing);
-
             // Approve extension
             // Add reply message to request
             // Update boarding
@@ -97,14 +99,8 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             boarding.updatePaymentStatus(PaymentStatus.PENDING);
             boarding.updateBoardingStatus(BoardingStatus.BOARDING);
 
-            // Boarding pricing update
-            var breakDown = BoardingPricingDomain.RequestBreakdown.createNew(
-                    check.getId(),
-                    check.getRequestType().getRequestType(),
-                    extension.getAdditionalPrice(),
-                    Instant.now()
-            );
-            pricing.add(breakDown);
+            // Boarding pricing update;
+            addPricingBreakdown(pricing, check.getId(), check.getRequestType().getRequestType(), extension.getAdditionalPrice());
 
             // Save all to DB
             serviceUpdate.updateApprovalExtension(extension.getId(), extension.isApproved(), extension.getUpdatedAt());
@@ -113,30 +109,27 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             pricingSearch.unwrappedUpdateRequestBreakdown(boarding.getId(), pricing);
 
             // DTO
+            String petName = petSearch.getPetName(boarding.getPetId());
+            String ownerName = ownerSearch.getPetOwnerName(boarding.getOwnerId());
+            String message = "The boarding extension for " + petName + " is completed.";
             var dto = new RequestCompletedServiceDTO(
                     check.getId(),
                     check.getRequestType().getRequestType(),
                     RequestStatus.COMPLETED.getRequestStatus(),
                     Instant.now()
             );
-            String petName = petSearch.getPetName(boarding.getPetId());
-            String message = "The boarding extension for " + petName + " is completed.";
+
+            // History log
+            try {
+                historyLog.createActivityLogRequest(check, ownerName, petName);
+                log.info("Activity log created for completing extension request made by '{}'", ownerName);
+            } catch (PersistenceHistoryException e) {
+                log.warn("Activity log for completing extension failed to save in class 'CommitRequestServicesAS'");
+            }
 
             return DomainResponse.success(dto, message);
 
         } catch (DomainArgumentException | PersistenceException e) {
-            // Rollback
-            log.warn("Initiating rollback for requestId: {}", request.getRequestId());
-            try {
-                if (originalBoarding != null && originalPricing != null) {
-                    requestUpdate.rollbackAsActive(request.getRequestId());
-                    boardingUpdate.updateBoarding(originalBoarding);
-                    pricingSearch.unwrappedUpdateRequestBreakdown(originalBoarding.getId(), originalPricing);
-                }
-            } catch (Exception f) {
-                log.error("Failed to delete photo request entry for requestId: {}", request.getRequestId(), f);
-            }
-
             return DomainResponse.error(e.getMessage());
         }
     }
@@ -150,8 +143,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
     // Return aggregated DTO response
     @Override
     public DomainResponse<RequestCompletedServiceDTO> commitGroomingRequest(RequestCompleteServiceRDTO request) {
-        BoardingDomain originalBoarding = null;
-        List<BoardingPricingDomain.RequestBreakdown> originalPricing = null;
+
         try {
             validateId(request.getRequestId());
 
@@ -163,20 +155,15 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             // Check request status
             RequestStatusDS.isValidToCommit(check);
 
-            originalBoarding = boarding.copy();
-            originalPricing = new ArrayList<>(pricing);
-
+            // Approve extension
+            // Add reply message to request
+            // Update payment status
             grooming.markAsApproved();
+            check.setResponseMessage(request.getNotes());
             boarding.updatePaymentStatus(PaymentStatus.PENDING);
 
             // Boarding pricing update
-            var breakDown = BoardingPricingDomain.RequestBreakdown.createNew(
-                    check.getId(),
-                    check.getRequestType().getRequestType(),
-                    grooming.getGroomingPrice(),
-                    Instant.now()
-            );
-            pricing.add(breakDown);
+            addPricingBreakdown(pricing, check.getId(), check.getRequestType().getRequestType(), grooming.getGroomingPrice());
 
             // Save all to DB
             serviceUpdate.updateApprovalExtension(grooming.getId(), grooming.isApproved(), grooming.getUpdatedAt());
@@ -185,32 +172,34 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             pricingSearch.unwrappedUpdateRequestBreakdown(boarding.getId(), pricing);
 
             // DTO
+            String petName = petSearch.getPetName(boarding.getPetId());
+            String ownerName = ownerSearch.getPetOwnerName(boarding.getOwnerId());
+            String message = "The grooming for " + petName + " is completed.";
             var dto = new RequestCompletedServiceDTO(
                     check.getId(),
                     check.getRequestType().getRequestType(),
                     RequestStatus.COMPLETED.getRequestStatus(),
                     Instant.now()
             );
-            String petName = petSearch.getPetName(boarding.getPetId());
-            String message = "The grooming for " + petName + " is completed.";
+
+            // History log
+            try {
+                historyLog.createActivityLogRequest(check, ownerName, petName);
+                log.info("Activity log created for completing grooming request made by '{}'", ownerName);
+            } catch (PersistenceHistoryException e) {
+                log.warn("Activity log for completing grooming failed to save in class 'CommitRequestServicesAS'");
+            }
 
             return DomainResponse.success(dto, message);
 
         } catch (DomainArgumentException | PersistenceException e) {
-            // Rollback
-            log.warn("Initiating rollback for requestId: {}", request.getRequestId());
-            try {
-                if (originalBoarding != null && originalPricing != null) {
-                    requestUpdate.rollbackAsActive(request.getRequestId());
-                    boardingUpdate.updateBoarding(originalBoarding);
-                    pricingSearch.unwrappedUpdateRequestBreakdown(originalBoarding.getId(), originalPricing);
-                }
-            } catch (Exception f) {
-                log.error("Failed to delete photo request entry for requestId: {}", request.getRequestId(), f);
-            }
-
             return DomainResponse.error(e.getMessage());
         }
+    }
+
+    private void addPricingBreakdown(List<BoardingPricingDomain.RequestBreakdown> pricing, String requestId, String requestType, double amount) {
+        var breakDown = BoardingPricingDomain.RequestBreakdown.createNew(requestId, requestType, amount);
+        pricing.add(breakDown);
     }
 
 

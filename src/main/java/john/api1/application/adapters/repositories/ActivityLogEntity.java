@@ -1,5 +1,6 @@
 package john.api1.application.adapters.repositories;
 
+import jakarta.annotation.Nullable;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.ActivityLogDomain;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,8 @@ public class ActivityLogEntity {
     @Indexed
     private ObjectId typeId;
     private String activityType;
+    @Nullable
+    private String requestType;
     private String performedBy;
     private String petOwner;
     private String pet;
@@ -39,6 +42,7 @@ public class ActivityLogEntity {
                 null,
                 new ObjectId(domain.getTypeId()),
                 domain.getActivityType().getActivityLogType(),
+                domain.getRequestType() != null ? domain.getRequestType().getRequestType() : null,
                 domain.getPerformedBy(),
                 domain.getPetOwner(),
                 domain.getPet(),

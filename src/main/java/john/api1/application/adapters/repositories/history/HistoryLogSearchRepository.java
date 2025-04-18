@@ -2,6 +2,7 @@ package john.api1.application.adapters.repositories.history;
 
 import john.api1.application.adapters.repositories.ActivityLogEntity;
 import john.api1.application.components.enums.ActivityLogType;
+import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.ActivityLogDomain;
 import john.api1.application.ports.repositories.history.IHistoryLogSearchRepository;
@@ -74,6 +75,7 @@ public class HistoryLogSearchRepository implements IHistoryLogSearchRepository {
                 entity.getId().toHexString(),
                 entity.getTypeId().toHexString(),
                 ActivityLogType.fromString(entity.getActivityType()),
+                RequestType.fromString(entity.getRequestType()),
                 entity.getPerformedBy(),
                 entity.getPetOwner(),
                 entity.getPet(),

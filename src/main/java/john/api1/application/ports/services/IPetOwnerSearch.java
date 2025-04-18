@@ -6,7 +6,7 @@ import john.api1.application.ports.repositories.owner.PetOwnerCQRS;
 import java.util.List;
 import java.util.Optional;
 
-public interface IPetOwnerManagement {
+public interface IPetOwnerSearch {
     PetOwnerCQRS getPetOwnerBoardingDetails(String id);
 
     List<String> getPetOwnerPets(String id);

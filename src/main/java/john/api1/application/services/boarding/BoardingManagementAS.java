@@ -6,6 +6,7 @@ import john.api1.application.components.enums.boarding.BoardingStatus;
 import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.components.exception.PersistenceHistoryException;
 import john.api1.application.domain.cores.boarding.BoardingExtensionDS;
 import john.api1.application.domain.cores.boarding.BoardingManagementDS;
 import john.api1.application.domain.models.boarding.BoardingDomain;
@@ -16,9 +17,10 @@ import john.api1.application.ports.repositories.boarding.IBoardingManagementRepo
 import john.api1.application.ports.repositories.boarding.IBoardingSearchRepository;
 import john.api1.application.ports.repositories.request.IRequestCompletedSearchRepository;
 import john.api1.application.ports.services.IBoardingAggregation;
-import john.api1.application.ports.services.IPetOwnerManagement;
+import john.api1.application.ports.services.IPetOwnerSearch;
 import john.api1.application.ports.services.boarding.IBoardingManagement;
 import john.api1.application.ports.services.boarding.IPricingManagement;
+import john.api1.application.ports.services.history.IHistoryLogCreate;
 import john.api1.application.ports.services.pet.IPetUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,12 +30,15 @@ import java.time.Instant;
 // THIS APPLICATION SERVICE IS FOR UPDATING CURRENT BOARDING
 @Service
 public class BoardingManagementAS implements IBoardingManagement {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BoardingManagementAS.class);
+
     private final IBoardingSearchRepository boardingSearch;
     private final IBoardingManagementRepository boardingManagement;
     private final IRequestCompletedSearchRepository requestManagement;
     private final IPricingManagement pricingManagement;
     private final IPetUpdate petUpdate;
-    private final IPetOwnerManagement ownerSearch;
+    private final IPetOwnerSearch ownerSearch;
+    private final IHistoryLogCreate historyLog;
     private final IBoardingAggregation aggregation;
 
 
@@ -45,7 +50,8 @@ public class BoardingManagementAS implements IBoardingManagement {
                                 // services
                                 IPricingManagement pricingManagement,
                                 IPetUpdate petUpdate,
-                                IPetOwnerManagement ownerSearch,
+                                IPetOwnerSearch ownerSearch,
+                                IHistoryLogCreate historyLog,
                                 IBoardingAggregation aggregation) {
         this.boardingSearch = boardingSearch;
         this.boardingManagement = boardingManagement;
@@ -53,6 +59,7 @@ public class BoardingManagementAS implements IBoardingManagement {
         this.pricingManagement = pricingManagement;
         this.petUpdate = petUpdate;
         this.ownerSearch = ownerSearch;
+        this.historyLog = historyLog;
         this.aggregation = aggregation;
     }
 
@@ -110,14 +117,22 @@ public class BoardingManagementAS implements IBoardingManagement {
             var extensions = requestManagement.getExtensionByCurrentBoarding(boardingId);
             Instant extendedTotalTime = BoardingExtensionDS.calculateFinalBoardingEnd(boarding.getBoardingEnd(), extensions);
 
-            // Return response
+            // DTO
             Instant now = Instant.now();
-            var dto = aggregation.boardingReleasedAggregation(boarding, boardingPrice.getData(), ownerDetail, petUpdated.getData(), extendedTotalTime, now);
-
-
             String message = String.format(
                     "%s's pet '%s' is successfully released from boarding at %s"
                     , ownerDetail.ownerName(), petUpdated.getData().petName(), now);
+            var dto = aggregation.boardingReleasedAggregation(boarding, boardingPrice.getData(), ownerDetail, petUpdated.getData(), extendedTotalTime, now);
+
+            // History log
+            try {
+                historyLog.createActivityLogBoarding(boarding, ownerDetail.ownerName(), petUpdated.getData().petName());
+                log.info("Activity log created for boarding release for pet '{}'", petUpdated.getData().petName());
+            } catch (PersistenceHistoryException e) {
+                log.warn("Activity log for boarding release failed to save in class 'BoardingManagementAS'");
+            }
+
+
             return DomainResponse.success(dto, message);
         } catch (PersistenceException | DomainArgumentException e) {
             return DomainResponse.error(e.getMessage());

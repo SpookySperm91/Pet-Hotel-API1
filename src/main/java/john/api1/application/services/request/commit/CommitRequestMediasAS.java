@@ -3,10 +3,10 @@ package john.api1.application.services.request.commit;
 import com.mongodb.MongoException;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
-import john.api1.application.components.enums.boarding.RequestStatus;
 import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.components.exception.PersistenceHistoryException;
 import john.api1.application.domain.cores.RequestStatusDS;
 import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.domain.models.boarding.BoardingDomain;
@@ -19,8 +19,11 @@ import john.api1.application.dto.request.request.admin.RequestCompletePhotoRDTO;
 import john.api1.application.dto.request.request.admin.RequestCompleteVideoRDTO;
 import john.api1.application.ports.repositories.request.IRequestCompletedCreateRepository;
 import john.api1.application.ports.repositories.wrapper.PreSignedUrlResponse;
+import john.api1.application.ports.services.IPetOwnerSearch;
 import john.api1.application.ports.services.boarding.IBoardingSearch;
+import john.api1.application.ports.services.history.IHistoryLogCreate;
 import john.api1.application.ports.services.media.IMediaManagement;
+import john.api1.application.ports.services.pet.IPetSearch;
 import john.api1.application.ports.services.request.IRequestSearch;
 import john.api1.application.ports.services.request.IRequestUpdate;
 import john.api1.application.ports.services.request.admin.ICommitRequestMedia;
@@ -43,6 +46,9 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
     private final IRequestUpdate requestUpdate;
     private final IBoardingSearch boardingSearch;
     private final IRequestSearch requestSearch;
+    private final IPetSearch petSearch;
+    private final IPetOwnerSearch ownerSearch;
+    private final IHistoryLogCreate historyLog;
     private final IAggregationCompletedRequest aggregation;
 
     @Autowired
@@ -51,12 +57,18 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
                                  IRequestUpdate requestUpdate,
                                  IBoardingSearch boardingSearch,
                                  IRequestSearch requestSearch,
+                                 IPetSearch petSearch,
+                                 IPetOwnerSearch ownerSearch,
+                                 IHistoryLogCreate historyCreate,
                                  IAggregationCompletedRequest aggregation) {
         this.createRepository = createRepository;
         this.mediaManagement = mediaManagement;
         this.requestUpdate = requestUpdate;
         this.boardingSearch = boardingSearch;
         this.requestSearch = requestSearch;
+        this.petSearch = petSearch;
+        this.ownerSearch = ownerSearch;
+        this.historyLog = historyCreate;
         this.aggregation = aggregation;
     }
 
@@ -73,7 +85,8 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
             validateId(request.getRequestId());
 
             RequestDomain requestdomain = requestSearch.searchByRequestId(request.getRequestId());
-            if (requestdomain.getRequestType() != RequestType.PHOTO_REQUEST) throw new DomainArgumentException("Invalid. The request is not a photo request");
+            if (requestdomain.getRequestType() != RequestType.PHOTO_REQUEST)
+                throw new DomainArgumentException("Invalid. The request is not a photo request");
             RequestStatusDS.isValidToCommit(requestdomain);
 
             // Generate media pre-sign url
@@ -114,8 +127,19 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
                 return DomainResponse.error(update.getMessage());
 
             // DTO
+            String petName = petSearch.getPetName(boarding.getPetId());
+            String ownerName = ownerSearch.getPetOwnerName(boarding.getOwnerId());
             photo = photo.mapWithId(photoId);
             var dto = aggregation.completedPhotoRequest(photo, Arrays.asList(mediaResponse));
+
+            // History log
+            try {
+                historyLog.createActivityLogRequest(requestdomain, ownerName, petName);
+                log.info("Activity log created for completing photo request made by '{}'", ownerName);
+            } catch (PersistenceHistoryException e) {
+                log.warn("Activity log for completing photo failed to save in class 'CommitRequestMediaAS'");
+            }
+
 
             return DomainResponse.success(dto, "Photo request successfully completed");
         } catch (DomainArgumentException | PersistenceException e) {
@@ -135,7 +159,8 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
             validateId(request.getRequestId());
 
             RequestDomain requestdomain = requestSearch.searchByRequestId(request.getRequestId());
-            if (requestdomain.getRequestType() != RequestType.VIDEO_REQUEST) throw new DomainArgumentException("Invalid. The request is not a video request");
+            if (requestdomain.getRequestType() != RequestType.VIDEO_REQUEST)
+                throw new DomainArgumentException("Invalid. The request is not a video request");
             RequestStatusDS.isValidToCommit(requestdomain);
 
             // Generate video media
@@ -172,8 +197,19 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
 
             // DTO
+            String petName = petSearch.getPetName(boarding.getPetId());
+            String ownerName = ownerSearch.getPetOwnerName(boarding.getOwnerId());
             video = video.mapWithId(videoId);
             var dto = aggregation.completedVideoRequest(video, mediaResponse);
+
+            // History log
+            try {
+                historyLog.createActivityLogRequest(requestdomain, ownerName, petName);
+                log.info("Activity log created for completing video request made by '{}'", ownerName);
+            } catch (PersistenceHistoryException e) {
+                log.warn("Activity log for completing video failed to save in class 'CommitRequestMediaAS'");
+            }
+
 
             return DomainResponse.success(dto, "Video request successfully completed");
         } catch (DomainArgumentException | PersistenceException e) {
@@ -200,6 +236,5 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
     private void validateId(String id) {
         if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid id cannot be converted to ObjectId");
     }
-
 
 }

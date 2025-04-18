@@ -1,15 +1,21 @@
 package john.api1.application.services.history;
 
+import com.mongodb.MongoException;
 import john.api1.application.components.enums.ActivityLogType;
+import john.api1.application.components.exception.DomainArgumentException;
+import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.components.exception.PersistenceHistoryException;
 import john.api1.application.domain.models.ActivityLogDomain;
+import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.request.RequestDomain;
 import john.api1.application.ports.repositories.history.IHistoryLogCreateRepository;
 import john.api1.application.ports.services.history.IHistoryLogCreate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(rollbackFor = {DomainArgumentException.class, PersistenceException.class, MongoException.class})
 public class HistoryLogCreate implements IHistoryLogCreate {
     private final IHistoryLogCreateRepository createRepository;
 
@@ -25,15 +31,15 @@ public class HistoryLogCreate implements IHistoryLogCreate {
     }
 
     @Override
-    public void createActivityLogBoarding(RequestDomain request, String petOwner, String pet) {
-        var domain = ActivityLogDomain.createForRequest(request, ActivityLogType.BOARDING_MANAGEMENT, petOwner, pet);
+    public void createActivityLogBoarding(BoardingDomain request, String petOwner, String pet) {
+        var domain = ActivityLogDomain.createForBoarding(request, ActivityLogType.BOARDING_MANAGEMENT, petOwner, pet);
         saveOrThrow(domain);
     }
 
     @Override
-    public void createActivityLogOwnerRegister(String petOwner, String pet) {
+    public void createActivityLogOwnerRegister(String petOwner) {
         String description = "New pet owner registered";
-        var domain = ActivityLogDomain.create(ActivityLogType.PET_OWNER_MANAGEMENT, petOwner, pet, description);
+        var domain = ActivityLogDomain.create(ActivityLogType.PET_OWNER_MANAGEMENT, petOwner, null, description);
         saveOrThrow(domain);
     }
 
