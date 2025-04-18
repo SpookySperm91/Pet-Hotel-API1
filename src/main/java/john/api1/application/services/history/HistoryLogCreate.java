@@ -2,6 +2,7 @@ package john.api1.application.services.history;
 
 import com.mongodb.MongoException;
 import john.api1.application.components.enums.ActivityLogType;
+import john.api1.application.components.enums.boarding.BoardingStatus;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.components.exception.PersistenceHistoryException;
@@ -32,7 +33,12 @@ public class HistoryLogCreate implements IHistoryLogCreate {
 
     @Override
     public void createActivityLogBoarding(BoardingDomain request, String petOwner, String pet) {
-        var domain = ActivityLogDomain.createForBoarding(request, ActivityLogType.BOARDING_MANAGEMENT, petOwner, pet);
+        String description = switch (request.getBoardingStatus()) {
+            case BoardingStatus.BOARDING -> "Pet check in for boarding";
+            case BoardingStatus.RELEASED -> "Pet released from boarding";
+            default -> "Pet boarding activity log";
+        };
+        var domain = ActivityLogDomain.createForBoarding(request, ActivityLogType.BOARDING_MANAGEMENT, petOwner, pet, description);
         saveOrThrow(domain);
     }
 

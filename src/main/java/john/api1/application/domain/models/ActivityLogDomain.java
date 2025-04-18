@@ -45,11 +45,11 @@ public class ActivityLogDomain {
         return new ActivityLogDomain(null, request.getId(), activityType, request.getRequestType(), "Admin", petOwner, pet, request.getResponseMessage(), Instant.now());
     }
 
-    public static ActivityLogDomain createForBoarding(BoardingDomain boarding, ActivityLogType activityType, String petOwner, String pet) {
+    public static ActivityLogDomain createForBoarding(BoardingDomain boarding, ActivityLogType activityType, String petOwner, String pet, String description) {
         if (!ObjectId.isValid(boarding.getId()))
             throw new DomainArgumentException("Boarding id for activity log is invalid cannot be converted to ObjectId");
 
-        return new ActivityLogDomain(null, boarding.getId(), activityType, null, "Admin", petOwner, pet, boarding.getResponseMessage(), Instant.now());
+        return new ActivityLogDomain(null, boarding.getId(), activityType, null, "Admin", petOwner, pet, description, Instant.now());
     }
 
 
