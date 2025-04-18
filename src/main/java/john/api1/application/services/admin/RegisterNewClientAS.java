@@ -17,11 +17,12 @@ import john.api1.application.domain.models.ClientDomain;
 import john.api1.application.domain.models.EmailLogsDomain;
 import john.api1.application.domain.models.SmsLogDomain;
 import john.api1.application.dto.request.RegisterRDTO;
-import john.api1.application.ports.repositories.owner.IAccountSearchRepository;
-import john.api1.application.ports.repositories.owner.IAccountCreateRepository;
 import john.api1.application.ports.repositories.ILogEmailRepository;
 import john.api1.application.ports.repositories.ILogSmsRepository;
+import john.api1.application.ports.repositories.owner.IAccountCreateRepository;
+import john.api1.application.ports.repositories.owner.IAccountSearchRepository;
 import john.api1.application.ports.services.IRegisterNewClient;
+import john.api1.application.ports.services.history.IHistoryLogCreate;
 import john.api1.application.services.response.RegisterResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class RegisterNewClientAS implements IRegisterNewClient {
     private final IAccountCreateRepository createRepository;
     private final ILogEmailRepository logEmailRepository;
     private final ILogSmsRepository logSmsRepository;
+    private final IHistoryLogCreate historyLog;
 
     @Autowired
     public RegisterNewClientAS(ClientCreationDS clientCreation,
@@ -49,13 +51,15 @@ public class RegisterNewClientAS implements IRegisterNewClient {
                                @Qualifier("MongoAccountSearchRepo") IAccountSearchRepository searchRepository,
                                @Qualifier("MongoCreateRepo") IAccountCreateRepository createRepository,
                                @Qualifier("MongoEmailLogRepo") ILogEmailRepository logEmailRepository,
-                               @Qualifier("MongoSmsLogRepo") ILogSmsRepository logSmsRepository) {
+                               @Qualifier("MongoSmsLogRepo") ILogSmsRepository logSmsRepository,
+                               IHistoryLogCreate historyLog) {
         this.clientCreation = clientCreation;
         this.emailService = emailService;
         this.searchRepository = searchRepository;
         this.createRepository = createRepository;
         this.logEmailRepository = logEmailRepository;
         this.logSmsRepository = logSmsRepository;
+        this.historyLog = historyLog;
     }
 
     // Create account credential first
@@ -93,6 +97,7 @@ public class RegisterNewClientAS implements IRegisterNewClient {
             logSms(registeredId, account.getPhoneNumber(), request.getFullName(), smsBody);
 
             String message = String.format("New pet owner '%s' has been successfully registered.", request.getFullName());
+
             return DomainResponse.success(
                     new RegisterResponse(
                             registeredId,
@@ -100,6 +105,7 @@ public class RegisterNewClientAS implements IRegisterNewClient {
                             request.getEmail(),
                             request.getPhoneNumber(),
                             smsBody), message);
+
 
         } catch (DomainArgumentException | PersistenceException | EmailSendingException e) {
             logger.error("Error registering client: {}", e.getMessage(), e);

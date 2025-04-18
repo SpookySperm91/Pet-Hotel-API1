@@ -118,7 +118,7 @@ public class RequestSearchRepository implements IRequestSearchRepository {
                 entity.getDescription(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
-                entity.getRejectDescription(),
+                entity.getResponseMessage(),
                 entity.isActive()
         );
     }

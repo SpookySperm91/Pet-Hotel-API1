@@ -29,7 +29,7 @@ public class RequestDomain {
     @Setter
     private Instant resolvedTime;
     @Setter
-    private String rejectionMessage;
+    private String responseMessage; // reject or after completing request
     @Setter
     private boolean active;
 
@@ -38,7 +38,7 @@ public class RequestDomain {
     }
 
     public RequestDomain withId(String id) {
-        return new RequestDomain(id, this.petId, this.ownerId, this.boardingId, this.requestType, this.requestStatus, this.description, this.requestTime, this.resolvedTime, this.rejectionMessage, this.active);
+        return new RequestDomain(id, this.petId, this.ownerId, this.boardingId, this.requestType, this.requestStatus, this.description, this.requestTime, this.resolvedTime, this.responseMessage, this.active);
     }
 
     public void markStatus(RequestStatus newStatus) {

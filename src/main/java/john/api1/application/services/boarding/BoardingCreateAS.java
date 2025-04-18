@@ -126,9 +126,6 @@ public class BoardingCreateAS implements IBoardingCreate {
                                                    BoardingType boardingType,
                                                    long time,
                                                    PaymentStatus paymentStatus) {
-        System.out.println("Before price rate conversion: " + pet.toString());
-
-
         PetPrices rate = PetPrices.fromSpeciesAndSize(
                 SpeciesType.fromStringToSpecies(pet.animalType()),
                 PetSize.fromStringToSize(pet.size()));

@@ -9,7 +9,7 @@ public interface IRequestUpdateRepository {
     void updateRequestStatus(String id, RequestStatus status);
 
     void updateRequestStatusAndActive(String id, RequestStatus status, boolean active);
-
+    void updateToComplete(String id, RequestStatus status, String message, boolean active);
     Optional<RequestDomain> updateToReject(String id, RequestStatus status, String rejectedDescription);
 
     // CQRS

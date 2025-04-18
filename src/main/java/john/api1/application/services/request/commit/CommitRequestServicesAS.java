@@ -88,8 +88,10 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             originalPricing = new ArrayList<>(pricing);
 
             // Approve extension
+            // Add reply message to request
             // Update boarding
             extension.markAsApproved();
+            check.setResponseMessage(request.getNotes());
             boarding.extendBoarding(extension.getExtendedHours());
             boarding.daycareToLongDay();
             boarding.updatePaymentStatus(PaymentStatus.PENDING);
@@ -106,7 +108,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
 
             // Save all to DB
             serviceUpdate.updateApprovalExtension(extension.getId(), extension.isApproved(), extension.getUpdatedAt());
-            requestUpdate.markRequestAsCompleted(check.getId());
+            requestUpdate.markRequestAsCompletedWithMessage(check.getId(), check.getResponseMessage());
             boardingUpdate.updateBoarding(boarding);
             pricingSearch.unwrappedUpdateRequestBreakdown(boarding.getId(), pricing);
 
@@ -178,7 +180,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
 
             // Save all to DB
             serviceUpdate.updateApprovalExtension(grooming.getId(), grooming.isApproved(), grooming.getUpdatedAt());
-            requestUpdate.markRequestAsCompleted(check.getId());
+            requestUpdate.markRequestAsCompletedWithMessage(check.getId(), check.getResponseMessage());
             boardingUpdate.updateBoarding(boarding);
             pricingSearch.unwrappedUpdateRequestBreakdown(boarding.getId(), pricing);
 

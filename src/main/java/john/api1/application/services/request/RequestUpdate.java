@@ -32,6 +32,26 @@ public class RequestUpdate implements IRequestUpdate {
         this.searchRepository = searchRepository;
     }
 
+    @Override
+    public DomainResponse<Void> markRequestAsCompletedWithMessage(String requestId, String message) {
+        try {
+            validateId(requestId);
+            var request = searchRepository.findById(requestId);
+            if (request.isEmpty()) return DomainResponse.error("Request cannot be found");
+
+            RequestDomain archived = request.get();
+            archived.markStatus(RequestStatus.COMPLETED);
+            updateRepository.updateToComplete(archived.getId(), archived.getRequestStatus(), message, archived.isActive());
+
+            return DomainResponse.success("Successfully marked request as completed");
+
+        } catch (DomainArgumentException | PersistenceException e) {
+            return DomainResponse.error(e.getMessage());
+        } catch (Exception e) {
+            return DomainResponse.error("Unable to complete the request. Please try again.");
+        }
+    }
+
     // Mark request as completed
     // Constraints: Only works if such request is currently active
     @Override

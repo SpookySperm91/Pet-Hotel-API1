@@ -107,7 +107,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
             // Save to DB
             // Update request status
             var saved = createRepository.createPhotoRequest(photo);
-            var update = requestUpdate.markRequestAsCompleted(request.getRequestId());
+            var update = requestUpdate.markRequestAsCompletedWithMessage(request.getRequestId(), request.getNotes());
             String photoId = saved
                     .orElseThrow(() -> new PersistenceException("Failed to save video domain..."));
             if (!update.isSuccess())
@@ -164,7 +164,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
             // Save to DB
             // Update request status
             var saved = createRepository.createVideoRequest(video);
-            var update = requestUpdate.markRequestAsCompleted(request.getRequestId());
+            var update = requestUpdate.markRequestAsCompletedWithMessage(request.getRequestId(), request.getNotes());
             String videoId = saved
                     .orElseThrow(() -> new PersistenceException("Failed to save video domain..."));
             if (!update.isSuccess())

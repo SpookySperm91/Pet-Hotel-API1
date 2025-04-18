@@ -37,7 +37,7 @@ public class RequestEntity {
     @LastModifiedDate
     private Instant updatedAt;
     @Nullable
-    private String rejectDescription;
+    private String responseMessage;
     private boolean active = true;
 
     public static RequestEntity create(ObjectId ownerId, ObjectId petId, ObjectId boardingId, String requestType, String requestStatus, String description, Instant createdAt) {

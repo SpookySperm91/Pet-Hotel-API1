@@ -95,7 +95,7 @@ public class RequestStatusDS {
 
     public static void stateRejectionReason(RequestDomain domain, String message) {
         if (message == null || message.trim().isEmpty()) throw new DomainArgumentException("Message cannot be empty");
-        domain.setRejectionMessage(message);
+        domain.setResponseMessage(message);
         domain.setResolvedTime(Instant.now());
     }
 }

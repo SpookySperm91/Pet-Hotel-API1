@@ -11,9 +11,6 @@ public class BoardingPricingDS {
 
     // Boarding total
     public static double getBoardingTotal(BoardingPricingDomain domain) {
-        if (domain.getBoardingType() == BoardingType.LONG_STAY) {
-            return domain.getRatePerHour() * 24 * domain.getBoardingDuration(); // Fixed 24-hour rate per day
-        }
         return domain.getRatePerHour() * domain.getBoardingDuration(); // Per-hour charge for daycare
     }
 

@@ -36,6 +36,17 @@ public class RequestUpdateRepository implements IRequestUpdateRepository {
     }
 
     @Override
+    public void updateToComplete(String id, RequestStatus status, String message, boolean active){
+        validateId(id);
+
+        Query query = createQuery(id);
+        Update update = createUpdate(status, message).set("active", active);
+
+        performUpdate(query, update);
+    }
+
+
+    @Override
     public void updateRequestStatusAndActive(String id, RequestStatus status, boolean active) {
         validateId(id);
 
@@ -107,13 +118,13 @@ public class RequestUpdateRepository implements IRequestUpdateRepository {
         return new Query(Criteria.where("_id").is(new ObjectId(id)));
     }
 
-    private Update createUpdate(RequestStatus status, String rejectedDescription) {
+    private Update createUpdate(RequestStatus status, String responseMessage) {
         Update update = new Update()
                 .set("requestStatus", status.getRequestStatus())
                 .set("updatedAt", Instant.now());
 
-        if (rejectedDescription != null) {
-            update.set("rejectDescription", rejectedDescription);
+        if (responseMessage != null) {
+            update.set("responseMessage", responseMessage);
         }
 
         return update;
@@ -141,7 +152,7 @@ public class RequestUpdateRepository implements IRequestUpdateRepository {
                 entity.getDescription(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
-                entity.getRejectDescription(),
+                entity.getResponseMessage(),
                 entity.isActive()
         );
     }
