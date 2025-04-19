@@ -19,7 +19,7 @@ public class ActivityLogDomain {
     private String typeId;  // Request, Boarding
     private ActivityLogType activityType;
     @Nullable
-    private RequestType requestType;
+    private RequestType requestType;  // For request
     private String performedBy;
     private String petOwner;
     private String pet;

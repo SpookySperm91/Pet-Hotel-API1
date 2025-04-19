@@ -36,7 +36,7 @@ public class ActivityLogEntity {
 
     public static ActivityLogEntity mapDomain(ActivityLogDomain domain) {
         if (!ObjectId.isValid(domain.getTypeId()))
-            throw new PersistenceException("Invalid type id cannot be converted to ObjectId");
+            throw new PersistenceException("Invalid animalType id cannot be converted to ObjectId");
 
         return new ActivityLogEntity(
                 null,
