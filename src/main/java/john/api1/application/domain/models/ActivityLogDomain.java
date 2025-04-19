@@ -59,4 +59,8 @@ public class ActivityLogDomain {
 
         return new ActivityLogDomain(id, this.typeId, this.activityType, this.requestType, this.performedBy, this.petOwner, this.pet, this.description, this.timestamp);
     }
+
+
+
+
 }

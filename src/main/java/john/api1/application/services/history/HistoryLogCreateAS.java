@@ -17,11 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(rollbackFor = {DomainArgumentException.class, PersistenceException.class, MongoException.class})
-public class HistoryLogCreate implements IHistoryLogCreate {
+public class HistoryLogCreateAS implements IHistoryLogCreate {
     private final IHistoryLogCreateRepository createRepository;
 
     @Autowired
-    public HistoryLogCreate(IHistoryLogCreateRepository createRepository) {
+    public HistoryLogCreateAS(IHistoryLogCreateRepository createRepository) {
         this.createRepository = createRepository;
     }
 

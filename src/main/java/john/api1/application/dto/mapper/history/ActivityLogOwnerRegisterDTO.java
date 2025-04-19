@@ -13,5 +13,5 @@ public record ActivityLogOwnerRegisterDTO(
         String email,
         String phoneNumber,
         String address
-) {
+) implements ActivityLogDTO{
 }

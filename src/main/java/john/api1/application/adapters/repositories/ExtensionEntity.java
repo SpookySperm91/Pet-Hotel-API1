@@ -23,6 +23,7 @@ public class ExtensionEntity {
     private ObjectId boardingId;
     private double additionalPrice;
     private long extendedHours;
+    private String durationType;
     @Nullable
     private String description;
     @CreatedDate
@@ -31,7 +32,7 @@ public class ExtensionEntity {
     private Instant updatedAt;
     private boolean approved;
 
-    public static ExtensionEntity create(ObjectId requestId, ObjectId boardingId, double additionalPrice, long extendedHours, String description, Instant createdAt, Instant updatedAt, boolean approved) {
-        return new ExtensionEntity(null, requestId, boardingId, additionalPrice, extendedHours, description, createdAt, updatedAt, approved);
+    public static ExtensionEntity create(ObjectId requestId, ObjectId boardingId, double additionalPrice, long extendedHours, String durationType, String description, Instant createdAt, Instant updatedAt, boolean approved) {
+        return new ExtensionEntity(null, requestId, boardingId, additionalPrice, extendedHours,durationType,  description, createdAt, updatedAt, approved);
     }
 }

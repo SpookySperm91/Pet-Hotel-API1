@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class HistoryLogSearchRepository implements IHistoryLogSearchRepository {
@@ -45,12 +46,16 @@ public class HistoryLogSearchRepository implements IHistoryLogSearchRepository {
     }
 
     @Override
-    public List<ActivityLogEntity> searchAll() {
-        return mongoTemplate.findAll(ActivityLogEntity.class);
+    public List<ActivityLogDomain> searchAll() {
+        // Fetch all records and convert to domain objects
+        return mongoTemplate.findAll(ActivityLogEntity.class).stream()
+                .map(this::mapToDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<ActivityLogEntity> searchByDate(Instant date) {
+    public List<ActivityLogDomain> searchByDate(Instant date) {
+        // Adjust to midnight for date comparison
         var start = date.truncatedTo(java.time.temporal.ChronoUnit.DAYS);
         var end = start.plus(java.time.Duration.ofDays(1));
 
@@ -58,17 +63,24 @@ public class HistoryLogSearchRepository implements IHistoryLogSearchRepository {
                 org.springframework.data.mongodb.core.query.Criteria.where("createdAt").gte(start).lt(end)
         );
 
-        return mongoTemplate.find(query, ActivityLogEntity.class);
+        // Find all logs for the given date range
+        return mongoTemplate.find(query, ActivityLogEntity.class).stream()
+                .map(this::mapToDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<ActivityLogEntity> searchByActivityType(ActivityLogType type) {
+    public List<ActivityLogDomain> searchByActivityType(ActivityLogType type) {
+        // Find all logs for the given activity type
         var query = new org.springframework.data.mongodb.core.query.Query(
                 org.springframework.data.mongodb.core.query.Criteria.where("activityType").is(type.getActivityLogType())
         );
 
-        return mongoTemplate.find(query, ActivityLogEntity.class);
+        return mongoTemplate.find(query, ActivityLogEntity.class).stream()
+                .map(this::mapToDomain)
+                .collect(Collectors.toList());
     }
+
 
     private ActivityLogDomain mapToDomain(ActivityLogEntity entity) {
         return new ActivityLogDomain(

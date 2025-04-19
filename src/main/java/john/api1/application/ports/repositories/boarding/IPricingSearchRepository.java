@@ -8,4 +8,8 @@ import java.util.Optional;
 public interface IPricingSearchRepository {
     List<BoardingPricingDomain.RequestBreakdown> getRequestBreakdown(String boardingId);
     Optional<BoardingPricingDomain> getBoardingPricing(String boardingId);
+
+    // CQRS
+    Optional<PricingCQRS> getBoardingPricingCqrs(String boardingId);
+
 }

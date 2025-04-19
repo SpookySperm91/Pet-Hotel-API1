@@ -7,6 +7,7 @@ import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.boarding.BoardingPricingDomain;
 import john.api1.application.ports.repositories.boarding.IPricingManagementRepository;
 import john.api1.application.ports.repositories.boarding.IPricingSearchRepository;
+import john.api1.application.ports.repositories.boarding.PricingCQRS;
 import john.api1.application.ports.services.boarding.IPricingManagement;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(rollbackFor = {DomainArgumentException.class, PersistenceException.class, MongoException.class})
@@ -116,4 +118,15 @@ public class PricingManagementAS implements IPricingManagement {
 
         return breakdownListOpt;
     }
+
+
+    public Optional<PricingCQRS> getBoardingPricingCqrs(String boardingId) {
+        if (!ObjectId.isValid(boardingId))
+            throw new PersistenceException("Invalid boarding ID format. It cannot be an ObjectId.");
+
+        var pricing = pricingSearch.getBoardingPricingCqrs(boardingId);
+        if (pricing.isEmpty()) throw new PersistenceException("Pricing cannot be found!");
+        return pricing;
+    }
+
 }

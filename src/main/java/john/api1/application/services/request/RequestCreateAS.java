@@ -119,6 +119,7 @@ public class RequestCreateAS implements IRequestCreate {
                     domain.getId(),
                     request.getBoardingId(),
                     request.getDescription());
+            extensionDomain.setDurationType(type);
             extensionDomain.setAdditionalPrice(priceRate, extendedHours);
 
             var domainId = requestCreate.createInitialRequestExtension(extensionDomain);

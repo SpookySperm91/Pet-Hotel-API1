@@ -1,6 +1,7 @@
 package john.api1.application.domain.models.request;
 
 import john.api1.application.components.enums.PetPrices;
+import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,8 @@ public class ExtensionDomain {
     private final String boardingId;
     private double additionalPrice;
     private long extendedHours;
+    @Setter
+    private BoardingType durationType; // HOURS, DAYS. For better readability
     @Setter
     private String description;
     private final Instant createdAt;
@@ -39,7 +42,7 @@ public class ExtensionDomain {
     }
 
     public ExtensionDomain mapWithId(String id) {
-        return new ExtensionDomain(id, this.requestId, this.boardingId, this.additionalPrice, this.extendedHours, this.description, this.createdAt, this.updatedAt, this.approved);
+        return new ExtensionDomain(id, this.requestId, this.boardingId, this.additionalPrice, this.extendedHours, this.durationType, this.description, this.createdAt, this.updatedAt, this.approved);
     }
 
     public void setAdditionalPrice(PetPrices petPrices, long extendedHours) {
@@ -59,7 +62,7 @@ public class ExtensionDomain {
         this.approved = true;
         this.updatedAt = Instant.now();
     }
-    
+
     public void markAsNotApproved() {
         if (!approved) {
             throw new DomainArgumentException("Extension already not approved.");

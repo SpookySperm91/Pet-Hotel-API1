@@ -6,6 +6,8 @@ import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.request.ExtensionDomain;
 import john.api1.application.domain.models.request.GroomingDomain;
 import john.api1.application.domain.models.request.RequestDomain;
+import john.api1.application.ports.repositories.request.ExtensionCQRS;
+import john.api1.application.ports.repositories.request.GroomingCQRS;
 import john.api1.application.ports.repositories.request.IRequestCompletedSearchRepository;
 import john.api1.application.ports.repositories.request.IRequestSearchRepository;
 import john.api1.application.ports.services.request.IRequestSearch;
@@ -69,6 +71,21 @@ public class RequestSearch implements IRequestSearch {
     public ExtensionDomain searchExtensionByRequestId(String id) {
         validateId(id);
         return searchCompletedRepository.getExtensionByRequestId(id)
+                .orElseThrow(() -> new PersistenceException("Extension request cannot be found"));
+    }
+
+    // CQRS
+    @Override
+    public GroomingCQRS searchGroomingByRequestIdCqrs(String id) {
+        validateId(id);
+        return searchCompletedRepository.getGroomingByRequestIdCqrs(id)
+                .orElseThrow(() -> new PersistenceException("Grooming request cannot be found"));
+    }
+
+    @Override
+    public ExtensionCQRS searchExtensionByRequestIdCqrs(String id) {
+        validateId(id);
+        return searchCompletedRepository.getExtensionByRequestIdCqrs(id)
                 .orElseThrow(() -> new PersistenceException("Extension request cannot be found"));
     }
 

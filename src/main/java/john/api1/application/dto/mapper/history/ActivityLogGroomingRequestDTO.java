@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,4 +15,14 @@ import lombok.NoArgsConstructor;
 public class ActivityLogGroomingRequestDTO extends ActivityLogRequestDTO {
     private String groomingType;
     private Double price;
+
+
+    public ActivityLogGroomingRequestDTO(
+            String id, String activityType, String description, String performBy, Instant timestamp, String petName, String petType, String breed, String size, String owner,
+            String groomingType, Double price) {
+
+        super(id, activityType, description, performBy, timestamp, petName, petType, breed, size, owner);
+        this.groomingType = groomingType;
+        this.price = price;
+    }
 }

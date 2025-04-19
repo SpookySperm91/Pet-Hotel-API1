@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface IHistoryLogSearchRepository {
     Optional<ActivityLogDomain> searchById(String id);
     Optional<ActivityLogDomain> searchRecently();
-    List<ActivityLogEntity> searchAll();
-    List<ActivityLogEntity> searchByDate(Instant date);
-    List<ActivityLogEntity> searchByActivityType(ActivityLogType type);
+    List<ActivityLogDomain> searchAll();
+    List<ActivityLogDomain> searchByDate(Instant date);
+    List<ActivityLogDomain> searchByActivityType(ActivityLogType type);
 }

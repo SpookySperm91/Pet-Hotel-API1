@@ -8,7 +8,6 @@ public record ActivityLogBoardingDTO(
         String description,
         String performedBy,
         Instant timestamp,
-        Double price,
 
         // Pet information
         String petName,
@@ -20,6 +19,7 @@ public record ActivityLogBoardingDTO(
         // Boarding infos
         String boardingType,
         int duration,
+        Double price,
         Instant startDate,
         Instant endDate
 ) implements ActivityLogDTO {

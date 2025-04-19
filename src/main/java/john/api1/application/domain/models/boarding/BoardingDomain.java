@@ -92,7 +92,6 @@ public class BoardingDomain {
         if (boardingStart == null || boardingEnd == null)
             throw new DomainArgumentException("Boarding start and end time must not be null.");
 
-
         long duration;
         if (boardingType == BoardingType.DAYCARE) {
             // Calculate duration in hours for daycare

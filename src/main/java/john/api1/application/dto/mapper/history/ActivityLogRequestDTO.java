@@ -9,7 +9,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ActivityLogRequestDTO {
+public class ActivityLogRequestDTO implements ActivityLogDTO{
     private String id;
     private String activityType;
     private String description;

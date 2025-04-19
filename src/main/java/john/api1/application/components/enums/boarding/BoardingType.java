@@ -8,10 +8,12 @@ import java.util.Arrays;
 @AllArgsConstructor
 @Getter
 public enum BoardingType {
-    DAYCARE("DAYCARE"),
-    LONG_STAY("LONG_STAY");
+    DAYCARE("DAYCARE", "Daycare"),
+    LONG_STAY("LONG_STAY","LongStay");
 
     private final String boardingType;
+    private final String durationType;
+
 
     public static BoardingType fromStringOrDefault(String dbValue) {
         return Arrays.stream(BoardingType.values())

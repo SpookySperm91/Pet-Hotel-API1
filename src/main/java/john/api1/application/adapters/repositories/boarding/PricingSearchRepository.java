@@ -5,6 +5,7 @@ import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.boarding.BoardingPricingDomain;
 import john.api1.application.ports.repositories.boarding.IPricingSearchRepository;
+import john.api1.application.ports.repositories.boarding.PricingCQRS;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -70,4 +71,27 @@ public class PricingSearchRepository implements IPricingSearchRepository {
 
         return Optional.of(pricingDomain);
     }
+
+    @Override
+    public Optional<PricingCQRS> getBoardingPricingCqrs(String boardingId) {
+        if (!ObjectId.isValid(boardingId)) {
+            throw new PersistenceException("Invalid boarding-id type");
+        }
+
+        Query query = new Query(Criteria.where("boardingId").is(new ObjectId(boardingId)));
+        PricingEntity pricingEntity = mongoTemplate.findOne(query, PricingEntity.class);
+
+        if (pricingEntity == null) {
+            return Optional.empty(); // Return empty if no pricing found
+        }
+
+        PricingCQRS pricing = new PricingCQRS(
+                BoardingType.fromStringOrDefault(pricingEntity.getBoardingType()),
+                pricingEntity.getRatePerHour(),
+                pricingEntity.getBoardingDuration()
+        );
+        return Optional.of(pricing);
+    }
+
+
 }

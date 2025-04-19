@@ -13,4 +13,8 @@ public interface IRequestCompletedSearchRepository {
 
     Optional<ExtensionDomain> getExtensionByRequestId(String id);
 
+
+    // CQRS
+    Optional<GroomingCQRS> getGroomingByRequestIdCqrs(String id);
+    Optional<ExtensionCQRS> getExtensionByRequestIdCqrs(String id);
 }
