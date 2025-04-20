@@ -4,7 +4,7 @@ import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.request.RequestDomain;
 
 public interface IHistoryLogCreate {
-    void createActivityLogRequest(RequestDomain request, String petOwner, String pet);
+    void createActivityLogCompletedRequest(RequestDomain request, String petOwner, String pet);
     void createActivityLogBoarding(BoardingDomain request, String petOwner, String pet);
 
 

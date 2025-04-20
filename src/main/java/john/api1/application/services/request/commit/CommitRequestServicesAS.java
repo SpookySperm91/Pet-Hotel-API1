@@ -121,7 +121,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
 
             // History log
             try {
-                historyLog.createActivityLogRequest(check, ownerName, petName);
+                historyLog.createActivityLogCompletedRequest(check, ownerName, petName);
                 log.info("Activity log created for completing extension request made by '{}'", ownerName);
             } catch (PersistenceHistoryException e) {
                 log.warn("Activity log for completing extension failed to save in class 'CommitRequestServicesAS'");
@@ -184,7 +184,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
 
             // History log
             try {
-                historyLog.createActivityLogRequest(check, ownerName, petName);
+                historyLog.createActivityLogCompletedRequest(check, ownerName, petName);
                 log.info("Activity log created for completing grooming request made by '{}'", ownerName);
             } catch (PersistenceHistoryException e) {
                 log.warn("Activity log for completing grooming failed to save in class 'CommitRequestServicesAS'");

@@ -38,11 +38,11 @@ public class ActivityLogDomain {
         return new ActivityLogDomain(null, typeId, activityType, null, performedBy, petOwner, pet, description, Instant.now());
     }
 
-    public static ActivityLogDomain createForRequest(RequestDomain request, ActivityLogType activityType, String petOwner, String pet) {
+    public static ActivityLogDomain createForRequest(RequestDomain request, ActivityLogType activityType, String description, String petOwner, String pet) {
         if (!ObjectId.isValid(request.getId()))
             throw new DomainArgumentException("Request id for activity log is invalid cannot be converted to ObjectId");
 
-        return new ActivityLogDomain(null, request.getId(), activityType, request.getRequestType(), "Admin", petOwner, pet, request.getResponseMessage(), Instant.now());
+        return new ActivityLogDomain(null, request.getId(), activityType, request.getRequestType(), "Admin", petOwner, pet, description, Instant.now());
     }
 
     public static ActivityLogDomain createForBoarding(BoardingDomain boarding, ActivityLogType activityType, String petOwner, String pet, String description) {
@@ -59,8 +59,6 @@ public class ActivityLogDomain {
 
         return new ActivityLogDomain(id, this.typeId, this.activityType, this.requestType, this.performedBy, this.petOwner, this.pet, this.description, this.timestamp);
     }
-
-
 
 
 }

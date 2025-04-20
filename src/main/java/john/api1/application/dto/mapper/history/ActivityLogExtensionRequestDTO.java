@@ -19,10 +19,10 @@ public class ActivityLogExtensionRequestDTO extends ActivityLogRequestDTO {
     private Double price;
 
     public ActivityLogExtensionRequestDTO(
-            String id, String activityType, String description, String performBy, Instant timestamp, String petName, String petType, String breed, String size, String owner,
+            String id, String activityType, String requestType, String description, String performBy, Instant timestamp, String petName, String petType, String breed, String size, String owner,
             long duration, String durationType, Instant current, Instant end, Double price) {
 
-        super(id, activityType, description, performBy, timestamp, petName, petType, breed, size, owner);
+        super(id, activityType, requestType, description, performBy, timestamp, petName, petType, breed, size, owner);
         this.duration = duration;
         this.durationType = durationType;
         this.currentEnd = current;

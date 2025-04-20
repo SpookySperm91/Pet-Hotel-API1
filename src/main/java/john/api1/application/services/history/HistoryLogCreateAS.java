@@ -3,6 +3,7 @@ package john.api1.application.services.history;
 import com.mongodb.MongoException;
 import john.api1.application.components.enums.ActivityLogType;
 import john.api1.application.components.enums.boarding.BoardingStatus;
+import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.components.exception.PersistenceHistoryException;
@@ -26,8 +27,16 @@ public class HistoryLogCreateAS implements IHistoryLogCreate {
     }
 
     @Override
-    public void createActivityLogRequest(RequestDomain request, String petOwner, String pet) {
-        var domain = ActivityLogDomain.createForRequest(request, ActivityLogType.REQUEST_MANAGEMENT, petOwner, pet);
+    public void createActivityLogCompletedRequest(RequestDomain request, String petOwner, String pet) {
+        String description = switch (request.getRequestType()) {
+            case RequestType.PHOTO_REQUEST -> "Photo request completed";
+            case RequestType.VIDEO_REQUEST -> "Video request completed";
+            case RequestType.GROOMING_SERVICE -> "Grooming request completed";
+            case RequestType.BOARDING_EXTENSION -> "Boarding extension request completed";
+            default -> "Request activity log";
+        };
+
+        var domain = ActivityLogDomain.createForRequest(request, ActivityLogType.REQUEST_MANAGEMENT, description, petOwner, pet);
         saveOrThrow(domain);
     }
 
@@ -51,7 +60,7 @@ public class HistoryLogCreateAS implements IHistoryLogCreate {
 
     @Override
     public void createActivityLogPetRegister(String petOwner, String pet) {
-        String description = "New pet added for " + petOwner;
+        String description = "New pet added";
         var domain = ActivityLogDomain.create(ActivityLogType.PET_MANAGEMENT, petOwner, pet, description);
         saveOrThrow(domain);
     }

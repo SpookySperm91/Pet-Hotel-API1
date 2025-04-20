@@ -113,6 +113,7 @@ public class ActivityLogDS {
 
         String id = domain.getId();
         String activityType = domain.getActivityType().getActivityLogTypeToDTO();
+        String requestType = domain.getRequestType() != null ? domain.getRequestType().getRequestType() : null;
         String description = domain.getDescription();
         String performBy = domain.getPerformedBy();
         Instant timestamp = domain.getTimestamp();
@@ -128,7 +129,7 @@ public class ActivityLogDS {
 
 
         return new ActivityLogRequestDTO(
-                id, activityType, description, performBy, timestamp,
+                id, activityType, requestType, description, performBy, timestamp,
                 petName, petType, breed, size,
                 owner);
 
@@ -144,6 +145,7 @@ public class ActivityLogDS {
 
             String id = domain.getId();
             String activityType = domain.getActivityType().getActivityLogTypeToDTO();
+            String requestType = domain.getRequestType() != null ? domain.getRequestType().getRequestType() : null;
             String description = domain.getDescription();
             String performBy = domain.getPerformedBy();
             Instant timestamp = domain.getTimestamp();
@@ -165,7 +167,7 @@ public class ActivityLogDS {
             Double price = BoardingPricingDS.getBoardingTotal(pricing);
 
             return new ActivityLogExtensionRequestDTO(
-                    id, activityType, description, performBy, timestamp,
+                    id, activityType, requestType, description, performBy, timestamp,
                     petName, petType, breed, size,
                     owner,
                     duration, durationType, current, end, price);
@@ -182,6 +184,7 @@ public class ActivityLogDS {
 
             String id = domain.getId();
             String activityType = domain.getActivityType().getActivityLogTypeToDTO();
+            String requestType = domain.getRequestType() != null ? domain.getRequestType().getRequestType() : null;
             String description = domain.getDescription();
             String performBy = domain.getPerformedBy();
             Instant timestamp = domain.getTimestamp();
@@ -200,7 +203,7 @@ public class ActivityLogDS {
             Double price = grooming.price();
 
             return new ActivityLogGroomingRequestDTO(
-                    id, activityType, description, performBy, timestamp,
+                    id, activityType, requestType, description, performBy, timestamp,
                     petName, petType, breed, size,
                     owner,
                     groomingType, price);

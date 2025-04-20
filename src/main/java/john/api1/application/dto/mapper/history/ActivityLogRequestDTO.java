@@ -12,6 +12,7 @@ import java.time.Instant;
 public class ActivityLogRequestDTO implements ActivityLogDTO{
     private String id;
     private String activityType;
+    private String requestType;
     private String description;
     private String performedBy;
     private Instant timestamp;

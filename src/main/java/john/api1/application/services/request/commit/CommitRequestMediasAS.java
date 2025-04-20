@@ -134,7 +134,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
             // History log
             try {
-                historyLog.createActivityLogRequest(requestdomain, ownerName, petName);
+                historyLog.createActivityLogCompletedRequest(requestdomain, ownerName, petName);
                 log.info("Activity log created for completing photo request made by '{}'", ownerName);
             } catch (PersistenceHistoryException e) {
                 log.warn("Activity log for completing photo failed to save in class 'CommitRequestMediaAS'");
@@ -206,7 +206,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
 
             // History log
             try {
-                historyLog.createActivityLogRequest(requestdomain, ownerName, petName);
+                historyLog.createActivityLogCompletedRequest(requestdomain, ownerName, petName);
                 log.info("Activity log created for completing video request made by '{}'", ownerName);
             } catch (PersistenceHistoryException e) {
                 log.warn("Activity log for completing video failed to save in class 'CommitRequestMediaAS'");
