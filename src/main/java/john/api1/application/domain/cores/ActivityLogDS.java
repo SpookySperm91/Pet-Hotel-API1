@@ -1,5 +1,6 @@
 package john.api1.application.domain.cores;
 
+import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.cores.boarding.BoardingExtensionDS;
 import john.api1.application.domain.cores.boarding.BoardingPricingDS;
 import john.api1.application.domain.models.ActivityLogDomain;
@@ -91,7 +92,7 @@ public class ActivityLogDS {
 
             // boarding details
             String boardingType = boarding.getBoardingType().getDurationType();
-            int duration = (int) boarding.getBoardingDuration();
+            int duration = (int) boarding.determineDuration();
             Double price = BoardingPricingDS.getBoardingTotal(pricing);
             Instant start = boarding.getBoardingStart();
             Instant end = boarding.getBoardingEnd();
@@ -107,31 +108,30 @@ public class ActivityLogDS {
 
     // Media Request
     public static ActivityLogRequestDTO transformRequestMedia(ActivityLogDomain domain, ActivityLogDataContext context) {
-        if (context.getPet() != null) {
-            PetCQRS pet = context.getPet();
+        if (context.getPet() == null) throw new PersistenceException("PetCQRS in context object is null");
+        PetCQRS pet = context.getPet();
 
-            String id = domain.getId();
-            String activityType = domain.getActivityType().getActivityLogTypeToDTO();
-            String description = domain.getDescription();
-            String performBy = domain.getPerformedBy();
-            Instant timestamp = domain.getTimestamp();
+        String id = domain.getId();
+        String activityType = domain.getActivityType().getActivityLogTypeToDTO();
+        String description = domain.getDescription();
+        String performBy = domain.getPerformedBy();
+        Instant timestamp = domain.getTimestamp();
 
-            // pet information
-            String petName = pet.petName();
-            String petType = pet.animalType();
-            String breed = pet.breed();
-            String size = pet.size();
+        // pet information
+        String petName = pet.petName();
+        String petType = pet.animalType();
+        String breed = pet.breed();
+        String size = pet.size();
 
-            // owner
-            String owner = domain.getPetOwner();
+        // owner
+        String owner = domain.getPetOwner();
 
 
-            return new ActivityLogRequestDTO(
-                    id, activityType, description, performBy, timestamp,
-                    petName, petType, breed, size,
-                    owner);
-        }
-        return null;
+        return new ActivityLogRequestDTO(
+                id, activityType, description, performBy, timestamp,
+                petName, petType, breed, size,
+                owner);
+
     }
 
     // Extension Request

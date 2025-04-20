@@ -28,6 +28,9 @@ public class BoardingSearchRepository implements IBoardingSearchRepository {
     }
 
     public Optional<BoardingDomain> searchById(String id) {
+        if (!ObjectId.isValid(id))
+            throw new PersistenceException("Invalid boarding id cannot be converted to ObjectId.");
+
         Query query = new Query(Criteria.where("_id").is(new ObjectId(id)));
         BoardingEntity entity = mongoTemplate.findOne(query, BoardingEntity.class);
 

@@ -41,7 +41,7 @@ public class BoardingDomain {
         );
     }
 
-    public BoardingDomain copy(){
+    public BoardingDomain copy() {
         return this.toBuilder().build();
     }
 
@@ -104,5 +104,16 @@ public class BoardingDomain {
 
         return duration > 0 ? duration : 0; // Ensure non-negative values
     }
+
+    public long determineDuration() {
+        int HOURS_PER_DAY = 24;
+        long duration = getBoardingDuration();
+
+        if (boardingType == BoardingType.LONG_STAY)
+            return (long) Math.ceil(duration / (double) HOURS_PER_DAY);
+
+        return duration;
+    }
+
 
 }

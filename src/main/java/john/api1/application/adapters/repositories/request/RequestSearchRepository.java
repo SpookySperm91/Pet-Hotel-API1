@@ -27,7 +27,8 @@ public class RequestSearchRepository implements IRequestSearchRepository {
 
     @Override
     public Optional<RequestDomain> findById(String id) {
-        if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid id cannot be converted to ObjectId");
+        if (!ObjectId.isValid(id))
+            throw new PersistenceException("Invalid id cannot be converted to ObjectId");
 
         Query query = new Query(Criteria.where("_id").is(new ObjectId(id)));
         RequestEntity entity = mongoTemplate.findOne(query, RequestEntity.class);
@@ -110,8 +111,8 @@ public class RequestSearchRepository implements IRequestSearchRepository {
     private RequestDomain toDomain(RequestEntity entity) {
         return new RequestDomain(
                 entity.getId().toString(),
-                entity.getOwnerId().toString(),
                 entity.getPetId().toString(),
+                entity.getOwnerId().toString(),
                 entity.getBoardingId().toString(),
                 RequestType.fromString(entity.getRequestType()),
                 RequestStatus.fromString(entity.getRequestStatus()),

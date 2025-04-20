@@ -105,6 +105,8 @@ public class AdminRequestCommitController {
             //////////////////////////
             // Session and magic shits
             //////////////////////////
+            System.out.println("request id: " + request.getRequestId());
+            System.out.println("notes: " + request.getNotes());
 
             var commit = commitRequestServices.commitExtensionRequest(request);
             if (!commit.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, commit.getMessage());

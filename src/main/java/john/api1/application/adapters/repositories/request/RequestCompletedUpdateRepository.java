@@ -75,7 +75,7 @@ public class RequestCompletedUpdateRepository implements IRequestCompletedUpdate
     }
 
     private void validateId(String id) {
-        if(ObjectId.isValid(id)) throw new PersistenceException("Invalid id cannot be converted to ObjectId!");
+        if(!ObjectId.isValid(id)) throw new PersistenceException("Invalid id cannot be converted to ObjectId!");
     }
 
 }

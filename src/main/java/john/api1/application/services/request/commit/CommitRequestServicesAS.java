@@ -79,12 +79,12 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
     @Override
     public DomainResponse<RequestCompletedServiceDTO> commitExtensionRequest(RequestCompleteServiceRDTO request) {
         try {
-            validateId(request.getRequestId());
+            validateId(request.getRequestId());   // CHECK
 
-            var check = requestSearch.searchByRequestId(request.getRequestId());
-            var boarding = validateActiveRequest(check.getBoardingId());
-            var extension = requestSearch.searchExtensionByRequestId(request.getRequestId());
-            var pricing = pricingSearch.getBreakdown(check.getBoardingId());
+            var check = requestSearch.searchByRequestId(request.getRequestId());   // CHECK
+            var boarding = validateActiveRequest(check.getBoardingId());  // CHECK
+            var extension = requestSearch.searchExtensionByRequestId(request.getRequestId());  // CHECK
+            var pricing = pricingSearch.getBreakdown(check.getBoardingId());  // CHECK
 
             // Check request status
             RequestStatusDS.isValidToCommit(check);
@@ -103,10 +103,10 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             addPricingBreakdown(pricing, check.getId(), check.getRequestType().getRequestType(), extension.getAdditionalPrice());
 
             // Save all to DB
-            serviceUpdate.updateApprovalExtension(extension.getId(), extension.isApproved(), extension.getUpdatedAt());
-            requestUpdate.markRequestAsCompletedWithMessage(check.getId(), check.getResponseMessage());
-            boardingUpdate.updateBoarding(boarding);
-            pricingSearch.unwrappedUpdateRequestBreakdown(boarding.getId(), pricing);
+            serviceUpdate.updateApprovalExtension(extension.getId(), extension.isApproved(), extension.getUpdatedAt());   // CHECK
+            requestUpdate.markRequestAsCompletedWithMessage(check.getId(), check.getResponseMessage());  // CHECK
+            boardingUpdate.updateBoarding(boarding);    // CHECK
+            pricingSearch.unwrappedUpdateRequestBreakdown(boarding.getId(), pricing);    // CHECK
 
             // DTO
             String petName = petSearch.getPetName(boarding.getPetId());

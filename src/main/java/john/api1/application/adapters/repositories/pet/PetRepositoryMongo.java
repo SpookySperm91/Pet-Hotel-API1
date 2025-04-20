@@ -234,36 +234,26 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
     @Override
     public Optional<PetCQRS> getPetDetails(String id) {
         if (!ObjectId.isValid(id)) {
-            throw new DomainArgumentException("Invalid Owner ID format");
+            throw new DomainArgumentException("Invalid pet id format");
         }
 
-        Query query = new Query();
-        query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
+        Query query = new Query(Criteria.where("_id").is(new ObjectId(id)));
 
-        // Include all fields in PetCQRS
-        query.fields().include(
-                "profilePictureUrl",
-                "petName",
-                "ownerName",
-                "animalType",
-                "breed",
-                "size",
-                "age",
-                "specialDescription",
-                "boarding");
+        PetEntity entity = mongoTemplate.findOne(query, PetEntity.class);
+        if (entity == null) return Optional.empty();
 
-        return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
-                .map(entity -> new PetCQRS(
-                        entity.getProfilePictureUrl(),
-                        entity.getPetName(),
-                        entity.getAnimalType(),
-                        entity.getBreed(),
-                        entity.getSize(),
-                        entity.getAge(),
-                        entity.getSpecialDescription(),
-                        entity.isBoarding()
-                ));
+        return Optional.of(new PetCQRS(
+                entity.getProfilePictureUrl(),
+                entity.getPetName(),
+                entity.getAnimalType(),
+                entity.getBreed(),
+                entity.getSize(),
+                entity.getAge(),
+                entity.getSpecialDescription(),
+                entity.isBoarding()
+        ));
     }
+
 
     @Override
     public Optional<PetCQRS> getPetNameBreed(String id) {

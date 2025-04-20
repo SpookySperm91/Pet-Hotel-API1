@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.List;
 
 public class BoardingExtensionDS {
-    private static final int HOURS_PER_DAY = 12;
+    private static final int HOURS_PER_DAY = 24;
 
     public static Instant calculateFinalBoardingEnd(Instant boardingEnd, List<ExtensionDomain> extensions) {
         long totalExtensionHours = extensions.stream()

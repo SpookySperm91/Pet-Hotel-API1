@@ -53,6 +53,7 @@ public class RequestCreateRepository implements IRequestCreateRepository {
                 new ObjectId(request.getBoardingId()),
                 request.getAdditionalPrice(),
                 request.getExtendedHours(),
+                request.getDurationType().getDurationType(),
                 request.getDescription(),
                 request.getCreatedAt(),
                 request.getUpdatedAt(),

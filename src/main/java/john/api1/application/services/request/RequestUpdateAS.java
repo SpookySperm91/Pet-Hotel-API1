@@ -18,15 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(rollbackFor = {DomainArgumentException.class, PersistenceException.class, MongoException.class})
-public class RequestUpdate implements IRequestUpdate {
+public class RequestUpdateAS implements IRequestUpdate {
     private final IRequestUpdateRepository updateRepository;
     private final IRequestDeleteRepository deleteRepository;
     private final IRequestSearchRepository searchRepository;
 
     @Autowired
-    public RequestUpdate(IRequestUpdateRepository updateRepository,
-                         IRequestDeleteRepository deleteRepository,
-                         IRequestSearchRepository searchRepository) {
+    public RequestUpdateAS(IRequestUpdateRepository updateRepository,
+                           IRequestDeleteRepository deleteRepository,
+                           IRequestSearchRepository searchRepository) {
         this.updateRepository = updateRepository;
         this.deleteRepository = deleteRepository;
         this.searchRepository = searchRepository;

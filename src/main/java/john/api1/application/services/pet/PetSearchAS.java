@@ -21,9 +21,11 @@ public class PetSearchAS implements IPetSearch {
     public PetCQRS getPetBoardingDetails(String petId) {
         if (!ObjectId.isValid(petId)) throw new PersistenceException("Pet id is invalid.");
 
-        return petSearch.getPetDetails(petId)
-                .orElseThrow(() -> new PersistenceException("Pet cannot be found."));
+        System.out.println("PetSearchAS.getPetBoardingDetails:: pet id: " + petId);
 
+        var pet = petSearch.getPetDetails(petId);
+        if (pet.isEmpty()) throw new PersistenceException("Pet cannot be found.");
+        return pet.get();
     }
 
     @Override

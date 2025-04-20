@@ -161,6 +161,8 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
             RequestDomain requestdomain = requestSearch.searchByRequestId(request.getRequestId());
             if (requestdomain.getRequestType() != RequestType.VIDEO_REQUEST)
                 throw new DomainArgumentException("Invalid. The request is not a video request");
+
+            // Check if approved before commit
             RequestStatusDS.isValidToCommit(requestdomain);
 
             // Generate video media

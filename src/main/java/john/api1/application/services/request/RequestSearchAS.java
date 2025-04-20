@@ -18,13 +18,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class RequestSearch implements IRequestSearch {
+public class RequestSearchAS implements IRequestSearch {
     private final IRequestSearchRepository searchRepository;
     private final IRequestCompletedSearchRepository searchCompletedRepository;
 
     @Autowired
-    public RequestSearch(IRequestSearchRepository searchRepository,
-                         IRequestCompletedSearchRepository searchCompletedRepository) {
+    public RequestSearchAS(IRequestSearchRepository searchRepository,
+                           IRequestCompletedSearchRepository searchCompletedRepository) {
         this.searchRepository = searchRepository;
         this.searchCompletedRepository = searchCompletedRepository;
     }

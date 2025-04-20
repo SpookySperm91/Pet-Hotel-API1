@@ -5,7 +5,6 @@ import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.cores.ActivityLogDS;
 import john.api1.application.domain.cores.ActivityLogDataContext;
 import john.api1.application.domain.models.ActivityLogDomain;
-import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.dto.mapper.history.ActivityLogDTO;
 import john.api1.application.ports.repositories.history.IHistoryLogSearchRepository;
 import john.api1.application.ports.services.IPetOwnerSearch;
@@ -24,9 +23,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+// Note: This layer throw persistence exception instead of handling. Expected other actors who use will catch gracefully!
 @Service
 public class HistoryLogSearchAS implements IHistoryLogSearch {
-    private static final Logger logger = LoggerFactory.getLogger(HistoryLogSearchAS.class);
+    private static final Logger log = LoggerFactory.getLogger(HistoryLogSearchAS.class);
 
     private final IHistoryLogSearchRepository searchRepository;
     private final IBoardingSearch boardingSearch;
@@ -62,7 +62,8 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
             ActivityLogDTO dto = transformLog(domain, context);
 
             return Optional.ofNullable(dto);
-        } catch (PersistenceException e) {
+        } catch (PersistenceException | NullPointerException e) {
+            log.error("Error occurred while fetching activity logs: {}", e.getMessage());
             throw e;
         }
     }
@@ -75,16 +76,14 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
                 throw new PersistenceException("No activity logs found");
             }
 
-            List<ActivityLogDTO> dtoList = activities.stream()
+            return activities.stream()
                     .map(domain -> {
                         ActivityLogDataContext context = buildDataContext(domain);
                         return transformLog(domain, context);
                     })
                     .collect(Collectors.toList());
-
-            return dtoList;
-        } catch (PersistenceException e) {
-            logger.error("Error occurred while fetching activity logs: {}", e.getMessage());
+        } catch (PersistenceException | NullPointerException e) {
+            log.error("Error occurred while fetching activity logs: {}", e.getMessage());
             throw e;
         }
     }
@@ -102,8 +101,8 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
             ActivityLogDomain domain = activity.get();
             ActivityLogDataContext context = buildDataContext(domain);
             return Optional.ofNullable(transformLog(domain, context));
-        } catch (PersistenceException e) {
-            logger.error("Error occurred while fetching activity logs: {}", e.getMessage());
+        } catch (PersistenceException | NullPointerException e) {
+            log.error("Error occurred while fetching activity logs: {}", e.getMessage());
             throw e;
         }
     }
@@ -116,110 +115,154 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
     public Optional<List<ActivityLogDTO>> getByBetweenDate(Instant start, Instant end) {
         return Optional.empty();
     }
-////////////////////////////////
+    ////////////////////////////////
 
     @Override
     public List<ActivityLogDTO> searchByActivityType(ActivityLogType type) {
-        List<ActivityLogDomain> activities = searchRepository.searchByActivityType(type);
-        if (activities.isEmpty()) {
-            return List.of(); // Empty list if no activities of the given type
-        }
+        try {
+            List<ActivityLogDomain> activities = searchRepository.searchByActivityType(type);
+            if (activities.isEmpty()) {
+                return List.of();
+            }
 
-        return activities.stream()
-                .map(domain -> {
-                    ActivityLogDataContext context = buildDataContext(domain);
-                    return transformLog(domain, context);
-                })
-                .collect(Collectors.toList());
+            return activities.stream()
+                    .map(domain -> {
+                        ActivityLogDataContext context = buildDataContext(domain);
+                        return transformLog(domain, context);
+                    })
+                    .collect(Collectors.toList());
+        } catch (PersistenceException | NullPointerException e) {
+            log.error("Error occurred while fetching activity logs: {}", e.getMessage());
+            throw e;
+        }
     }
 
-    private ActivityLogDataContext buildDataContext(ActivityLogDomain domain) {
-        switch (domain.getActivityType()) {
-            case BOARDING_MANAGEMENT:
-                // Fetch boarding details
-                var boardingResult = boardingSearch.findBoardingById(domain.getTypeId());
-                if (boardingResult.isSuccess()) {
-                    BoardingDomain boarding = boardingResult.getData();
+    private ActivityLogDataContext buildDataContext(ActivityLogDomain activity) {
+        try {
+            switch (activity.getActivityType()) {
+                case BOARDING_MANAGEMENT -> {
+                    var boardingResult = boardingSearch.findBoardingById(activity.getTypeId());
+                    if (boardingResult.isSuccess()) {
+                        var boarding = boardingResult.getData();
+                        var pricingOpt = pricingSearch.getBoardingPricingCqrs(boarding.getId());
+                        var petOpt = petSearch.getPetBoardingDetails(boarding.getPetId());
 
-                    var pricing = pricingSearch.getBoardingPricingCqrs(boarding.getId());
-                    var pet = petSearch.getPetBoardingDetails(boarding.getPetId());
-
-                    var owner = ownerSearch.getPetOwnerBoardingDetails(boarding.getOwnerId());
-                    return new ActivityLogDataContext.Builder()
-                            .boarding(boarding)
-                            .pricing(pricing.get())
-                            .pet(pet)
-                            .owner(owner) // Add owner details
-                            .build();
+                        if (pricingOpt.isPresent() && petOpt != null) {
+                            return new ActivityLogDataContext.Builder()
+                                    .boarding(boarding)
+                                    .pricing(pricingOpt.get())
+                                    .pet(petOpt)
+                                    .build();
+                        }
+                    }
                 }
-                break;
 
-            case PET_OWNER_MANAGEMENT:
-                // Fetch boarding first to get the ownerId
-                var boardingForOwner = boardingSearch.findBoardingById(domain.getTypeId());
-                if (boardingForOwner.isSuccess()) {
-                    BoardingDomain boarding = boardingForOwner.getData();
-                    var owner = ownerSearch.getPetOwnerBoardingDetails(boarding.getOwnerId());
-                    return new ActivityLogDataContext.Builder()
-                            .owner(owner)
-                            .build();
+                case PET_OWNER_MANAGEMENT -> {
+                    var boardingResult = boardingSearch.findBoardingById(activity.getTypeId());
+                    if (boardingResult.isSuccess()) {
+                        var boarding = boardingResult.getData();
+                        var ownerOpt = ownerSearch.getPetOwnerBoardingDetails(boarding.getOwnerId());
+
+                        if (ownerOpt != null) {
+                            return new ActivityLogDataContext.Builder()
+                                    .owner(ownerOpt)
+                                    .build();
+                        }
+                    }
                 }
-                break;
 
-            case PET_MANAGEMENT:
-                // Fetch boarding first to get the petId
-                var boardingForPet = boardingSearch.findBoardingById(domain.getTypeId());
-                if (boardingForPet.isSuccess()) {
-                    BoardingDomain boarding = boardingForPet.getData();
-                    var pet = petSearch.getPetBoardingDetails(boarding.getPetId());
-                    return new ActivityLogDataContext.Builder()
-                            .pet(pet)
-                            .build();
+                case PET_MANAGEMENT -> {
+                    var boardingResult = boardingSearch.findBoardingById(activity.getTypeId());
+                    if (boardingResult.isSuccess()) {
+                        var boarding = boardingResult.getData();
+                        var ownerOpt = ownerSearch.getPetOwnerBoardingDetails(boarding.getOwnerId());
+                        var petOpt = petSearch.getPetBoardingDetails(boarding.getPetId());
+
+                        if (ownerOpt != null && petOpt != null) {
+                            return new ActivityLogDataContext.Builder()
+                                    .owner(ownerOpt)
+                                    .pet(petOpt)
+                                    .build();
+                        }
+                    }
                 }
-                break;
 
-            case REQUEST_MANAGEMENT:
-                // Fetch request details for request management activity
-                var request = requestSearch.searchByRequestId(domain.getTypeId());
-                if (request != null) {
-                    return new ActivityLogDataContext.Builder()
-                            .request(request)
-                            .build();
+                case REQUEST_MANAGEMENT -> {
+                    var request = requestSearch.searchByRequestId(activity.getTypeId());
+
+                    if (request != null) {
+                        System.out.println(request.toString());
+
+                        var petOpt = petSearch.getPetBoardingDetails(request.getPetId());
+                        if (petOpt == null) return null;
+
+                        return switch (request.getRequestType()) {
+                            case BOARDING_EXTENSION -> {
+                                var boardingResult = boardingSearch.findBoardingById(request.getBoardingId());
+                                var pricingOpt = pricingSearch.getBoardingPricingCqrs(request.getBoardingId());
+                                var extension = requestSearch.searchExtensionByRequestIdCqrs(request.getId());
+
+                                if (boardingResult.isSuccess() && pricingOpt.isPresent() && extension != null) {
+                                    yield new ActivityLogDataContext.Builder()
+                                            .boarding(boardingResult.getData())
+                                            .pricing(pricingOpt.get())
+                                            .extension(extension)
+                                            .pet(petOpt)
+                                            .build();
+                                }
+                                yield null;
+                            }
+
+                            case GROOMING_SERVICE -> {
+                                var grooming = requestSearch.searchGroomingByRequestIdCqrs(request.getId());
+                                if (grooming != null) {
+                                    yield new ActivityLogDataContext.Builder()
+                                            .grooming(grooming)
+                                            .pet(petOpt)
+                                            .build();
+                                }
+                                yield null;
+                            }
+
+                            case PHOTO_REQUEST, VIDEO_REQUEST -> new ActivityLogDataContext.Builder()
+                                    .pet(petOpt)
+                                    .build();
+
+                            default -> null;
+                        };
+                    }
                 }
-                break;
 
-            default:
-                break;
+                default -> {
+                    return null;
+                }
+            }
+        } catch (PersistenceException | IllegalStateException | NullPointerException ex) {
+            // Optionally log the error for debugging:
+            log.warn("Failed to build activity log context for activity {}: {}", activity.getId(), ex.getMessage());
         }
 
-        return null; // Return null if no context could be built
+        return null;
     }
+
 
     private ActivityLogDTO transformLog(ActivityLogDomain domain, ActivityLogDataContext context) {
-        switch (domain.getActivityType()) {
-            case BOARDING_MANAGEMENT:
-                return ActivityLogDS.transformBoarding(domain, context);
-            case PET_OWNER_MANAGEMENT:
-                return ActivityLogDS.transformRegisterOwner(domain, context);
-            case PET_MANAGEMENT:
-                return ActivityLogDS.transformRegisterPet(domain, context);
-            case REQUEST_MANAGEMENT:
-                switch (domain.getRequestType()) {
-                    case PHOTO_REQUEST:
-                    case VIDEO_REQUEST:
-                        return ActivityLogDS.transformRequestMedia(domain, context);
-                    case BOARDING_EXTENSION:
-                        return ActivityLogDS.transformRequestExtension(domain, context);
-                    case GROOMING_SERVICE:
-                        return ActivityLogDS.transformRequestGrooming(domain, context);
-                    case null:
-                        break;
-                    default:
-                        return null;
+        return switch (domain.getActivityType()) {
+            case BOARDING_MANAGEMENT -> ActivityLogDS.transformBoarding(domain, context);
+            case PET_OWNER_MANAGEMENT -> ActivityLogDS.transformRegisterOwner(domain, context);
+            case PET_MANAGEMENT -> ActivityLogDS.transformRegisterPet(domain, context);
+            case REQUEST_MANAGEMENT -> {
+                if (domain.getRequestType() == null) {
+                    throw new PersistenceException("Request type is null for request management log");
                 }
-            default:
-                return null;
-        }
+                yield switch (domain.getRequestType()) {
+                    case PHOTO_REQUEST, VIDEO_REQUEST -> ActivityLogDS.transformRequestMedia(domain, context);
+                    case BOARDING_EXTENSION -> ActivityLogDS.transformRequestExtension(domain, context);
+                    case GROOMING_SERVICE -> ActivityLogDS.transformRequestGrooming(domain, context);
+                    default -> null;
+                };
+            }
+        };
     }
 
 

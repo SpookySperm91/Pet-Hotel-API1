@@ -6,13 +6,14 @@ import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @AllArgsConstructor
 @Getter
-
+@ToString
 public class RequestDomain {
     private final String id;
     private final String petId;
