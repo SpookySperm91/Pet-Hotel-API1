@@ -35,10 +35,9 @@ public class PhotoRequestEntity {
                 .toList();
     }
 
-    public record PhotoFileListEnt(
-            ObjectId mediaId,
-            String fileName
-    ) {
-
+        public record PhotoFileListEnt(
+                ObjectId mediaId,
+                String fileName
+        ) {
+        }
     }
-}

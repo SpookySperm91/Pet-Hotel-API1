@@ -1,7 +1,6 @@
 package john.api1.application.adapters.repositories;
 
 import jakarta.annotation.Nullable;
-import john.api1.application.components.enums.BucketType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,8 +27,8 @@ public class MinioEntity {
     private ObjectId ownerId;
     @Field("typeId")
     @Nullable
-    private ObjectId typeId; // request ID (nullable for non-request related photos)
-    private String fileUrl;  // object url or final id
+    private ObjectId typeId; // request id (nullable for non-request related photos)
+    private String fileName;  // name + id
     private String bucketType; // bucket type(request type)
     private String description;
     private Instant uploadedAt;

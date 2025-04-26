@@ -6,8 +6,10 @@ import john.api1.application.domain.models.request.GroomingDomain;
 import john.api1.application.domain.models.request.RequestDomain;
 import john.api1.application.ports.repositories.request.ExtensionCQRS;
 import john.api1.application.ports.repositories.request.GroomingCQRS;
+import john.api1.application.ports.repositories.request.RequestCQRS;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IRequestSearch {
     RequestDomain searchByRequestId(String requestId);
@@ -27,4 +29,7 @@ public interface IRequestSearch {
     GroomingCQRS searchGroomingByRequestIdCqrs(String id);
 
     ExtensionCQRS searchExtensionByRequestIdCqrs(String id);
+
+    // Recent media?
+    Optional<RequestCQRS> searchRecentMediaRequest();
 }

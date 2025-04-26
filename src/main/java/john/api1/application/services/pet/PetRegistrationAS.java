@@ -6,9 +6,9 @@ import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.components.exception.PersistenceHistoryException;
 import john.api1.application.domain.models.PetDomain;
 import john.api1.application.dto.request.PetRDTO;
-import john.api1.application.ports.repositories.owner.IAccountSearchRepository;
 import john.api1.application.ports.repositories.owner.IPetOwnerUpdateRepository;
 import john.api1.application.ports.repositories.pet.IPetCreateRepository;
+import john.api1.application.ports.services.IPetOwnerSearch;
 import john.api1.application.ports.services.history.IHistoryLogCreate;
 import john.api1.application.ports.services.pet.IPetRegister;
 import org.bson.types.ObjectId;
@@ -23,13 +23,13 @@ public class PetRegistrationAS implements IPetRegister {
 
     private final IPetCreateRepository petCreate;
     private final IPetOwnerUpdateRepository ownerUpdate;
-    private final IAccountSearchRepository ownerSearch;
+    private final IPetOwnerSearch ownerSearch;
     private final IHistoryLogCreate historyCreate;
 
     @Autowired
     public PetRegistrationAS(IPetCreateRepository petCreate,
                              IPetOwnerUpdateRepository accountUpdate,
-                             IAccountSearchRepository ownerSearch,
+                             IPetOwnerSearch ownerSearch,
                              IHistoryLogCreate historyCreate) {
         this.petCreate = petCreate;
         this.ownerUpdate = accountUpdate;
@@ -53,7 +53,7 @@ public class PetRegistrationAS implements IPetRegister {
             if (!ObjectId.isValid(ownerId))
                 throw new DomainArgumentException("Invalid owner id format cannot bec converted to ObjectId");
 
-            var owner = ownerSearch.getUsernameIdByEmail(ownerId);
+            var owner = ownerSearch.getPetOwnerDetails(ownerId);
             if (owner.isEmpty()) return DomainResponse.error("Pet owner does not exist.");
 
 
@@ -75,8 +75,8 @@ public class PetRegistrationAS implements IPetRegister {
 
             // history log
             try {
-                historyCreate.createActivityLogPetRegister(owner.get().username(), registerPet.getPetName());
-                log.info("Activity log created for new registered pet '{}' owned to '{}'", petDomain.getPetName(), owner.get().username());
+                historyCreate.createActivityLogPetRegister(owner.get().ownerName(), registerPet.getPetName());
+                log.info("Activity log created for new registered pet '{}' owned to '{}'", petDomain.getPetName(), owner.get().ownerName());
             } catch (PersistenceHistoryException e) {
                 log.warn("Activity log for new pet registration failed to save in class 'PetRegistrationAS'");
             }

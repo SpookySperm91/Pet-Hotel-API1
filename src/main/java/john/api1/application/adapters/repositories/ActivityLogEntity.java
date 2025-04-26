@@ -21,8 +21,9 @@ import java.time.Instant;
 public class ActivityLogEntity {
     @Id
     private ObjectId id;
-    @Indexed
-    private ObjectId typeId;
+    @Nullable
+    @Indexed(name = "typeId_sparse_idx", sparse = true)
+    private ObjectId typeId;  // boarding, request
     private String activityType;
     @Nullable
     private String requestType;
@@ -35,12 +36,12 @@ public class ActivityLogEntity {
     private Instant createdAt;
 
     public static ActivityLogEntity mapDomain(ActivityLogDomain domain) {
-        if (!ObjectId.isValid(domain.getTypeId()))
+        if (domain.getTypeId() != null && !ObjectId.isValid(domain.getTypeId()))
             throw new PersistenceException("Invalid animalType id cannot be converted to ObjectId");
 
         return new ActivityLogEntity(
                 null,
-                new ObjectId(domain.getTypeId()),
+                domain.getTypeId() != null && !domain.getTypeId().isEmpty() ? new ObjectId(domain.getTypeId()) : null,
                 domain.getActivityType().getActivityLogType(),
                 domain.getRequestType() != null ? domain.getRequestType().getRequestType() : null,
                 domain.getPerformedBy(),

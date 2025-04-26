@@ -24,6 +24,5 @@ public interface IRequestSearchRepository {
     List<RequestDomain> findAllByPetId(String petId);
 
     // CQRS
-
-
+    Optional<RequestCQRS> findRecentMediaRequest();
 }

@@ -6,8 +6,10 @@ import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.request.RequestDomain;
 import john.api1.application.ports.repositories.request.IRequestSearchRepository;
+import john.api1.application.ports.repositories.request.RequestCQRS;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -105,6 +107,34 @@ public class RequestSearchRepository implements IRequestSearchRepository {
         return entities.stream()
                 .map(this::toDomain)
                 .toList();
+    }
+
+
+    // Recent
+    @Override
+    public Optional<RequestCQRS> findRecentMediaRequest() {
+        var query = new Query()
+                .with(Sort.by(Sort.Direction.DESC, "updatedAt"))
+                .addCriteria(new Criteria().andOperator(
+                        new Criteria().orOperator(
+                                Criteria.where("requestType").is(RequestType.PHOTO_REQUEST.getRequestType()),
+                                Criteria.where("requestType").is(RequestType.VIDEO_REQUEST.getRequestType())
+                        ),
+                        Criteria.where("isActive").is(false)
+                ))
+                .limit(1);
+
+        var media = mongoTemplate.findOne(query, RequestEntity.class);
+        if (media == null) return Optional.empty();
+
+        return Optional.of(RequestCQRS.mapMedia(
+                media.getId().toString(),
+                media.getOwnerId().toString(),
+                media.getPetId().toString(),
+                media.getBoardingId().toString(),
+                RequestType.fromString(media.getRequestType()),
+                media.getDescription()
+        ));
     }
 
 

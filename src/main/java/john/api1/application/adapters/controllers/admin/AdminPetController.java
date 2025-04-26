@@ -98,6 +98,7 @@ public class AdminPetController {
 
         // Step 2: Call service to process
         var processUrl = petProfilePic.processProfilePhoto(id, petName);
+
         if (!processUrl.isSuccess()) {
             HttpStatus status;
             switch (processUrl.getErrorType()) {

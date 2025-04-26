@@ -1,6 +1,5 @@
 package john.api1.application.services.media;
 
-import com.google.common.base.Optional;
 import john.api1.application.adapters.services.MinioAdapter;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MediaSearchAS implements IMediaSearch {
@@ -74,14 +74,15 @@ public class MediaSearchAS implements IMediaSearch {
 
     @Override
     public Optional<MediaIdUrlExpire> findProfilePicByOwnerId(String ownerId) {
-        if (!ObjectId.isValid(ownerId)) throw new PersistenceException("Owner id for media retrieval cannot be converted to ObjectId");
+        if (!ObjectId.isValid(ownerId))
+            throw new PersistenceException("Owner id for media retrieval cannot be converted to ObjectId");
 
         var results = mediaRepository.findProfilePicByOwnerId(ownerId);
-        if (results.isEmpty()) return Optional.absent();
+        if (results.isEmpty()) return Optional.empty();
 
         String preSignedUrl = minioAdapter.getReadUrl(
                 results.get().bucketType(),
-                results.get().fileUrl());
+                results.get().fileName());
 
         return Optional.of(new MediaIdUrlExpire(
                 results.get().id(),
@@ -90,9 +91,22 @@ public class MediaSearchAS implements IMediaSearch {
         ));
     }
 
+    @Override
+    public Optional<List<MediaPreview>> findByRequestId(String requestId) {
+        if (!ObjectId.isValid(requestId))
+            throw new PersistenceException("Invalid type-id from media search cannot be converted to ObjectId");
+
+        var results = mediaRepository.findByTypeId(requestId)
+                .stream()
+                .map(this::mapToMediaPreview)
+                .toList();
+
+        return Optional.ofNullable(results);
+    }
+
 
     private MediaPreview mapToMediaPreview(MediaEntityPreview entity) {
-        String preSignedUrl = minioAdapter.getReadUrl(entity.bucketType(), entity.fileUrl());
+        String preSignedUrl = minioAdapter.getReadUrl(entity.bucketType(), entity.fileName());
         return new MediaPreview(
                 entity.id(),
                 entity.description(),

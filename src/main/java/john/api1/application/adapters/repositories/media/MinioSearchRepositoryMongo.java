@@ -114,7 +114,7 @@ public class MinioSearchRepositoryMongo implements IMediaSearchRepository {
                 entity.getId().toString(),
                 entity.getDescription(),
                 BucketType.fromString(entity.getBucketType()),
-                entity.getFileUrl(),
+                entity.getFileName(),
                 entity.getUploadedAt(),
                 entity.getPreSignedUrlExpire()
         );
@@ -130,7 +130,7 @@ class MediaMapper {
                 entity.getId().toString(),
                 entity.getDescription(),
                 BucketType.fromString(entity.getBucketType()),
-                entity.getFileUrl(),
+                entity.getFileName(),
                 entity.getUploadedAt(),
                 entity.getPreSignedUrlExpire()
         );

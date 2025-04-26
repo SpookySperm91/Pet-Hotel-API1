@@ -16,6 +16,7 @@ import java.time.Instant;
 @Getter
 public class ActivityLogDomain {
     private final String id;
+    @Nullable
     private String typeId;  // Request, Boarding
     private ActivityLogType activityType;
     @Nullable

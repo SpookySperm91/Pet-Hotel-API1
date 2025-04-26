@@ -14,6 +14,7 @@ public enum RequestType {
 
     private final String requestType;
     private final String requestTypeToDto;
+    // private final String requestTypeToMediaDto;  Possible future implementation(?)
 
     public static RequestType fromString(String requestType) {
         if (requestType == null) {

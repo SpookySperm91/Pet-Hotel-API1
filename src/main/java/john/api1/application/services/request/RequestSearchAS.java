@@ -6,16 +6,14 @@ import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.request.ExtensionDomain;
 import john.api1.application.domain.models.request.GroomingDomain;
 import john.api1.application.domain.models.request.RequestDomain;
-import john.api1.application.ports.repositories.request.ExtensionCQRS;
-import john.api1.application.ports.repositories.request.GroomingCQRS;
-import john.api1.application.ports.repositories.request.IRequestCompletedSearchRepository;
-import john.api1.application.ports.repositories.request.IRequestSearchRepository;
+import john.api1.application.ports.repositories.request.*;
 import john.api1.application.ports.services.request.IRequestSearch;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RequestSearchAS implements IRequestSearch {
@@ -88,6 +86,12 @@ public class RequestSearchAS implements IRequestSearch {
         return searchCompletedRepository.getExtensionByRequestIdCqrs(id)
                 .orElseThrow(() -> new PersistenceException("Extension request cannot be found"));
     }
+
+    @Override
+    public Optional<RequestCQRS> searchRecentMediaRequest(){
+        return searchRepository.findRecentMediaRequest();
+    }
+
 
     private void validateId(String id) {
         if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid id cannot be converted to ObjectId");

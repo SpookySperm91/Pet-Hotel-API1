@@ -28,7 +28,17 @@ public class PetOwnerSearchAS implements IPetOwnerSearch {
 
         return petOwnerCQRS.getDetails(petOwnerId)
                 .orElseThrow(() -> new PersistenceException("Pet-owner cannot be found!"));
+    }
 
+    @Override
+    public Optional<PetOwnerCQRS> getPetOwnerDetails(String petOwnerId) {
+        if (!ObjectId.isValid(petOwnerId))
+            throw new DomainArgumentException("Pet-owner id is invalid");
+
+        return petOwnerCQRS.getDetails(petOwnerId)
+                .or(() -> {
+                    throw new PersistenceException("Pet-owner cannot be found!");
+                });
     }
 
     @Override

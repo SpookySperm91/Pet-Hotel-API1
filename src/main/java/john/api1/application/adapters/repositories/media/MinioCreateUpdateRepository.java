@@ -52,7 +52,7 @@ public class MinioCreateUpdateRepository implements IMediaCreateRepository, IMed
                         savedEntity.getId().toString(),
                         savedEntity.getOwnerId().toString(),
                         savedEntity.getTypeId() != null ? savedEntity.getTypeId().toString() : null,
-                        savedEntity.getFileUrl(),
+                        savedEntity.getFileName(),
                         BucketType.fromString(savedEntity.getBucketType()),
                         savedEntity.getDescription(),
                         savedEntity.getUploadedAt(),

@@ -67,9 +67,13 @@ public class HistoryLogCreateAS implements IHistoryLogCreate {
 
     // Shared save method with exception handling
     private void saveOrThrow(ActivityLogDomain domain) {
-        var saved = createRepository.createNewLog(domain);
-        if (saved.isEmpty()) {
-            throw new PersistenceHistoryException("Activity log failed to save: " + domain);
+        try {
+            var saved = createRepository.createNewLog(domain);
+            if (saved.isEmpty()) {
+                throw new PersistenceHistoryException("Activity log failed to save: " + domain);
+            }
+        } catch (NullPointerException e) {
+            throw new PersistenceHistoryException("Activity log failed to save due to null pointer: " + domain);
         }
     }
 }

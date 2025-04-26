@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface IPetOwnerSearch {
     PetOwnerCQRS getPetOwnerBoardingDetails(String id);
+    Optional<PetOwnerCQRS> getPetOwnerDetails(String id);
 
     List<String> getPetOwnerPets(String id);
 

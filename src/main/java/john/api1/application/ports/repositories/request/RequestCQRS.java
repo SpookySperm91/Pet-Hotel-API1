@@ -10,12 +10,16 @@ public record RequestCQRS(
         String petId,
         String boardingId,
         RequestType type,
+        String description,
         Instant createdAt,
         Instant updatedAt,
         Boolean active
 ) {
     public static RequestCQRS mapIds(String id, String ownerId, String petId, String boardingId) {
-        return new RequestCQRS(id, ownerId, petId, boardingId, null, null, null,null);
+        return new RequestCQRS(id, ownerId, petId, boardingId, null, null, null, null, null);
     }
 
+    public static RequestCQRS mapMedia(String id, String ownerId, String petId, String boardingId, RequestType type, String description) {
+        return new RequestCQRS(id, ownerId, petId, boardingId, type, description, null, null, null);
+    }
 }

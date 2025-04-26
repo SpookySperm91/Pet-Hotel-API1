@@ -5,8 +5,10 @@ import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.ports.repositories.wrapper.MediaPreview;
 import john.api1.application.ports.repositories.wrapper.PreSignedUrlResponse;
+import john.api1.application.ports.services.media.IMediaSearch;
 import john.api1.application.services.media.MediaManagementAS;
 import john.api1.application.services.media.MediaSearchAS;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,9 +23,10 @@ import java.util.List;
 @RequestMapping("/api/v1/media/test/")
 public class MediaTest {
     private final MediaManagementAS mediaManagement;
-    private final MediaSearchAS mediaSearch;
+    private final IMediaSearch mediaSearch;
 
-    public MediaTest(MediaManagementAS mediaManagement, MediaSearchAS mediaSearch) {
+    @Autowired
+    public MediaTest(MediaManagementAS mediaManagement, IMediaSearch mediaSearch) {
         this.mediaManagement = mediaManagement;
         this.mediaSearch = mediaSearch;
     }

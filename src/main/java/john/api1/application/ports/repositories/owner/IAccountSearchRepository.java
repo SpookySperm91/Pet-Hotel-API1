@@ -19,6 +19,7 @@ public interface IAccountSearchRepository {
     // ReadOnly
     Optional<UsernameAndId> getUsernameIdByEmail(String email);
 
+
     // Full Domain Object
     // 🔹 Full Profile (Used for login & profile retrieval)
     Optional<ClientFullAccount> getFullAccountById(String id);
