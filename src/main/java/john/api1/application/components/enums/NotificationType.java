@@ -1,5 +1,6 @@
 package john.api1.application.components.enums;
 
+import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -27,4 +28,12 @@ public enum NotificationType {
     private final String notificationType;
     private final String notificationTypeDto;
 
+    public static NotificationType fromString(String type) {
+        for (NotificationType t : NotificationType.values()) {
+            if (t.notificationType.equals(type)) {
+                return t;
+            }
+        }
+        throw new DomainArgumentException("Invalid NotificationType: " + type);
+    }
 }
