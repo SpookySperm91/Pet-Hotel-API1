@@ -3,8 +3,8 @@ package john.api1.application.adapters.controllers.admin;
 import john.api1.application.components.ExternalReferencesUrls;
 import john.api1.application.components.enums.EndpointType;
 import john.api1.application.dto.DTOResponse;
-import john.api1.application.dto.mapper.PetRegisterResponseDTO;
-import john.api1.application.dto.mapper.ProfileResponseDTO;
+import john.api1.application.dto.mapper.PetRegisterDTO;
+import john.api1.application.dto.mapper.ProfileDTO;
 import john.api1.application.dto.request.PetRDTO;
 import john.api1.application.ports.services.pet.IPetProfilePhoto;
 import john.api1.application.ports.services.pet.IPetRegister;
@@ -37,7 +37,7 @@ public class AdminPetController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<DTOResponse<PetRegisterResponseDTO>> registerPet(
+    public ResponseEntity<DTOResponse<PetRegisterDTO>> registerPet(
             @Valid @RequestBody PetRDTO petRequest,
             BindingResult result) {
 
@@ -74,7 +74,7 @@ public class AdminPetController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DTOResponse.of(
                         HttpStatus.OK.value(),
-                        new PetRegisterResponseDTO(
+                        new PetRegisterDTO(
                                 tokenResponse.getData().getAuthorizedId(),
                                 requestUploadUrl),
                         registerResponse.getMessage()
@@ -85,7 +85,7 @@ public class AdminPetController {
     // Call service layer to process
     // Return response (url)
     @PostMapping("register/{id}/{petName}/upload-photo/{token}")
-    public ResponseEntity<DTOResponse<ProfileResponseDTO>> updatePetPhoto(
+    public ResponseEntity<DTOResponse<ProfileDTO>> updatePetPhoto(
             @PathVariable String id,
             @PathVariable String petName,
             @PathVariable String token

@@ -3,7 +3,7 @@ package john.api1.application.services.pet;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
 import john.api1.application.domain.models.MediaDomain;
-import john.api1.application.dto.mapper.ProfileResponseDTO;
+import john.api1.application.dto.mapper.ProfileDTO;
 import john.api1.application.ports.services.media.IMediaManagement;
 import john.api1.application.ports.services.pet.IPetProfilePhoto;
 import john.api1.application.ports.services.pet.IPetUpdate;
@@ -20,7 +20,7 @@ public class PetProfilePhotoAS implements IPetProfilePhoto {
     }
 
     @Override
-    public DomainResponse<ProfileResponseDTO> processProfilePhoto(String id, String petName) {
+    public DomainResponse<ProfileDTO> processProfilePhoto(String id, String petName) {
 
         // Step 1: Create pre-signed url
         String objectName = mediaManagement.generateMediaObjectName(petName, id);
@@ -50,7 +50,7 @@ public class PetProfilePhotoAS implements IPetProfilePhoto {
 
         // Step 4: Return Response
         return DomainResponse.success(
-                new ProfileResponseDTO(
+                new ProfileDTO(
                         saveMediaResponse.getData().id(),
                         generateMedia.getData().preSignedUrl(),
                         saveMediaResponse.getData().expiredAt()

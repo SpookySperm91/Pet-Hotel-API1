@@ -1,7 +1,7 @@
 package john.api1.application.adapters.controllers.admin;
 
 import john.api1.application.dto.DTOResponse;
-import john.api1.application.dto.mapper.RegisterResponseDTO;
+import john.api1.application.dto.mapper.RegisterDTO;
 import john.api1.application.dto.request.RegisterRDTO;
 import john.api1.application.ports.services.IRegisterNewClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +25,12 @@ public class AdminController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<DTOResponse<RegisterResponseDTO>> registerPetOwner(@Valid @RequestBody RegisterRDTO request) {
+    public ResponseEntity<DTOResponse<RegisterDTO>> registerPetOwner(@Valid @RequestBody RegisterRDTO request) {
         // Call registration service
         var response = register.registerNewClient(request);
 
         if (response.isSuccess()) {
-            RegisterResponseDTO dto = response.getData().toDTO();
+            RegisterDTO dto = response.getData().toDTO();
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(

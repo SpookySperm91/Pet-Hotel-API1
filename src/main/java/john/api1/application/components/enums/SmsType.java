@@ -9,7 +9,7 @@ public enum SmsType {
     REGISTER("Register"),
     CHANGE_PASSWORD_CODE("ChangePasswordCode"),
     UPDATE_STATUS("UpdateStatus"),
-    NOTIFICATION("Notification");
+    NOTIFICATION("NotificationAS");
 
     private final String SmsType;
 
