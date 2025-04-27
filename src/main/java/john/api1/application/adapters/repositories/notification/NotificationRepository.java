@@ -1,5 +1,6 @@
 package john.api1.application.adapters.repositories.notification;
 
+import com.mongodb.client.result.DeleteResult;
 import john.api1.application.adapters.repositories.NotificationEntity;
 import john.api1.application.components.enums.NotificationType;
 import john.api1.application.components.exception.PersistenceException;
@@ -83,28 +84,37 @@ public class NotificationRepository implements INotificationCreateRepository, IN
         return entities.stream().map(this::toDomain).collect(Collectors.toList());
     }
 
-    // Delete
     @Override
     public void deleteById(String id) {
-        validateId(id, "");
+        validateId(id, "notification");
 
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
-        mongoTemplate.remove(query, NotificationEntity.class);
+        DeleteResult result = mongoTemplate.remove(query, NotificationEntity.class);
+
+        // Check if any document was deleted
+        if (result.getDeletedCount() == 0) {
+            throw new PersistenceException("No notification found with the given id: " + id);
+        }
     }
 
     @Override
-    public void deleteAllRead(String ownerId) {
+    public long deleteAllRead(String ownerId) {
         validateId(ownerId, "owner");
 
         Query query = new Query();
         query.addCriteria(Criteria.where("ownerId").is(new ObjectId(ownerId)).and("read").is(true));
-        mongoTemplate.remove(query, NotificationEntity.class);
+        DeleteResult result = mongoTemplate.remove(query, NotificationEntity.class);
 
+        // Check if any document was deleted
+        if (result.getDeletedCount() == 0) {
+            throw new PersistenceException("No read notifications found for the owner with id: " + ownerId);
+        }
+        return result.getDeletedCount();
     }
 
     @Override
-    public void deleteAllByDay(String ownerId, Instant day) {
+    public long deleteAllByDay(String ownerId, Instant day) {
         validateId(ownerId, "owner");
 
         Instant startOfDay = day.truncatedTo(ChronoUnit.DAYS);
@@ -117,8 +127,15 @@ public class NotificationRepository implements INotificationCreateRepository, IN
                         Criteria.where("createdAt").lt(endOfDay)
                 )
         );
-        mongoTemplate.remove(query, NotificationEntity.class);
+        DeleteResult result = mongoTemplate.remove(query, NotificationEntity.class);
+
+        // Check if any document was deleted
+        if (result.getDeletedCount() == 0) {
+            throw new PersistenceException("No notifications found for the owner with id: " + ownerId + " on the specified day.");
+        }
+        return result.getDeletedCount();
     }
+
 
     // Test
     @Override

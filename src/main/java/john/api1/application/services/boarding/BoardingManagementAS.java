@@ -114,7 +114,7 @@ public class BoardingManagementAS implements IBoardingManagement {
             // Fetch related data (optimize batch-fetch if possible)
             var ownerDetail = ownerSearch.getPetOwnerBoardingDetails(boarding.getOwnerId());
             var boardingPrice = pricingManagement.getPricingDetails(boarding.getId());
-            var extensions = requestManagement.getExtensionByCurrentBoarding(boardingId);
+            var extensions = requestManagement.getExtensionByCurrentBoarding(boarding.getId());
             Instant extendedTotalTime = BoardingExtensionDS.calculateFinalBoardingEnd(boarding.getBoardingEnd(), extensions);
 
             // DTO
@@ -131,7 +131,6 @@ public class BoardingManagementAS implements IBoardingManagement {
             } catch (PersistenceHistoryException e) {
                 log.warn("Activity log for boarding release failed to save in class 'BoardingManagementAS'");
             }
-
 
             return DomainResponse.success(dto, message);
         } catch (PersistenceException | DomainArgumentException e) {

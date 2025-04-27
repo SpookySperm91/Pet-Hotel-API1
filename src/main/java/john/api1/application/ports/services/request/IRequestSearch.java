@@ -30,6 +30,11 @@ public interface IRequestSearch {
 
     ExtensionCQRS searchExtensionByRequestIdCqrs(String id);
 
+    Double searchGroomingPriceByRequestId(String id);
+
+    Double searchExtensionPriceByRequestId(String id);
+
+
     // Recent media?
     Optional<RequestCQRS> searchRecentMediaRequest();
 }

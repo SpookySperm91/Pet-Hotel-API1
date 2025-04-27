@@ -6,6 +6,7 @@ import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.boarding.BoardingDomain;
+import john.api1.application.ports.repositories.boarding.BoardingDurationCQRS;
 import john.api1.application.ports.repositories.boarding.IBoardingSearchRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,27 @@ public class BoardingSearchRepository implements IBoardingSearchRepository {
         }
 
         return Optional.ofNullable(BoardingStatus.safeFromStringOrDefault(entity.getBoardingStatus()));
+    }
+
+    @Override
+    public Optional<BoardingDurationCQRS> checkBoardingTime(String id) {
+        if (!ObjectId.isValid(id))
+            throw new PersistenceException("Invalid boarding id cannot be converted to ObjectId.");
+
+        Query query = new Query(Criteria.where("_id").is(id));
+        query.fields().include("boardingStart");
+        query.fields().include("boardingEnd");
+        query.fields().include("boardingCategory");
+
+        var entity = mongoTemplate.findOne(query, BoardingEntity.class);
+        if (entity == null || entity.getBoardingStatus() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(new BoardingDurationCQRS(
+                entity.getBoardingStart(),
+                entity.getBoardingEnd(),
+                BoardingType.fromStringOrError(entity.getBoardingCategory())));
     }
 
 

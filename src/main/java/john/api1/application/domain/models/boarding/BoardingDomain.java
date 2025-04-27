@@ -22,7 +22,7 @@ public class BoardingDomain {
     private final String ownerId;
     private BoardingType boardingType;
     private Instant boardingStart;
-    private Instant boardingEnd;
+    private Instant boardingEnd; // final, cannot change, only in extension + aggregation
     private BoardingStatus boardingStatus;
     private PaymentStatus paymentStatus;
     private final String notes;

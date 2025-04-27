@@ -22,4 +22,7 @@ public interface IBoardingSearchRepository {
 
     // Status
     Optional<BoardingStatus> checkBoardingCurrentStatus(String id);
+
+    // Time
+    Optional<BoardingDurationCQRS> checkBoardingTime(String id);
 }

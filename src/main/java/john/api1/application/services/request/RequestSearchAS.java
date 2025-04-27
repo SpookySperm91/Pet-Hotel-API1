@@ -88,7 +88,24 @@ public class RequestSearchAS implements IRequestSearch {
     }
 
     @Override
-    public Optional<RequestCQRS> searchRecentMediaRequest(){
+    public Double searchGroomingPriceByRequestId(String id) {
+        validateId(id);
+        var price = searchCompletedRepository.getGroomingPriceByRequestId(id);
+        if (price.isEmpty()) throw new PersistenceException("Grooming price cannot be found");
+        return price.get();
+    }
+
+    @Override
+    public Double searchExtensionPriceByRequestId(String id) {
+        validateId(id);
+        var price = searchCompletedRepository.getExtensionPriceByRequestId(id);
+        if (price.isEmpty()) throw new PersistenceException("Extension price cannot be found");
+        return price.get();
+    }
+
+
+    @Override
+    public Optional<RequestCQRS> searchRecentMediaRequest() {
         return searchRepository.findRecentMediaRequest();
     }
 

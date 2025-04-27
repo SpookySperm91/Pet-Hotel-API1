@@ -79,12 +79,12 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
     @Override
     public DomainResponse<RequestCompletedServiceDTO> commitExtensionRequest(RequestCompleteServiceRDTO request) {
         try {
-            validateId(request.getRequestId());   // CHECK
+            validateId(request.getRequestId());
 
-            var check = requestSearch.searchByRequestId(request.getRequestId());   // CHECK
-            var boarding = validateActiveRequest(check.getBoardingId());  // CHECK
-            var extension = requestSearch.searchExtensionByRequestId(request.getRequestId());  // CHECK
-            var pricing = pricingSearch.getBreakdown(check.getBoardingId());  // CHECK
+            var check = requestSearch.searchByRequestId(request.getRequestId());
+            var boarding = validateActiveRequest(check.getBoardingId());
+            var extension = requestSearch.searchExtensionByRequestId(request.getRequestId());
+            var pricing = pricingSearch.getBreakdown(check.getBoardingId());
 
             // Check request status
             RequestStatusDS.isValidToCommit(check);

@@ -1,5 +1,6 @@
 package john.api1.application.components.enums.boarding;
 
+import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -27,7 +28,7 @@ public enum RequestType {
             }
         }
 
-        throw new IllegalArgumentException("Unknown request type: " + requestType);
+        throw new DomainArgumentException("Unknown request type: " + requestType);
     }
 
 }

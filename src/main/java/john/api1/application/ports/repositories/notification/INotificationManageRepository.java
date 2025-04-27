@@ -14,8 +14,8 @@ public interface INotificationManageRepository {
 
     // Delete
     void deleteById(String id);
-    void deleteAllRead(String ownerId);
-    void deleteAllByDay(String ownerId, Instant day);
+    long deleteAllRead(String ownerId);
+    long deleteAllByDay(String ownerId, Instant day);
 
     // Test
     List<NotificationDomain> searchAll();

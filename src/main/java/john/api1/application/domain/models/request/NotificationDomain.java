@@ -42,4 +42,9 @@ public class NotificationDomain {
         return new NotificationDomain(id, requestId, ownerId, description, notificationType, createdAt, read);
     }
 
+    public static NotificationDomain mapWithId(String id, NotificationDomain domain) {
+        return new NotificationDomain(id, domain.getRequestId(), domain.ownerId, domain.getDescription(), domain.getNotificationType(), domain.getCreatedAt(), domain.read);
+    }
+
+
 }

@@ -5,6 +5,7 @@ import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.domain.models.request.ExtensionDomain;
 
 public record ExtensionCQRS(
+        String boardingId,
         long extendedHours,
         double additionalPrice,
         BoardingType durationType

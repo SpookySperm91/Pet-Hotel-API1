@@ -91,7 +91,7 @@ public class RequestCompletedSearchRepository implements IRequestCompletedSearch
     // CQRS
     @Override
     public Optional<GroomingCQRS> getGroomingByRequestIdCqrs(String id) {
-        if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid grooming id");
+        if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid request id for grooming");
 
         Query query = new Query(Criteria.where("requestId").is(new ObjectId(id)));
         GroomingEntity groomingEntity = mongoTemplate.findOne(query, GroomingEntity.class);
@@ -109,18 +109,45 @@ public class RequestCompletedSearchRepository implements IRequestCompletedSearch
 
     @Override
     public Optional<ExtensionCQRS> getExtensionByRequestIdCqrs(String id) {
-        if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid extension id");
+        if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid request id for extension");
 
         Query query = new Query(Criteria.where("requestId").is(new ObjectId(id)));
         ExtensionEntity extensionEntity = mongoTemplate.findOne(query, ExtensionEntity.class);
 
         return Optional.ofNullable(extensionEntity).map(
                 n -> new ExtensionCQRS(
+                        n.getBoardingId().toString(),
                         n.getExtendedHours(),
                         n.getAdditionalPrice(),
                         BoardingType.fromStringOrDefault(n.getDurationType())
                 )
         );
+    }
+
+
+    public Optional<Double> getGroomingPriceByRequestId(String id) {
+        if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid request id for grooming");
+        Query query = new Query(Criteria.where("requestId").is(new ObjectId(id)));
+        query.fields().include("groomingPrice");
+
+        GroomingEntity grooming = mongoTemplate.findOne(query, GroomingEntity.class);
+        if (grooming == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(grooming.getGroomingPrice());
+    }
+
+    public Optional<Double> getExtensionPriceByRequestId(String id) {
+        if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid request id for extension");
+        Query query = new Query(Criteria.where("requestId").is(new ObjectId(id)));
+        query.fields().include("additionalPrice"); // Assuming your extension entity has this field
+
+        ExtensionEntity extension = mongoTemplate.findOne(query, ExtensionEntity.class);
+        if (extension == null) {
+            return Optional.empty();
+        }
+        return Optional.of(extension.getAdditionalPrice());
     }
 
 
