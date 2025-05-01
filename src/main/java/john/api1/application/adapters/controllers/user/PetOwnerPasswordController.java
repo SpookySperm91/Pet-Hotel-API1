@@ -19,7 +19,7 @@ import javax.validation.Valid;
 
 @RestController
 @Validated
-@RequestMapping("/api/v1/reset-password/")
+@RequestMapping("/api/v1/pet-owner/reset-password/")
 public class PetOwnerPasswordController {
     private final ResetPasswordRequestAS passwordRequest;
     private final ResetPasswordValidateAS passwordValidate;
@@ -85,7 +85,7 @@ public class PetOwnerPasswordController {
         }
 
         // api link
-        String resetApi = String.format("%sapi/v1/reset-password/confirm/%s/%s",
+        String resetApi = String.format("%sapi/v1/pet-owner/reset-password/confirm/%s/%s",
                 referencesUrls.getSpringbootApiUrl(), id, token);
 
         // Return valid-status, username, api-to-confirm-password

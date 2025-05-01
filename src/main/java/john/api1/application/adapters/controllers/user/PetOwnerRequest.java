@@ -23,7 +23,7 @@
     import java.util.stream.Collectors;
 
     @RestController
-    @RequestMapping("/api/v1/boarding/request/")
+    @RequestMapping("/api/v1/pet-owner/boarding/request/")
     public class PetOwnerRequest {
         private final IRequestCreate requestCreate;
         private final IRequestStatusManagement requestStatus;

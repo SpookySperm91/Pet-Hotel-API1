@@ -13,6 +13,9 @@ public class DTOResponse<T> {
     private T data;
     private String message;
 
+    public static <T> DTOResponse<T> of(int status) {
+        return new DTOResponse<>(status, Instant.now(), null, null);
+    }
     public static <T> DTOResponse<T> of(int status, T data) {
         return new DTOResponse<>(status, Instant.now(), data, null);
     }

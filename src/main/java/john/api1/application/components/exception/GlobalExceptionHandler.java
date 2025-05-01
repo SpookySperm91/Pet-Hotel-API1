@@ -30,4 +30,10 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", ex.getMessage()));  // Send the error message in the response body
     }
 
+    @ExceptionHandler(SessionException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidSession(SessionException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
 }
