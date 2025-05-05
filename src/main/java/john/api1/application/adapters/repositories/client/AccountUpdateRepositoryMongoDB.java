@@ -2,6 +2,8 @@ package john.api1.application.adapters.repositories.client;
 
 import com.mongodb.client.result.UpdateResult;
 import john.api1.application.adapters.repositories.ClientEntity;
+import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.domain.models.ClientAccountDomain;
 import john.api1.application.ports.repositories.owner.IAccountUpdateRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.time.Instant;
 @Qualifier("MongoAccountUpdateRepo")
 public class AccountUpdateRepositoryMongoDB implements IAccountUpdateRepository {
     private final MongoTemplate mongoTemplate;
+
     @Autowired
     public AccountUpdateRepositoryMongoDB(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
@@ -44,6 +47,28 @@ public class AccountUpdateRepositoryMongoDB implements IAccountUpdateRepository 
         Update update = new Update().set("hashedPassword", newPassword).set("updateAt", Instant.now());
         return updateField(query, update);
     }
+
+    @Override
+    public void updateAccount(ClientAccountDomain accountDomain) {
+        if (accountDomain.getId() == null || !ObjectId.isValid(accountDomain.getId()))
+            throw new PersistenceException("Invalid account id cannot be converted to ObjectId or currently empty");
+
+        ObjectId objectId = new ObjectId(accountDomain.getId());
+        Query query = new Query(Criteria.where("_id").is(objectId));
+
+        Update update = new Update()
+                .set("email", accountDomain.getEmail())
+                .set("phoneNumber", accountDomain.getPhoneNumber())
+                .set("hashedPassword", accountDomain.getHashedPassword())
+                .set("accountLock", accountDomain.isLocked())
+                .set("updateAt", accountDomain.getUpdatedAt());
+
+        if (!updateField(query, update)) {
+            throw new PersistenceException("Account update failed for id: " + accountDomain.getId());
+        }
+
+    }
+
 
     private boolean updateField(Query query, Update update) {
         UpdateResult result = mongoTemplate.updateFirst(query, update, ClientEntity.class);

@@ -1,11 +1,9 @@
 package john.api1.application.dto.mapper.boarding;
 
-import john.api1.application.domain.models.boarding.BoardingPricingDomain;
-
 import java.time.Instant;
 import java.util.List;
 
-public record BoardingReleasedDTO(
+public record BoardingDTO(
         // O(1)
         String id,
         String petId,
@@ -34,11 +32,14 @@ public record BoardingReleasedDTO(
         Instant boardingEnd,
         Instant extensionEnd, // for extended time boarding
         Instant releasedAt,
+        long durationDays,
+        long durationHours,
         String notes,
 
         // Pricing breakdown
-        String paymentStatus,
-        double initialPrice,
+        String boardingPrepaidStatus,
+        double rate,
+        double boardingPrice,
         List<RequestBreakdownDTO> requestBreakdown,
         double total,
 

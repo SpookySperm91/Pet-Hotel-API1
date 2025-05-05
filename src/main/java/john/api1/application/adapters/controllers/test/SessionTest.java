@@ -22,7 +22,7 @@ public class SessionTest {
     }
 
     @GetMapping("/test2")
-    @ValidateSession(role = SessionRole.PET_OWNER)
+    @ValidateSession(role = SessionRole.ADMIN)
     public ResponseEntity<DTOResponse<Void>> test2() {
         return ResponseEntity.ok(DTOResponse.of(200, "session works"));
     }

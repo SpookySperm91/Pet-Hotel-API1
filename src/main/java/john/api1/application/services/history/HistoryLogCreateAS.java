@@ -52,16 +52,24 @@ public class HistoryLogCreateAS implements IHistoryLogCreate {
     }
 
     @Override
-    public void createActivityLogOwnerRegister(String petOwner) {
+    public void createActivityLogOwnerRegister(String ownerId, String petOwner) {
         String description = "New pet owner registered";
-        var domain = ActivityLogDomain.create(ActivityLogType.PET_OWNER_MANAGEMENT, petOwner, null, description);
+        var domain = ActivityLogDomain.create(ActivityLogType.PET_OWNER_MANAGEMENT, ownerId, petOwner, null, description);
         saveOrThrow(domain);
     }
 
     @Override
-    public void createActivityLogPetRegister(String petOwner, String pet) {
+    public void createActivityLogOwnerRegisterByOwner(String ownerId, String petOwner) {
+        String description = "Pet owner account pending";
+        var domain = ActivityLogDomain.create(ownerId, ActivityLogType.PET_OWNER_MANAGEMENT, petOwner + (" (Owner)"), petOwner, null, description);
+        saveOrThrow(domain);
+    }
+
+
+    @Override
+    public void createActivityLogPetRegister(String petId, String petOwner, String pet) {
         String description = "New pet added";
-        var domain = ActivityLogDomain.create(ActivityLogType.PET_MANAGEMENT, petOwner, pet, description);
+        var domain = ActivityLogDomain.create(ActivityLogType.PET_MANAGEMENT, petId, petOwner, pet, description);
         saveOrThrow(domain);
     }
 

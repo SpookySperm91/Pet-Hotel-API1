@@ -23,7 +23,7 @@ public class ActivityLogEntity {
     private ObjectId id;
     @Nullable
     @Indexed(name = "typeId_sparse_idx", sparse = true)
-    private ObjectId typeId;  // boarding, request
+    private ObjectId typeId;  // boarding, request, pet-id (lmao this is sh*t)
     private String activityType;
     @Nullable
     private String requestType;

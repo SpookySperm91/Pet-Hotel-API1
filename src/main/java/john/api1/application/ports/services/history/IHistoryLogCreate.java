@@ -9,8 +9,10 @@ public interface IHistoryLogCreate {
 
 
     // Pet and pet owner creation
-    void createActivityLogOwnerRegister(String petOwner);
-    void createActivityLogPetRegister(String petOwner, String pet);
+    void createActivityLogOwnerRegister(String owner, String petOwner);
+    void createActivityLogOwnerRegisterByOwner(String owner, String petOwner);
+
+    void createActivityLogPetRegister(String petId, String petOwner, String pet);
 
 }
 

@@ -38,6 +38,20 @@ public class ClientAccountDomain {
         this.updatedAt = this.createdAt;
     }
 
+    public ClientAccountDomain(String email, String phoneNumber, String hashedPassword, boolean lock) {
+        if (!isValidEmail(email)) throw new DomainArgumentException("Invalid email format");
+        if (!isValidPhoneNumber(phoneNumber))
+            throw new DomainArgumentException("Invalid phone-number format or length");
+
+        this.id = null;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.hashedPassword = hashedPassword;
+        this.locked = lock;
+        this.createdAt = Instant.now();
+        this.updatedAt = this.createdAt;
+    }
+
     public ClientAccountDomain(String id, String email, String phoneNumber, String hashedPassword, boolean locked) {
         this.id = id;
         this.email = email;
@@ -67,7 +81,7 @@ public class ClientAccountDomain {
 
     // change email
     public ClientAccountDomain changeEmail(String newEmail) {
-        if (isValidEmail(newEmail) || newEmail.equalsIgnoreCase(this.email)) {
+        if (!isValidEmail(newEmail) || newEmail.equalsIgnoreCase(this.email)) {
             return this; // Return same object if no change
         }
         return new ClientAccountDomain(id, newEmail, phoneNumber, hashedPassword, locked, createdAt, Instant.now());
@@ -80,6 +94,14 @@ public class ClientAccountDomain {
         }
         return new ClientAccountDomain(id, email, newPhoneNumber, hashedPassword, locked, createdAt, Instant.now());
     }
+
+    public ClientAccountDomain approveAccount() {
+        if (!locked) {
+            return this; // Return same object if no change
+        }
+        return new ClientAccountDomain(id, email, phoneNumber, hashedPassword, false, createdAt, Instant.now());
+    }
+
 
     // private methods
     public static boolean isValidEmail(String email) {

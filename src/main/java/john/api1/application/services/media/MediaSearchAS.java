@@ -1,6 +1,5 @@
 package john.api1.application.services.media;
 
-import john.api1.application.adapters.services.MinioAdapter;
 import john.api1.application.components.DomainResponse;
 import john.api1.application.components.enums.BucketType;
 import john.api1.application.components.exception.PersistenceException;
@@ -8,9 +7,11 @@ import john.api1.application.ports.repositories.media.IMediaSearchRepository;
 import john.api1.application.ports.repositories.wrapper.MediaEntityPreview;
 import john.api1.application.ports.repositories.wrapper.MediaIdUrlExpire;
 import john.api1.application.ports.repositories.wrapper.MediaPreview;
+import john.api1.application.ports.services.media.IMediaAdapter;
 import john.api1.application.ports.services.media.IMediaSearch;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -19,11 +20,12 @@ import java.util.Optional;
 
 @Service
 public class MediaSearchAS implements IMediaSearch {
-    private final MinioAdapter minioAdapter;
+    private final IMediaAdapter minioAdapter;
     private final IMediaSearchRepository mediaRepository;
 
     @Autowired
-    public MediaSearchAS(MinioAdapter minioAdapter, IMediaSearchRepository mediaRepository) {
+    public MediaSearchAS(@Qualifier("DigitalOceanS3Adapter") IMediaAdapter minioAdapter,
+                         IMediaSearchRepository mediaRepository) {
         this.minioAdapter = minioAdapter;
         this.mediaRepository = mediaRepository;
     }
@@ -79,10 +81,15 @@ public class MediaSearchAS implements IMediaSearch {
 
         var results = mediaRepository.findProfilePicByOwnerId(ownerId);
         if (results.isEmpty()) return Optional.empty();
+        System.out.println("////////////");
+        System.out.println(results.get());
 
+        System.out.println("Process profile picture. Filename: " + results.get().fileName());
         String preSignedUrl = minioAdapter.getReadUrl(
                 results.get().bucketType(),
                 results.get().fileName());
+
+
 
         return Optional.of(new MediaIdUrlExpire(
                 results.get().id(),

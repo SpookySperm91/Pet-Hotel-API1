@@ -50,6 +50,10 @@ public class ClientLoginAS implements ILoginPetOwner {
                 return DomainResponse.error("Invalid account");
             }
 
+            if (account.get().isLocked()) {
+                return DomainResponse.error("Account is locked");
+            }
+
             var loginOperation = clientLogin.login(account.get(), password);
             if (!loginOperation.isSuccess()) {
                 return DomainResponse.error(loginOperation.getMessage());

@@ -30,6 +30,7 @@ public class BoardingRDTO {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH")  // Hour precision only
     private final LocalDateTime  boardingEnd;
     @NotBlank(message = "payment status cannot be empty")
+    @Pattern(regexp = "(?i)PAID|NOT_PAID", message = "Payment status must be: PAID or NOT_PAID")
     private final String paymentStatus;
     private final String notes;
 }

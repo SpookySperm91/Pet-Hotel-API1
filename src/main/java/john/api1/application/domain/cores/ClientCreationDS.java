@@ -29,6 +29,11 @@ public class ClientCreationDS {
         return new CreateNewAccountResult(rawPassword, account);
     }
 
+    public ClientAccountDomain createNewAccount(String email, String phoneNumber, String password) {
+        String hashedPassword = passwordManagement.hash(password);
+        return new ClientAccountDomain(email, phoneNumber, hashedPassword, true);
+    }
+
     public ClientDomain instantiateNewClient(
             String accountId,
             String fullName,

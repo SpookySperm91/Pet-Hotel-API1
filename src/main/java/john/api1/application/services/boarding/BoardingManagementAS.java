@@ -10,7 +10,7 @@ import john.api1.application.components.exception.PersistenceHistoryException;
 import john.api1.application.domain.cores.boarding.BoardingExtensionDS;
 import john.api1.application.domain.cores.boarding.BoardingManagementDS;
 import john.api1.application.domain.models.boarding.BoardingDomain;
-import john.api1.application.dto.mapper.boarding.BoardingReleasedDTO;
+import john.api1.application.dto.mapper.boarding.BoardingDTO;
 import john.api1.application.dto.request.BoardingStatusRDTO;
 import john.api1.application.dto.request.PaymentStatusDTO;
 import john.api1.application.ports.repositories.boarding.IBoardingManagementRepository;
@@ -68,7 +68,7 @@ public class BoardingManagementAS implements IBoardingManagement {
     // Update boarding DB
     // Retrieve boarding details for aggregation return data
     @Override
-    public DomainResponse<BoardingReleasedDTO> releasedBoarding(String boardingId) {
+    public DomainResponse<BoardingDTO> releasedBoarding(String boardingId) {
         var boarding = boardingSearch.searchById(boardingId);
         if (boarding.isEmpty()) return DomainResponse.error("Boarding do not exist");
 
@@ -82,7 +82,7 @@ public class BoardingManagementAS implements IBoardingManagement {
     }
 
     @Override
-    public DomainResponse<BoardingReleasedDTO> forceReleasedBoarding(String boardingId) {
+    public DomainResponse<BoardingDTO> forceReleasedBoarding(String boardingId) {
         var boarding = boardingSearch.searchById(boardingId);
         if (boarding.isEmpty()) return DomainResponse.error("Boarding do not exist");
 
@@ -95,7 +95,7 @@ public class BoardingManagementAS implements IBoardingManagement {
     }
 
 
-    private DomainResponse<BoardingReleasedDTO> release(BoardingDomain boarding, String boardingId) {
+    private DomainResponse<BoardingDTO> release(BoardingDomain boarding, String boardingId) {
         try {
             // release, deactivate boarding and pricing
             boarding.updateBoardingStatus(BoardingStatus.RELEASED);  // RELEASED = auto set active as false
@@ -103,7 +103,6 @@ public class BoardingManagementAS implements IBoardingManagement {
 
             boardingManagement.updateBoardingAfterRelease(boarding);
             pricingManagement.deactivatePricing(boardingId);
-
 
             // update pet current status
             var petUpdated = petUpdate.updatePetStatusWithResponse(boarding.getPetId(), BoardingStatus.RELEASED);
@@ -117,12 +116,16 @@ public class BoardingManagementAS implements IBoardingManagement {
             var extensions = requestManagement.getExtensionByCurrentBoarding(boarding.getId());
             Instant extendedTotalTime = BoardingExtensionDS.calculateFinalBoardingEnd(boarding.getBoardingEnd(), extensions);
 
+            // Duration
+            var hours = BoardingManagementDS.calculateBoardingDurationHours(boarding.getBoardingStart(), extendedTotalTime);
+            var days = BoardingManagementDS.calculateBoardingDurationDays(boarding.getBoardingStart(), extendedTotalTime);
+
             // DTO
             Instant now = Instant.now();
             String message = String.format(
                     "%s's pet '%s' is successfully released from boarding at %s"
                     , ownerDetail.ownerName(), petUpdated.getData().petName(), now);
-            var dto = aggregation.boardingReleasedAggregation(boarding, boardingPrice.getData(), ownerDetail, petUpdated.getData(), extendedTotalTime, now);
+            var dto = aggregation.boardingReleasedAggregation(boarding, boardingPrice.getData(), ownerDetail, petUpdated.getData(), days, hours, extendedTotalTime, now);
 
             // History log
             try {
@@ -151,7 +154,6 @@ public class BoardingManagementAS implements IBoardingManagement {
             if (boardingStatusOpt.get().equals(BoardingStatus.RELEASED)) {
                 return DomainResponse.error("Boarding is already released. It cannot be updated!");
             }
-
             var status = PaymentStatus.safeFromStringOrDefault(paymentStatus.getStatus());
             boardingManagement.updatePaidStatus(paymentStatus.getId(), status);
 

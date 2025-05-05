@@ -85,7 +85,7 @@ public class HistoryLogSearchRepository implements IHistoryLogSearchRepository {
     private ActivityLogDomain mapToDomain(ActivityLogEntity entity) {
         return new ActivityLogDomain(
                 entity.getId().toHexString(),
-                entity.getTypeId().toHexString(),
+                entity.getTypeId() != null ? entity.getTypeId().toHexString(): null,
                 ActivityLogType.fromString(entity.getActivityType()),
                 RequestType.fromString(entity.getRequestType()),
                 entity.getPerformedBy(),

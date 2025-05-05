@@ -9,17 +9,27 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 public class BoardingExtensionDS {
     private static final int HOURS_PER_DAY = 24;
 
     public static Instant calculateFinalBoardingEnd(Instant boardingEnd, List<ExtensionDomain> extensions) {
+        if (extensions == null || extensions.isEmpty()) {
+            return boardingEnd;
+        }
+
         long totalExtensionHours = extensions.stream()
-                .mapToLong(ExtensionDomain::getExtendedHours)
+                .map(ExtensionDomain::getExtendedHours)
+                .filter(hours -> hours > 0)
+                .mapToLong(Long::longValue)
                 .sum();
 
-        return boardingEnd.plus(Duration.ofHours(totalExtensionHours));
+        return totalExtensionHours > 0
+                ? boardingEnd.plus(Duration.ofHours(totalExtensionHours))
+                : boardingEnd;
     }
+
 
     public static Instant calculateFinalBoardingEnd(Instant boardingEnd, ExtensionCQRS extensions) {
         if (extensions == null) return boardingEnd;

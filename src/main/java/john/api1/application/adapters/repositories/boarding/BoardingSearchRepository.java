@@ -73,6 +73,7 @@ public class BoardingSearchRepository implements IBoardingSearchRepository {
 
     @Override
     public List<BoardingDomain> searchAll() {
+
         return fetchBoardings(new Query());
     }
 
@@ -81,6 +82,17 @@ public class BoardingSearchRepository implements IBoardingSearchRepository {
         Query query = new Query(Criteria.where("boardingStatus").is(status.getBoardingStatus()));
         return fetchBoardings(query);
     }
+
+    @Override
+    public Optional<BoardingDomain> searchRecent() {
+        Query query = new Query()
+                .with(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"))
+                .limit(1);
+
+        BoardingEntity entity = mongoTemplate.findOne(query, BoardingEntity.class);
+        return Optional.ofNullable(entity).map(this::toDomain);
+    }
+
 
     @Override
     public Optional<BoardingStatus> checkBoardingCurrentStatus(String id) {
@@ -123,9 +135,19 @@ public class BoardingSearchRepository implements IBoardingSearchRepository {
     private List<BoardingDomain> fetchBoardings(Query query) {
         return mongoTemplate.find(query, BoardingEntity.class)
                 .stream()
-                .map(this::toDomain)
+                .map(entity -> {
+                    try {
+                        return toDomain(entity);
+                    } catch (PersistenceException e) {
+                        // Optional: log which entity failed (e.g., ID)
+                        System.err.println("Failed to map boarding entity: " + (entity.getId() != null ? entity.getId() : "unknown ID"));
+                        return null;
+                    }
+                })
+                .filter(domain -> domain != null)
                 .collect(Collectors.toList());
     }
+
 
     private BoardingDomain toDomain(BoardingEntity entity) {
         return new BoardingDomain(

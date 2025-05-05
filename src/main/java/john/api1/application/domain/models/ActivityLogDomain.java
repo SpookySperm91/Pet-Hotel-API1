@@ -32,6 +32,13 @@ public class ActivityLogDomain {
         return new ActivityLogDomain(null, null, activityType, null, "Admin", petOwner, pet, description, Instant.now());
     }
 
+    public static ActivityLogDomain create(ActivityLogType activityType, String typeId, String petOwner, String pet, String description) {
+        if (!ObjectId.isValid(typeId))
+            throw new DomainArgumentException("Type id for activity log is invalid cannot be converted to ObjectId");
+
+        return new ActivityLogDomain(null, typeId, activityType, null, "Admin", petOwner, pet, description, Instant.now());
+    }
+
     public static ActivityLogDomain create(String typeId, ActivityLogType activityType, String performedBy, String petOwner, String pet, String description) {
         if (!ObjectId.isValid(typeId))
             throw new DomainArgumentException("Type id for activity log is invalid cannot be converted to ObjectId");

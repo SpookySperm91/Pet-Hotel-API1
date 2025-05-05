@@ -7,7 +7,9 @@ import lombok.Getter;
 @Getter
 public enum SessionRole {
     PET_OWNER("PET_OWNER"),
-    ADMIN("ADMIN");
+    ADMIN("ADMIN"),
+    MASTER("MASTER");
+
 
     private final String sessionRole;
 

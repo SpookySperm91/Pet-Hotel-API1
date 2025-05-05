@@ -12,12 +12,16 @@ import reactor.core.publisher.Mono;
 public class AsyncEmailService {
     private final ISendEmail registeredEmail;
     private final ISendEmail passwordResetLink;
+    private final ISendEmail adminPasswordResetLink;
+
 
     @Autowired
     public AsyncEmailService(@Qualifier("RegisteredEmail") ISendEmail registeredEmail,
-                             @Qualifier("PasswordResetLink") ISendEmail passwordResetLink) {
+                             @Qualifier("PasswordResetLink") ISendEmail passwordResetLink,
+                             @Qualifier("PasswordResetLink") ISendEmail adminPasswordResetLink) {
         this.registeredEmail = registeredEmail;
         this.passwordResetLink = passwordResetLink;
+        this.adminPasswordResetLink = adminPasswordResetLink;
 
     }
 
@@ -26,6 +30,8 @@ public class AsyncEmailService {
             case REGISTERED -> registeredEmail.sendEmail(username, email, body)
                     .doOnNext(System.out::println); // Optional logging
             case RESET_PASSWORD_LINK -> passwordResetLink.sendEmail(username, email, body)
+                    .doOnNext(System.out::println);
+            case ADMIN_RESET_PASSWORD_LINK -> adminPasswordResetLink.sendEmail(username, email, body)
                     .doOnNext(System.out::println);
             default -> Mono.error(new IllegalArgumentException("Unsupported email type: " + emailType));
         };

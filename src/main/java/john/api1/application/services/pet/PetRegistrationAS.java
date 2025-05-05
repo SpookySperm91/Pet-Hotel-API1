@@ -75,7 +75,7 @@ public class PetRegistrationAS implements IPetRegister {
 
             // history log
             try {
-                historyCreate.createActivityLogPetRegister(owner.get().ownerName(), registerPet.getPetName());
+                historyCreate.createActivityLogPetRegister(petId, owner.get().ownerName(), registerPet.getPetName());
                 log.info("Activity log created for new registered pet '{}' owned to '{}'", petDomain.getPetName(), owner.get().ownerName());
             } catch (PersistenceHistoryException e) {
                 log.warn("Activity log for new pet registration failed to save in class 'PetRegistrationAS'");

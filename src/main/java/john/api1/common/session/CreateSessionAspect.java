@@ -26,18 +26,12 @@ public class CreateSessionAspect {
 
     @AfterReturning(pointcut = "@annotation(createSession)", returning = "responseEntity")
     public void handleSessionCreation(Object responseEntity, CreateSession createSession) {
-        logger.info("🔍 Aspect triggered for role: {}", createSession.role()); // Log the role
-
-        if (responseEntity instanceof ResponseEntity<?>) {
-            ResponseEntity<?> entity = (ResponseEntity<?>) responseEntity;
+        if (responseEntity instanceof ResponseEntity<?> entity) {
             Object body = entity.getBody();
 
-            // Handle methods returning DTOResponse
             if (body instanceof DTOResponse<?>) {
                 handleDTOResponse((DTOResponse<?>) body, createSession.role());
-            }
-            // Handle methods returning non-DTO response types (e.g., String, Integer)
-            else {
+            } else {
                 handleNonDTOResponse(body, createSession.role());
             }
         } else {

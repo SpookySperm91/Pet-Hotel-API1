@@ -34,9 +34,9 @@ public class MediaTest {
 
     @PutMapping("create")
     public ResponseEntity<DTOResponse<PreSignedUrlResponse>> createUploadLink() {
-        String idTestValue = "67cd5d7ae0964d37102fa05a";
+        String idTestValue = "67f73820ccea496c9f1d56fe";
         String fileTestValue = "example-file";
-        BucketType fileType = BucketType.PROFILE_PHOTO;
+        BucketType fileType = BucketType.REQUEST_PHOTO;
         var response = mediaManagement.generateMediaFile(idTestValue, fileTestValue, fileType);
 
         if (response.isSuccess()) {

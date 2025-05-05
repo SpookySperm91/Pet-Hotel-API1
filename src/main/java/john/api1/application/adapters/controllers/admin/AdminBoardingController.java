@@ -4,7 +4,7 @@ import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.enums.boarding.PaymentStatus;
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.boarding.BoardingCreatedDTO;
-import john.api1.application.dto.mapper.boarding.BoardingReleasedDTO;
+import john.api1.application.dto.mapper.boarding.BoardingDTO;
 import john.api1.application.dto.request.BoardingRDTO;
 import john.api1.application.dto.request.BoardingStatusRDTO;
 import john.api1.application.dto.request.PaymentStatusDTO;
@@ -56,10 +56,6 @@ public class AdminBoardingController {
                 return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
             }
 
-            // Session and magic (later)
-            ////////////////////////////
-            ////////////////////////////
-
             // Start creating boarding
             BoardingType boardingType = BoardingType.fromStringOrError(boardingRequest.getBoardingType());
             PaymentStatus paymentStatus = PaymentStatus.fromStringOrError(boardingRequest.getPaymentStatus());
@@ -87,14 +83,11 @@ public class AdminBoardingController {
     }
 
     @PutMapping("/release/{boardingId}")
-    public ResponseEntity<DTOResponse<BoardingReleasedDTO>> releaseBoarding(@Valid @PathVariable String boardingId) {
+    // @ValidateSession(role = SessionRole.ADMIN)
+    public ResponseEntity<DTOResponse<BoardingDTO>> releaseBoarding(@Valid @PathVariable String boardingId) {
         if (boardingId == null || boardingId.trim().isEmpty()) {
             return buildErrorResponse(HttpStatus.BAD_REQUEST, "Boarding ID cannot be null, empty, or blank!");
         }
-
-        // Session and magic (later)
-        ////////////////////////////
-        ////////////////////////////
 
         // release
         var release = boardingManagement.releasedBoarding(boardingId);
@@ -110,14 +103,10 @@ public class AdminBoardingController {
 
 
     @PutMapping("/release-force/{boardingId}")
-    public ResponseEntity<DTOResponse<BoardingReleasedDTO>> forceReleaseBoarding(@PathVariable String boardingId) {
+    public ResponseEntity<DTOResponse<BoardingDTO>> forceReleaseBoarding(@PathVariable String boardingId) {
         if (boardingId == null || boardingId.trim().isEmpty()) {
             return buildErrorResponse(HttpStatus.BAD_REQUEST, "Boarding ID cannot be null, empty, or blank!");
         }
-
-        // Session and magic (later)
-        ////////////////////////////
-        ////////////////////////////
 
         // release
         var release = boardingManagement.forceReleasedBoarding(boardingId);
@@ -138,10 +127,6 @@ public class AdminBoardingController {
 
         if (result.hasErrors()) return handleValidationErrors(result);
 
-        // Session and magic (later)
-        ////////////////////////////
-        ////////////////////////////
-
         var update = boardingManagement.updatePaidStatus(request);
         if (!update.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, update.getMessage());
 
@@ -158,9 +143,6 @@ public class AdminBoardingController {
             BindingResult result) {
         if (result.hasErrors()) return handleValidationErrors(result);
 
-        // Session and magic (later)
-        ////////////////////////////
-        ////////////////////////////
 
         var update = boardingManagement.updateBoardingStatus(request);
         if (!update.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, update.getMessage());

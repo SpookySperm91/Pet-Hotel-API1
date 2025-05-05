@@ -35,7 +35,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class RegisterNewClientAS implements IRegisterNewClient {
+@Qualifier("RegisterNewClientAS")
+public class RegisterNewClientAS implements IRegisterNewClient<RegisterRDTO, RegisterResponse> {
     private static final Logger log = LoggerFactory.getLogger(RegisterNewClientAS.class);
 
     private final ClientCreationDS clientCreation;
@@ -100,8 +101,8 @@ public class RegisterNewClientAS implements IRegisterNewClient {
             String message = String.format("New pet owner '%s' has been successfully registered.", request.getFullName());
 
             // History log
-            try{
-                historyLog.createActivityLogOwnerRegister(information.getFullName());
+            try {
+                historyLog.createActivityLogOwnerRegister(registeredId, information.getFullName());
                 log.info("Activity log created for new registered owner '{}'", information.getFullName());
             } catch (PersistenceHistoryException e) {
                 log.warn("Activity log for new owner registration failed to save in class 'RegisterNewClientAS'");

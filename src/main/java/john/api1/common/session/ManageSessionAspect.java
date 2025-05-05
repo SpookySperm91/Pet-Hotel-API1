@@ -41,7 +41,7 @@ public class ManageSessionAspect {
             throw new SessionException("Invalid or unauthorized session token.");
         }
 
-        logger.info("✅ Session validated for role: {}", validateSession.role());
+        logger.info("Session validated for role: {}", validateSession.role());
     }
 
 

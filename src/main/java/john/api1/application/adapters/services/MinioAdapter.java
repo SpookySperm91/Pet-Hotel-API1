@@ -1,11 +1,13 @@
 package john.api1.application.adapters.services;
 
-import io.minio.MinioClient;
 import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.MinioClient;
 import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import john.api1.application.components.MinioBucket;
 import john.api1.application.components.enums.BucketType;
+import john.api1.application.ports.services.media.IMediaAdapter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class MinioAdapter {
+@Qualifier("MinioAdapter")
+public class MinioAdapter implements IMediaAdapter {
     private final MinioClient minioClient;
     private final MinioBucket minioBucket;
 
@@ -33,12 +36,13 @@ public class MinioAdapter {
 
     private String getPreSignedUrl(BucketType bucket, String objectName, Method method) {
         try {
+            System.out.println("MinioAdapter: Process media. Object Name: " + objectName);
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .bucket(minioBucket.getBucketName(bucket))
                             .object(objectName)
                             .method(method)
-                            .expiry(bucket.getMinuteExpire(), TimeUnit.MINUTES)
+                            .expiry(bucket.getMinuteExpire(), TimeUnit.DAYS)
                             .build()
             );
         } catch (MinioException e) {

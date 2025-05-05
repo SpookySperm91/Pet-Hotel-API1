@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PasswordResetAdapter {
     private static String domainUrl;
+    private static String adminUrl;
+
     private static final String tempUrl = "http://localhost:5000";
 
     @Value("${app.frontend.url}")
@@ -15,5 +17,9 @@ public class PasswordResetAdapter {
 
     public static String generateResetLink(String userId, String resetToken) {
         return tempUrl + "/reset-password.html?id=" + userId + "&token=" + resetToken;
+    }
+
+    public static String generateResetLinkAdmin(String userId, String resetToken) {
+        return tempUrl + "/admin-reset-password.html?id=" + userId + "&token=" + resetToken;
     }
 }

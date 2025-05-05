@@ -17,7 +17,7 @@ public class RedisSessionService implements ISessionService {
     private final RedisTemplate<String, Object> redisTemplate;
     private static final String SESSION_PREFIX = "session:";
     private static final String ROLE_KEY = "role";
-    private static final int TIMEOUT = 45;
+    private static final int TIMEOUT = 12;
 
     @Autowired
     public RedisSessionService(RedisTemplate<String, Object> redisTemplate) {
@@ -33,7 +33,7 @@ public class RedisSessionService implements ISessionService {
     public void saveSession(String token, SessionRole role) {
         String redisKey = SESSION_PREFIX + token;
         redisTemplate.opsForHash().put(redisKey, ROLE_KEY, role.getSessionRole());
-        redisTemplate.expire(redisKey, TIMEOUT, TimeUnit.MINUTES);
+        redisTemplate.expire(redisKey, TIMEOUT, TimeUnit.HOURS);
     }
 
     @Override
