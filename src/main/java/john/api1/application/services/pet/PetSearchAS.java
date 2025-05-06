@@ -8,6 +8,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PetSearchAS implements IPetSearch {
     private final IPetCQRSRepository petSearch;
@@ -45,4 +47,11 @@ public class PetSearchAS implements IPetSearch {
         return name.get();
     }
 
+    // List
+    @Override
+    public List<PetCQRS> getAllByOwner(String ownerId) {
+        if (!ObjectId.isValid(ownerId)) throw new PersistenceException("Owner id is invalid.");
+
+        return petSearch.getAllByOwner(ownerId);
+    }
 }

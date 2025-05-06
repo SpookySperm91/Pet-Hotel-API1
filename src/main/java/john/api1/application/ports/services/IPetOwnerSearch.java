@@ -20,4 +20,12 @@ public interface IPetOwnerSearch {
 
     // Single fields
     String getPetOwnerName(String ownerId);
+
+    // List
+    List<PetOwnerCQRS> getAllActivePetOwner();
+    PetOwnerCQRS getRecentActivePetOwner();
+
+    List<PetOwnerCQRS> getAllPendingPetOwner();
+
+    PetOwnerCQRS getRecentPendingPetOwner();
 }

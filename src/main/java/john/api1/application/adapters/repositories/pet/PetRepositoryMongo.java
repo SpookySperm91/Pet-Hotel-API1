@@ -132,6 +132,35 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
                 .toList();
     }
 
+    @Override
+    public List<PetCQRS> getAllByOwner(String ownerId) {
+        if (!ObjectId.isValid(ownerId)) {
+            throw new IllegalArgumentException("Invalid owner ID format");
+        }
+
+        Query query = new Query(Criteria.where("petOwnerId").is(new ObjectId(ownerId)));
+        List<PetEntity> pets = mongoTemplate.find(query, PetEntity.class);
+
+        return pets.stream()
+                .map(this::toPetCQRS)
+                .toList();
+    }
+
+    private PetCQRS toPetCQRS(PetEntity entity) {
+        return new PetCQRS(
+                entity.getId().toString(),
+                entity.getProfilePictureUrl(),
+                entity.getPetName(),
+                entity.getAnimalType(),
+                entity.getBreed(),
+                entity.getSize(),
+                entity.getAge(),
+                entity.getSpecialDescription(),
+                entity.isBoarding()
+        );
+    }
+
+
     //
     // UPDATE METHODS
     //
@@ -218,6 +247,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
 
         return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
                 .map(entity -> new PetCQRS(
+                        entity.getId().toString(),
                         entity.getProfilePictureUrl(),
                         entity.getPetName(),
                         entity.getAnimalType(),
@@ -243,6 +273,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
         if (entity == null) return Optional.empty();
 
         return Optional.of(new PetCQRS(
+                entity.getId().toString(),
                 entity.getProfilePictureUrl(),
                 entity.getPetName(),
                 entity.getAnimalType(),
@@ -272,6 +303,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
 
         return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
                 .map(entity -> PetCQRS.mapNameTypeBreed(
+                        entity.getId().toString(),
                         entity.getPetName(),
                         entity.getAnimalType(),
                         entity.getBreed()
@@ -296,6 +328,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
 
         return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
                 .map(entity -> PetCQRS.mapNameTypeBreedSize(
+                        entity.getId().toString(),
                         entity.getPetName(),
                         entity.getAnimalType(),
                         entity.getBreed(),

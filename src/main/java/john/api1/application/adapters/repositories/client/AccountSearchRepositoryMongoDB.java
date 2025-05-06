@@ -1,7 +1,6 @@
 package john.api1.application.adapters.repositories.client;
 
 import john.api1.application.adapters.repositories.ClientEntity;
-import john.api1.application.adapters.repositories.PetEntity;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.models.ClientAccountDomain;
 import john.api1.application.domain.models.ClientDomain;
@@ -13,6 +12,7 @@ import john.api1.application.ports.repositories.wrapper.UsernameAndId;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -160,26 +160,75 @@ public class AccountSearchRepositoryMongoDB implements IAccountSearchRepository,
                 .map(client -> petId); // return the found petId as String
     }
 
-        @Override
-        public Optional<String> getPetOwnerName(String ownerId) {
-            if (!ObjectId.isValid(ownerId)) throw new PersistenceException("Pet-owner id cannot be mapped to ObjectId");
+    @Override
+    public Optional<String> getPetOwnerName(String ownerId) {
+        if (!ObjectId.isValid(ownerId)) throw new PersistenceException("Pet-owner id cannot be mapped to ObjectId");
 
-            Query query = new Query();
-            query.addCriteria(Criteria.where("_id").is(new ObjectId(ownerId)));
-            query.fields().include("clientName");
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(new ObjectId(ownerId)));
+        query.fields().include("clientName");
 
-            return Optional.ofNullable(mongoTemplate.findOne(query, ClientEntity.class))
-                    .map(ClientEntity::getClientName);
-        }
+        return Optional.ofNullable(mongoTemplate.findOne(query, ClientEntity.class))
+                .map(ClientEntity::getClientName);
+    }
+
+
+    @Override
+    public List<PetOwnerCQRS> getAllActive() {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("accountLock").is(false));
+        var clients = mongoTemplate.find(query, ClientEntity.class);
+
+        return clients.stream()
+                .map(this::mapToCQRS)
+                .toList();
+    }
+
+    @Override
+    public Optional<PetOwnerCQRS> getRecentActive() {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("accountLock").is(false));
+        query.with(Sort.by(Sort.Direction.DESC, "createAt"));
+        query.limit(1);
+
+        ClientEntity entity = mongoTemplate.findOne(query, ClientEntity.class);
+        return Optional.ofNullable(entity)
+                .map(this::mapToCQRS);
+    }
+
+    @Override
+    public List<PetOwnerCQRS> getAllPending() {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("accountLock").is(true));
+        var clients = mongoTemplate.find(query, ClientEntity.class);
+
+        return clients.stream()
+                .map(this::mapToCQRS)
+                .toList();
+    }
+
+    @Override
+    public Optional<PetOwnerCQRS> getRecentPending() {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("accountLock").is(true));
+        query.with(Sort.by(Sort.Direction.DESC, "createAt"));
+        query.limit(1);
+
+        ClientEntity entity = mongoTemplate.findOne(query, ClientEntity.class);
+        return Optional.ofNullable(entity)
+                .map(this::mapToCQRS);
+    }
 
 
     private PetOwnerCQRS mapToCQRS(ClientEntity account) {
         return new PetOwnerCQRS(
+                account.getId().toString(),
                 account.getClientName(),
                 account.getEmail(),
                 account.getPhoneNumber(),
                 account.getStreetAddress(),
                 account.getCityAddress(),
-                account.getStateAddress());
+                account.getStateAddress(),
+                account.getCreateAt());
     }
 }

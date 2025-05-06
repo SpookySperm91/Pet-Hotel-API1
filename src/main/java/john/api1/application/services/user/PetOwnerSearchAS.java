@@ -89,4 +89,34 @@ public class PetOwnerSearchAS implements IPetOwnerSearch {
         return name.get();
 
     }
+
+    @Override
+    public List<PetOwnerCQRS> getAllActivePetOwner() {
+        var allActive = petOwnerCQRS.getAllActive();
+        if (allActive.isEmpty()) throw new PersistenceException("Pet fileName cannot be found.");
+        return allActive;
+    }
+
+    @Override
+    public PetOwnerCQRS getRecentActivePetOwner() {
+        var recent = petOwnerCQRS.getRecentActive();
+        if (recent.isEmpty()) throw new PersistenceException("No recent active to be found.");
+        return recent.get();
+    }
+
+    @Override
+    public List<PetOwnerCQRS> getAllPendingPetOwner() {
+        var allPending = petOwnerCQRS.getAllPending();
+        if (allPending.isEmpty()) throw new PersistenceException("Pet fileName cannot be found.");
+        return allPending;
+    }
+
+    @Override
+    public PetOwnerCQRS getRecentPendingPetOwner() {
+        var recent = petOwnerCQRS.getRecentPending();
+        if (recent.isEmpty()) throw new PersistenceException("No recent active to be found.");
+        return recent.get();
+    }
+
+
 }

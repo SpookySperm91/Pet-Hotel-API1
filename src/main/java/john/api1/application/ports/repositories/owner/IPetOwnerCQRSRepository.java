@@ -10,4 +10,11 @@ public interface IPetOwnerCQRSRepository {
     Optional<String> checkPetIfExist(String owner, String pet);
 
     Optional<String> getPetOwnerName(String ownerId);
+
+    // List
+    List<PetOwnerCQRS> getAllActive();
+    Optional<PetOwnerCQRS> getRecentActive();
+
+    List<PetOwnerCQRS> getAllPending();
+    Optional<PetOwnerCQRS> getRecentPending();
 }
