@@ -1,5 +1,7 @@
 package john.api1.application.components.enums;
 
+import john.api1.application.components.enums.boarding.RequestStatus;
+import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,4 +38,34 @@ public enum NotificationType {
         }
         throw new DomainArgumentException("Invalid NotificationType: " + type);
     }
+
+    public static NotificationType check(RequestType requestType, RequestStatus status) {
+        return switch (requestType) {
+            case PHOTO_REQUEST -> switch (status) {
+                case COMPLETED -> PHOTO_REQUEST_COMPLETED;
+                case REJECTED -> PHOTO_REQUEST_REJECTED;
+                default -> throw new DomainArgumentException("Unsupported status for PHOTO_REQUEST: " + status);
+            };
+            case VIDEO_REQUEST -> switch (status) {
+                case COMPLETED -> VIDEO_REQUEST_COMPLETED;
+                case REJECTED -> VIDEO_REQUEST_REJECTED;
+                default -> throw new DomainArgumentException("Unsupported status for VIDEO_REQUEST: " + status);
+            };
+            case BOARDING_EXTENSION -> switch (status) {
+                case IN_PROGRESS -> EXTENSION_REQUEST_IN_PROGRESS;
+                case COMPLETED -> EXTENSION_REQUEST_COMPLETED;
+                case REJECTED -> EXTENSION_REQUEST_REJECTED;
+                default -> throw new DomainArgumentException("Unsupported status for EXTENSION: " + status);
+            };
+            case GROOMING_SERVICE -> switch (status) {
+                case IN_PROGRESS -> GROOMING_REQUEST_IN_PROGRESS;
+                case COMPLETED -> GROOMING_REQUEST_COMPLETED;
+                case REJECTED -> GROOMING_REQUEST_REJECTED;
+                default -> throw new DomainArgumentException("Unsupported status for GROOMING: " + status);
+            };
+            default -> throw new DomainArgumentException("Unsupported RequestType: " + requestType);
+        };
+    }
+
+
 }

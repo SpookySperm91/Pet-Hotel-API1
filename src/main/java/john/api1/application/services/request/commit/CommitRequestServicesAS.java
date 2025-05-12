@@ -113,6 +113,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             String ownerName = ownerSearch.getPetOwnerName(boarding.getOwnerId());
             String message = "The boarding extension for " + petName + " is completed.";
             var dto = new RequestCommittedServiceDTO(
+                    check.getOwnerId(),
                     check.getId(),
                     check.getRequestType().getRequestType(),
                     RequestStatus.COMPLETED.getRequestStatus(),
@@ -176,6 +177,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             String ownerName = ownerSearch.getPetOwnerName(boarding.getOwnerId());
             String message = "The grooming for " + petName + " is completed.";
             var dto = new RequestCommittedServiceDTO(
+                    check.getOwnerId(),
                     check.getId(),
                     check.getRequestType().getRequestType(),
                     RequestStatus.COMPLETED.getRequestStatus(),

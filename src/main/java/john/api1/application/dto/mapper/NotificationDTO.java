@@ -3,6 +3,8 @@ package john.api1.application.dto.mapper;
 import john.api1.application.domain.models.request.NotificationDomain;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public record NotificationDTO(
         String id,
@@ -21,5 +23,11 @@ public record NotificationDTO(
                 domain.getNotificationType().getNotificationTypeDto(),
                 domain.getDescription(),
                 domain.getCreatedAt());
+    }
+
+    public static List<NotificationDTO> map(List<NotificationDomain> domains) {
+        return domains.stream()
+                .map(NotificationDTO::map)
+                .collect(Collectors.toList());
     }
 }

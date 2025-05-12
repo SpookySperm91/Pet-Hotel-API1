@@ -138,6 +138,7 @@ public class NotificationAS implements INotificationCreate, INotificationDelete 
             return DomainResponse.success(response);
 
         } catch (DomainArgumentException | PersistenceException e) {
+            System.out.println(e.fillInStackTrace().getMessage());
             return DomainResponse.error(e.getMessage());
         }
     }
@@ -183,7 +184,7 @@ public class NotificationAS implements INotificationCreate, INotificationDelete 
 
 
     private void validateId(String id, String type) {
-        System.out.println("Invalid " + type + " id cannot be converted to ObjectId: Happens in NotificationAS.class");
+        System.out.println(type  + "-id: " + id);
         if (!ObjectId.isValid(id))
             throw new PersistenceException("Invalid " + type + " id cannot be converted to ObjectId");
     }

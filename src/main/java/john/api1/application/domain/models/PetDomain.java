@@ -55,6 +55,22 @@ public class PetDomain {
         this.updatedAt = Instant.now();
     }
 
+    public void updateBreed(String breed) {
+        validateNotEmpty(breed, "Pet breed cannot be empty");
+        this.breed = breed;
+        this.updatedAt = Instant.now();
+    }
+
+    public void updateSize(String size) {
+        validateNotEmpty(size, "Pet size cannot be empty");
+        this.size = size;
+        this.updatedAt = Instant.now();
+    }
+
+    public void updateAge(Integer age) {
+        this.age = age;
+        this.updatedAt = Instant.now();
+    }
     public void updateAnimalType(String animalType) {
         validateNotEmpty(animalType, "Animal type cannot be empty");
         this.animalType = animalType;

@@ -1,15 +1,23 @@
 package john.api1.application.adapters.controllers.admin;
 
 import jakarta.validation.Valid;
+import john.api1.application.async.AsyncNotificationService;
+import john.api1.application.components.enums.NotificationType;
+import john.api1.application.components.enums.boarding.RequestType;
+import john.api1.application.components.exception.DomainArgumentException;
+import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.request.commit.RequestCommittedPhotoDTO;
 import john.api1.application.dto.mapper.request.commit.RequestCommittedServiceDTO;
 import john.api1.application.dto.mapper.request.commit.RequestCommittedVideoDTO;
+import john.api1.application.dto.request.NotificationRDTO;
 import john.api1.application.dto.request.request.admin.RequestCompletePhotoRDTO;
 import john.api1.application.dto.request.request.admin.RequestCompleteServiceRDTO;
 import john.api1.application.dto.request.request.admin.RequestCompleteVideoRDTO;
 import john.api1.application.ports.services.request.admin.ICommitRequestMedia;
 import john.api1.application.ports.services.request.admin.ICommitRequestServices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -25,14 +33,18 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/admin/manage/request/commit")
 public class AdminRequestCommitController {
+    private static final Logger log = LoggerFactory.getLogger(AdminRequestCommitController.class);
     private final ICommitRequestMedia commitRequestMedia;
     private final ICommitRequestServices commitRequestServices;
+    private final AsyncNotificationService notificationService;
 
     @Autowired
     public AdminRequestCommitController(ICommitRequestMedia commitRequestMedia,
-                                        ICommitRequestServices commitRequestServices) {
+                                        ICommitRequestServices commitRequestServices,
+                                        AsyncNotificationService notificationService) {
         this.commitRequestMedia = commitRequestMedia;
         this.commitRequestServices = commitRequestServices;
+        this.notificationService = notificationService;
     }
 
 
@@ -48,6 +60,19 @@ public class AdminRequestCommitController {
         try {
             var commit = commitRequestMedia.commitPhotoRequest(request);
             if (!commit.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, commit.getMessage());
+
+            var data = commit.getData();
+            try {
+                var notification = new NotificationRDTO(
+                        data.ownerId(),
+                        null,
+                        data.requestId(),
+                        RequestType.PHOTO_REQUEST.getRequestType(),
+                        NotificationType.PHOTO_REQUEST_COMPLETED.getNotificationType());
+                notificationService.tryCreate(notification);
+            } catch (DomainArgumentException | PersistenceException e) {
+                log.warn("Failed to create complete photo request notification. Reason: {}", e.getMessage());
+            }
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(DTOResponse.of(
@@ -70,12 +95,21 @@ public class AdminRequestCommitController {
         if (error != null) return buildErrorResponse(HttpStatus.BAD_REQUEST, error);
 
         try {
-            //////////////////////////
-            // Session and magic shits
-            //////////////////////////
-
             var commit = commitRequestMedia.commitVideoRequest(request);
             if (!commit.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, commit.getMessage());
+
+            var data = commit.getData();
+            try {
+                var notification = new NotificationRDTO(
+                        data.ownerId(),
+                        null,
+                        data.requestId(),
+                        RequestType.VIDEO_REQUEST.getRequestType(),
+                        NotificationType.VIDEO_REQUEST_COMPLETED.getNotificationType());
+                notificationService.tryCreate(notification);
+            } catch (DomainArgumentException | PersistenceException e) {
+                log.warn("Failed to create complete video request notification. Reason: {}", e.getMessage());
+            }
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(DTOResponse.of(
@@ -98,14 +132,24 @@ public class AdminRequestCommitController {
         if (error != null) return buildErrorResponse(HttpStatus.BAD_REQUEST, error);
 
         try {
-            //////////////////////////
-            // Session and magic shits
-            //////////////////////////
             System.out.println("request id: " + request.getRequestId());
             System.out.println("notes: " + request.getNotes());
 
             var commit = commitRequestServices.commitExtensionRequest(request);
             if (!commit.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, commit.getMessage());
+
+            var data = commit.getData();
+            try {
+                var notification = new NotificationRDTO(
+                        data.ownerId(),
+                        null,
+                        data.requestId(),
+                        RequestType.BOARDING_EXTENSION.getRequestType(),
+                        NotificationType.EXTENSION_REQUEST_COMPLETED.getNotificationType());
+                notificationService.tryCreate(notification);
+            } catch (DomainArgumentException | PersistenceException e) {
+                log.warn("Failed to create complete extension request notification. Reason: {}", e.getMessage());
+            }
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(DTOResponse.of(
@@ -127,12 +171,21 @@ public class AdminRequestCommitController {
         if (error != null) return buildErrorResponse(HttpStatus.BAD_REQUEST, error);
 
         try {
-            //////////////////////////
-            // Session and magic shits
-            //////////////////////////
-
             var commit = commitRequestServices.commitGroomingRequest(request);
             if (!commit.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, commit.getMessage());
+
+            var data = commit.getData();
+            try {
+                var notification = new NotificationRDTO(
+                        data.ownerId(),
+                        null,
+                        data.requestId(),
+                        RequestType.GROOMING_SERVICE.getRequestType(),
+                        NotificationType.GROOMING_REQUEST_COMPLETED.getNotificationType());
+                notificationService.tryCreate(notification);
+            } catch (DomainArgumentException | PersistenceException e) {
+                log.warn("Failed to create grooming request notification. Reason: {}", e.getMessage());
+            }
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(DTOResponse.of(

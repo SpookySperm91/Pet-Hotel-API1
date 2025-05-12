@@ -86,7 +86,7 @@ public class RequestStatusManagementAS implements IRequestStatusManagement {
             String ownerName = ownerSearch.getPetOwnerName(updatedRequest.ownerId());
             String petName = petSearch.getPetName(updatedRequest.petId());
 
-            var dto = new RequestStatusUpdateDTO(requestId, RequestStatus.REJECTED.getRequestStatus(), ownerName, petName);
+            var dto = new RequestStatusUpdateDTO(requestId, requestOpt.get().getRequestType().getRequestType(), RequestStatus.REJECTED.getRequestStatus(), requestOpt.get().getOwnerId(), ownerName, petName);
             return DomainResponse.success(dto, "Successfully rejected pending request. Can be undone for 5 minutes");
 
         } catch (DomainArgumentException | PersistenceException e) {
@@ -121,7 +121,7 @@ public class RequestStatusManagementAS implements IRequestStatusManagement {
             String ownerName = ownerSearch.getPetOwnerName(updatedRequest.ownerId());
             String petName = petSearch.getPetName(updatedRequest.petId());
 
-            var dto = new RequestStatusUpdateDTO(requestId, newStatus.getRequestStatus(), ownerName, petName);
+            var dto = new RequestStatusUpdateDTO(requestId, requestOpt.get().getRequestType().getRequestType(), newStatus.getRequestStatus(), requestOpt.get().getOwnerId(), ownerName, petName);
             return DomainResponse.success(dto, successMessage);
 
         } catch (DomainArgumentException | PersistenceException e) {

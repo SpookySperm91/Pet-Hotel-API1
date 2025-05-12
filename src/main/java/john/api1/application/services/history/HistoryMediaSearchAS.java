@@ -49,7 +49,10 @@ public class HistoryMediaSearchAS implements IHistoryMediaSearch {
     public Optional<MediaHistoryDTO> getRecentHistoryMedia() {
         try {
             var optionalRequest = requestSearch.searchRecentMediaRequest();
-            if (optionalRequest.isEmpty()) return Optional.empty();
+            if (optionalRequest.isEmpty()) {
+                System.out.println("no optional request found, its empty");
+                return Optional.empty();
+            }
 
             RequestCQRS request = optionalRequest.get();
             String requestId = request.id();
@@ -60,7 +63,7 @@ public class HistoryMediaSearchAS implements IHistoryMediaSearch {
             switch (request.type()) {
                 case PHOTO_REQUEST -> {
                     var photoRequest = completedSearch.findPhotoRequestByRequestId(requestId)
-                            .orElseThrow(() -> new PersistenceHistoryException("No recent photo request history found"));
+                            .orElseThrow(() -> new PersistenceHistoryException("No recent photo request history found. Request-ID: " + requestId));
 
                     var media = mediaSearch.findByRequestId(photoRequest.requestId())
                             .orElseThrow(() -> new PersistenceException("No photos found. Failed to generate pre-signed URLs"));
@@ -74,10 +77,13 @@ public class HistoryMediaSearchAS implements IHistoryMediaSearch {
                             request.createdAt(),
                             request.updatedAt()
                     );
+
+                    System.out.println("Made it here PHOTO");
                     return Optional.of(dto);
                 }
 
                 case VIDEO_REQUEST -> {
+                    System.out.println("Start searching VIDEO");
                     var videoRequest = completedSearch.findVideoRequestByRequestId(requestId)
                             .orElseThrow(() -> new PersistenceHistoryException("No recent video request history found"));
 
@@ -97,6 +103,7 @@ public class HistoryMediaSearchAS implements IHistoryMediaSearch {
                             request.createdAt(),
                             request.updatedAt()
                     );
+                    System.out.println("Made it here VIDEO");
                     return Optional.of(dto);
                 }
 

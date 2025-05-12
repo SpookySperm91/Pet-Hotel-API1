@@ -81,7 +81,7 @@ public class ClientAccountDomain {
 
     // change email
     public ClientAccountDomain changeEmail(String newEmail) {
-        if (!isValidEmail(newEmail) || newEmail.equalsIgnoreCase(this.email)) {
+        if (newEmail.equalsIgnoreCase(this.email)) {
             return this; // Return same object if no change
         }
         return new ClientAccountDomain(id, newEmail, phoneNumber, hashedPassword, locked, createdAt, Instant.now());

@@ -158,6 +158,7 @@ public class NotificationRepository implements INotificationCreateRepository, IN
 
     private void validateId(String id, String type) {
         if (!ObjectId.isValid(id))
+            System.out.println("Triggered here: NotificationRepository");
             throw new PersistenceException("Invalid " + type + " id cannot be converted to ObjectId");
     }
 }

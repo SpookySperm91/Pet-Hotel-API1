@@ -147,7 +147,7 @@ public class RequestSearchRepository implements IRequestSearchRepository {
                                 Criteria.where("requestType").is(RequestType.PHOTO_REQUEST.getRequestType()),
                                 Criteria.where("requestType").is(RequestType.VIDEO_REQUEST.getRequestType())
                         ),
-                        Criteria.where("isActive").is(false)
+                        Criteria.where("active").is(false)
                 ))
                 .limit(1);
 

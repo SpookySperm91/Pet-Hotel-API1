@@ -1,14 +1,20 @@
 package john.api1.application.services.pet;
 
 import john.api1.application.components.DomainResponse;
+import john.api1.application.components.enums.BucketType;
 import john.api1.application.components.enums.boarding.BoardingStatus;
 import john.api1.application.components.exception.DomainArgumentException;
 import john.api1.application.components.exception.PersistenceException;
+import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.domain.models.PetDomain;
+import john.api1.application.dto.mapper.pet.PetUpdatedDTO;
 import john.api1.application.dto.request.PetRDTO;
+import john.api1.application.ports.repositories.media.IMediaSearchRepository;
 import john.api1.application.ports.repositories.pet.IPetSearchRepository;
 import john.api1.application.ports.repositories.pet.IPetUpdateRepository;
 import john.api1.application.ports.repositories.pet.PetCQRS;
+import john.api1.application.ports.repositories.wrapper.PreSignedUrlResponse;
+import john.api1.application.ports.services.media.IMediaManagement;
 import john.api1.application.ports.services.pet.IPetUpdate;
 import john.api1.application.services.response.PetUpdateResponse;
 import org.bson.types.ObjectId;
@@ -23,11 +29,15 @@ import java.util.logging.Logger;
 public class PetUpdateAS implements IPetUpdate {
     private static final Logger logger = Logger.getLogger(PetUpdateAS.class.getName());
     private final IPetUpdateRepository petUpdate;
+    private final IMediaSearchRepository mediaSearch;
+    private final IMediaManagement mediaManagement;
     private final IPetSearchRepository petSearch;
 
     @Autowired
-    public PetUpdateAS(IPetUpdateRepository petUpdate, IPetSearchRepository petSearch) {
+    public PetUpdateAS(IPetUpdateRepository petUpdate, IMediaSearchRepository mediaSearch, IMediaManagement mediaManagement, IPetSearchRepository petSearch) {
         this.petUpdate = petUpdate;
+        this.mediaSearch = mediaSearch;
+        this.mediaManagement = mediaManagement;
         this.petSearch = petSearch;
     }
 
@@ -65,11 +75,74 @@ public class PetUpdateAS implements IPetUpdate {
         }
     }
 
+    public DomainResponse<PetUpdatedDTO> updatePet(PetDomain pet, String photoProfile) {
+        try {
+            PreSignedUrlResponse profile = null;
+
+            if (!photoProfile.trim().isEmpty()) {
+                var media = mediaSearch.findProfilePicByOwnerIdDomain(pet.getId());
+                String objectName = mediaManagement.generateMediaObjectName(pet.getPetName(), pet.getId());
+                var generateMedia = mediaManagement.generateMediaFile(pet.getId(), objectName, BucketType.PROFILE_PHOTO);
+
+                // <-- this is needed!
+                if (media.isEmpty()) {
+                    // Generate new media
+                    if (!generateMedia.isSuccess()) {
+                        return DomainResponse.error(generateMedia.getMessage(), DomainResponse.ErrorType.SERVER_ERROR);
+                    }
+
+                    MediaDomain mediaDomain = MediaDomain.create(
+                            pet.getId(), objectName, BucketType.PROFILE_PHOTO, generateMedia.getData().expiresAt()
+                    );
+
+                    var saveMediaResponse = mediaManagement.saveMediaFile(mediaDomain);
+                    if (!saveMediaResponse.isSuccess()) {
+                        return DomainResponse.error(saveMediaResponse.getMessage(), DomainResponse.ErrorType.SERVER_ERROR);
+                    }
+
+                } else {
+                    MediaDomain mediaDomain = MediaDomain.create(
+                            pet.getId(), objectName, BucketType.PROFILE_PHOTO, generateMedia.getData().expiresAt()
+                    );
+                    mediaDomain.mapWithId(media.get().id());
+
+                    var saveMediaResponse = mediaManagement.saveMediaFile(mediaDomain);
+                    if (!saveMediaResponse.isSuccess()) {
+                        return DomainResponse.error(saveMediaResponse.getMessage(), DomainResponse.ErrorType.SERVER_ERROR);
+                    }
+
+                }
+                profile = generateMedia.getData();
+                pet.updateProfilePicture(photoProfile);
+
+            }
+
+            boolean updated = petUpdate.updatePet(pet);
+            if (!updated) {
+                return DomainResponse.error("Failed to update pet '" + pet.getPetName() + "'.");
+            }
+
+            PetUpdatedDTO dto = new PetUpdatedDTO(
+                    pet.getId(), pet.getOwnerId(), pet.getPetName(), pet.getBreed(),
+                    pet.getSize(), pet.getAge(), profile
+            );
+
+            return DomainResponse.success(dto, "Pet '" + pet.getPetName() + "' successfully updated.");
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return DomainResponse.error("Failed to update pet '" + pet.getPetName() + "'. Something went wrong with the database.",
+                    DomainResponse.ErrorType.SERVER_ERROR
+            );
+        }
+    }
+
+
     // UPDATE SPECIFICS METHODS
-    // Check pet id if exist
-    // Return with updated value, error message otherwise
-    //
-    //
+// Check pet id if exist
+// Return with updated value, error message otherwise
+//
+//
     @Override
     public DomainResponse<PetUpdateResponse> updatePetName(String petId, String newPetName) {
         return update(petId, () -> petUpdate.updatePetName(petId, newPetName),

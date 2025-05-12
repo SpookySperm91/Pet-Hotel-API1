@@ -25,16 +25,18 @@ public class NotificationDomain {
     public static NotificationDomain create(String requestId, String ownerId, String description, NotificationType notificationType) {
         if (!ObjectId.isValid(requestId))
             throw new PersistenceException("Invalid request id cannot be converted to ObjectId");
-        if (!ObjectId.isValid(ownerId))
+        if (!ObjectId.isValid(ownerId)) {
+            System.out.println("Triggered here: NotificationDomain ID: " + ownerId);
             throw new PersistenceException("Invalid owner id cannot be converted to ObjectId");
-
+        }
         return new NotificationDomain(null, requestId, ownerId, description, notificationType, Instant.now(), false);
     }
 
     public static NotificationDomain create(String ownerId, String description, NotificationType notificationType) {
-        if (!ObjectId.isValid(ownerId))
+        if (!ObjectId.isValid(ownerId)) {
+            System.out.println("Triggered here: NotificationDomain ID: " + ownerId);
             throw new PersistenceException("Invalid owner id cannot be converted to ObjectId");
-
+        }
         return new NotificationDomain(null, null, ownerId, description, notificationType, Instant.now(), false);
     }
 

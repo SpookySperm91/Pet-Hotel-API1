@@ -3,12 +3,14 @@ package john.api1.application.dto.mapper.history.media;
 import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.ports.repositories.wrapper.MediaPreview;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.Instant;
 import java.util.List;
 
 @Getter
-public class MediaHistoryPhotoDTO implements MediaHistoryDTO {
+@ToString
+public class    MediaHistoryPhotoDTO implements MediaHistoryDTO {
     private final String requestId;
     private final List<MediaPreview.MediaPreviewDTO> photos;
     private final String requestType = RequestType.PHOTO_REQUEST.getRequestTypeToDto();

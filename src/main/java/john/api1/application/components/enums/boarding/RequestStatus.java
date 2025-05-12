@@ -1,5 +1,6 @@
 package john.api1.application.components.enums.boarding;
 
+import john.api1.application.components.exception.DomainArgumentException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -26,7 +27,7 @@ public enum RequestStatus {
             }
         }
 
-        throw new IllegalArgumentException("Unknown request status: " + requestStatus);
+        throw new DomainArgumentException("Unknown request status: " + requestStatus);
     }
 
 

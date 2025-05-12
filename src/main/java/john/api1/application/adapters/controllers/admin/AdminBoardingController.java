@@ -1,12 +1,16 @@
 package john.api1.application.adapters.controllers.admin;
 
+import john.api1.application.async.AsyncNotificationService;
+import john.api1.application.components.enums.NotificationType;
 import john.api1.application.components.enums.boarding.BoardingType;
 import john.api1.application.components.enums.boarding.PaymentStatus;
+import john.api1.application.components.enums.boarding.RequestType;
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.boarding.BoardingCreatedDTO;
 import john.api1.application.dto.mapper.boarding.BoardingDTO;
 import john.api1.application.dto.request.BoardingRDTO;
 import john.api1.application.dto.request.BoardingStatusRDTO;
+import john.api1.application.dto.request.NotificationRDTO;
 import john.api1.application.dto.request.PaymentStatusDTO;
 import john.api1.application.ports.services.boarding.IBoardingCreate;
 import john.api1.application.ports.services.boarding.IBoardingManagement;
@@ -30,11 +34,16 @@ public class AdminBoardingController {
     private static final Logger logger = LoggerFactory.getLogger(AdminBoardingController.class);
     private final IBoardingCreate boardingCreate;
     private final IBoardingManagement boardingManagement;
+    private final AsyncNotificationService notificationService;
+
 
     @Autowired
-    public AdminBoardingController(IBoardingCreate boardingCreate, IBoardingManagement boardingManagement) {
+    public AdminBoardingController(IBoardingCreate boardingCreate,
+                                   IBoardingManagement boardingManagement,
+                                   AsyncNotificationService notificationService) {
         this.boardingCreate = boardingCreate;
         this.boardingManagement = boardingManagement;
+        this.notificationService = notificationService;
     }
 
     // CREATE BOARDING

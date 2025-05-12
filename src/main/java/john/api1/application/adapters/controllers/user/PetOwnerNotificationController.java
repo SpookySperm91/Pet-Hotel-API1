@@ -1,59 +1,46 @@
 package john.api1.application.adapters.controllers.user;
 
+import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.NotificationDTO;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import john.api1.application.ports.services.notification.INotificationSearch;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/pet-owner/notifications")
 public class PetOwnerNotificationController {
-    private static final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final INotificationSearch notificationSearch;
+
+    @Autowired
+    public PetOwnerNotificationController(INotificationSearch notificationSearch) {
+        this.notificationSearch = notificationSearch;
+    }
+
 
     // Subscribes after pet-owner logging in
-    @GetMapping(value = "/subscribe/{ownerId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@PathVariable String ownerId) {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+    @GetMapping("/{ownerId}/all")
+    public ResponseEntity<DTOResponse<List<NotificationDTO>>> getNotifications(@PathVariable String ownerId) {
+        var notification = notificationSearch.searchAllByOwner(ownerId);
+        if (!notification.isSuccess())
+            return buildErrorResponse(HttpStatus.OK, "No current notification for owner id: " + ownerId);
 
-        emitters.put(ownerId, emitter);
-
-        emitter.onCompletion(() -> emitters.remove(ownerId));
-        emitter.onTimeout(() -> emitters.remove(ownerId));
-        emitter.onError((e) -> emitters.remove(ownerId));
-
-        return emitter;
-    }
-
-    @PostMapping("/send/{ownerId}")
-    public void sendNotification(@PathVariable String ownerId,
-                                 @RequestBody NotificationDTO notificationDTO) throws IOException {
-        SseEmitter emitter = emitters.get(ownerId);
-
-        if (emitter != null) {
-            emitter.send(SseEmitter.event()
-                    .name("notification")
-                    .data(notificationDTO));
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                DTOResponse.of(
+                        HttpStatus.OK.value(),
+                        notification.getData(),
+                        "Notification successfully fetched")
+        );
     }
 
 
-    public static void sendToOwner(String ownerId,
-                                   String notificationMessage) {
-        SseEmitter emitter = emitters.get(ownerId);
-        if (emitter != null) {
-            try {
-                emitter.send(SseEmitter.event()
-                        .name("notification")
-                        .data(notificationMessage));  // Send the structured data, could be NotificationDTO
-            } catch (IOException e) {
-                emitter.completeWithError(e);
-                emitters.remove(ownerId);
-            }
-        }
+    private <T> ResponseEntity<DTOResponse<T>> buildErrorResponse(HttpStatus status, String message) {
+        return ResponseEntity.status(status).body(DTOResponse.message(status.value(), message));
     }
-
 }

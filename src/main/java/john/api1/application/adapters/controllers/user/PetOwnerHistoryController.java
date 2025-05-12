@@ -1,4 +1,4 @@
-package john.api1.application.adapters.controllers.admin;
+package john.api1.application.adapters.controllers.user;
 
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.components.exception.PersistenceHistoryException;
@@ -17,54 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/admin/history")
-public class AdminHistoryController {
+@RequestMapping("/api/v1/pet-owner/history")
+public class PetOwnerHistoryController {
     private final IHistoryLogSearch historyLogSearch;
     private final IHistoryMediaSearch historyMediaSearch;
 
     @Autowired
-    public AdminHistoryController(IHistoryLogSearch historyLogSearch,
-                                  IHistoryMediaSearch historyMediaSearch) {
-        this.historyLogSearch = historyLogSearch;
+    public PetOwnerHistoryController(IHistoryMediaSearch historyMediaSearch, IHistoryLogSearch historyLogSearch) {
         this.historyMediaSearch = historyMediaSearch;
+        this.historyLogSearch =historyLogSearch;
     }
 
-    @GetMapping("/search/recent")
-    public ResponseEntity<DTOResponse<ActivityLogDTO>> searchRecentLog() {
 
-        try {
-            var recent = historyLogSearch.getRecentLog();
-
-            return recent.map(activityLogDTO -> ResponseEntity.status(HttpStatus.OK)
-                            .body(DTOResponse.of(
-                                    HttpStatus.OK.value(),
-                                    activityLogDTO,
-                                    "Ok.")))
-                    .orElseGet(() -> buildErrorResponse(HttpStatus.OK, "No recent activity log found"));
-        } catch (PersistenceException | NullPointerException e) {
-            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with the system. Try again");
-        }
-    }
-
-    @GetMapping("/search/all")
-    public ResponseEntity<DTOResponse<List<ActivityLogDTO>>> searchAll() {
-        try {
-            var recent = historyLogSearch.getAll();
-
-            if (!recent.isEmpty()) {
-                return ResponseEntity.ok(DTOResponse.of(
-                        HttpStatus.OK.value(),
-                        recent,
-                        "Ok."));
-            } else {
-                return buildErrorResponse(HttpStatus.OK, "No recent activity log found");
-            }
-        } catch (PersistenceException | NullPointerException e) {
-            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with the system. Try again");
-        }
-    }
-
-    // Media
     @GetMapping("/search/media/recent")
     public ResponseEntity<DTOResponse<MediaHistoryDTO>> searchRecentMedia() {
         // Get recent media
@@ -72,14 +36,12 @@ public class AdminHistoryController {
         // Similar to request format
         try {
             var recent = historyMediaSearch.getRecentHistoryMedia();
-            return recent.map(mediaHistoryDTO ->
-                            ResponseEntity.ok(DTOResponse.of(
+            return recent.map(mediaHistoryDTO -> ResponseEntity.ok(DTOResponse.of(
                             HttpStatus.OK.value(),
                             mediaHistoryDTO,
                             "Ok.")))
                     .orElseGet(() -> buildErrorResponse(HttpStatus.OK, "No recent activity log found"));
         } catch (PersistenceException | PersistenceHistoryException | NullPointerException e) {
-            System.out.println("ERROR: " +  e.getMessage());
             return buildErrorResponse(HttpStatus.OK, "No recent activity log found");
         }
     }
@@ -102,10 +64,8 @@ public class AdminHistoryController {
         }
     }
 
-
     private <T> ResponseEntity<DTOResponse<T>> buildErrorResponse(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(DTOResponse.message(status.value(), message));
     }
-
 
 }

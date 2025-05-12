@@ -2,6 +2,7 @@ package john.api1.application.adapters.repositories.media;
 
 import john.api1.application.adapters.repositories.MinioEntity;
 import john.api1.application.components.enums.BucketType;
+import john.api1.application.domain.models.MediaDomain;
 import john.api1.application.ports.repositories.media.IMediaSearchRepository;
 import john.api1.application.ports.repositories.wrapper.MediaEntityPreview;
 import org.bson.types.ObjectId;
@@ -122,7 +123,39 @@ public class MinioSearchRepositoryMongo implements IMediaSearchRepository {
 
         return Optional.of(preview);
     }
+
+    public Optional<MediaDomain> findProfilePicByOwnerIdDomain(String ownerId) {
+        if (!ObjectId.isValid(ownerId)) return Optional.empty();
+        Query query = new Query(Criteria.where("ownerId").is(new ObjectId(ownerId))
+                .and("bucketType").is(BucketType.PROFILE_PHOTO.getBucketType())
+        );
+
+        query.with(Sort.by(Sort.Direction.DESC, "uploadedAt"));
+        query.limit(1);
+
+        MinioEntity entity = mongoTemplate.findOne(query, MinioEntity.class);
+        if (entity == null) return Optional.empty();
+
+
+        MediaDomain preview = new MediaDomain(
+                entity.getId().toString(),
+                entity.getOwnerId().toString(),
+                entity.getTypeId() != null ? entity.getTypeId().toString() : null,
+                entity.getFileName(),
+                BucketType.fromString(entity.getBucketType()),
+                entity.getDescription(),
+                entity.getUploadedAt(),
+                entity.getPreSignedUrlExpire(),
+                entity.isArchived()
+        );
+
+
+        return Optional.of(preview);
+    }
+
+
 }
+
 
 class MediaMapper {
     public static MediaEntityPreview toMediaDomain(MinioEntity entity) {
