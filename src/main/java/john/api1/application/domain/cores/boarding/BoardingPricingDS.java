@@ -15,6 +15,10 @@ public class BoardingPricingDS {
         return domain.getRatePerHour() * domain.getBoardingDuration(); // Per-hour charge for daycare
     }
 
+    public static double getBoardingTotal(BoardingPricingDomain domain, long hours) {
+        return domain.getRatePerHour() * hours; // Per-hour charge for daycare
+    }
+
     public static double getBoardingTotal(PricingCQRS pricing) {
         return pricing.rate() * pricing.duration(); // Per-hour charge for daycare
     }
@@ -31,6 +35,10 @@ public class BoardingPricingDS {
     // Overall total (boarding + request)
     public static double getOverallTotal(BoardingPricingDomain domain) {
         return getBoardingTotal(domain) + getRequestTotal(domain);
+    }
+
+    public static double getOverallTotal(BoardingPricingDomain domain, long hours) {
+        return getBoardingTotal(domain, hours) + getRequestTotal(domain);
     }
 
 

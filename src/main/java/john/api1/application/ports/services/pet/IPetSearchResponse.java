@@ -8,6 +8,8 @@ import java.util.List;
 public interface IPetSearchResponse {
     DomainResponse<List<PetDetailsDTO>> searchAll();
 
+    DomainResponse<List<PetDetailsDTO>> searchAllByOwnerId(String id);
+
     DomainResponse<PetDetailsDTO> searchRecent();
 
 }

@@ -1,5 +1,6 @@
 package john.api1.application.services.aggregation;
 
+import john.api1.application.components.DateUtils;
 import john.api1.application.domain.cores.boarding.BoardingPricingDS;
 import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.boarding.BoardingPricingDomain;
@@ -46,7 +47,7 @@ public class AggregationBoarding implements IBoardingAggregation {
                 owner.ownerName(), owner.ownerEmail(), owner.ownerPhoneNumber(),
                 String.join(", ", owner.streetAddress(), owner.cityAddress(), owner.stateAddress()),
                 // boarding
-                boarding.getBoardingType().getBoardingType(),
+                boarding.getBoardingType().getDurationType(),
                 boarding.getBoardingStart(),
                 boarding.getBoardingEnd(),
                 boarding.getPaymentStatus().getPaymentStatus(),
@@ -80,17 +81,17 @@ public class AggregationBoarding implements IBoardingAggregation {
                 owner.ownerName(), owner.ownerEmail(), owner.ownerPhoneNumber(),
                 String.join(", ", owner.streetAddress(), owner.cityAddress(), owner.stateAddress()),
                 // boarding details
-                boarding.getBoardingStatus().getBoardingStatus(), boarding.getBoardingType().getBoardingType(),
+                boarding.getBoardingStatus().getBoardingStatus(), boarding.getBoardingType().getDurationType(),
                 boarding.getBoardingStart(), boarding.getBoardingEnd(), extensionTime, releasedAt,
                 durationDays, durationHours, boarding.getNotes(),
                 // pricing
                 boarding.getPaymentStatus().getPaymentStatus(),
                 pricing.getRatePerHour(),
-                BoardingPricingDS.getBoardingTotal(pricing),
+                BoardingPricingDS.getBoardingTotal(pricing, durationHours),
                 RequestBreakdownDTO.map(pricing.getRequestBreakdown()),
-                BoardingPricingDS.getOverallTotal(pricing),
-                boarding.getCreatedAt()
-        );
+                BoardingPricingDS.getOverallTotal(pricing, durationHours),
+                boarding.getCreatedAt(),
+                DateUtils.isAfter(extensionTime));
     }
 
     public BoardingDTO boardingAggregation(BoardingDomain boarding, BoardingPricingDomain pricing, PetOwnerCQRS owner, PetCQRS pet, long durationDays, long durationHours, Instant extensionTime) {
@@ -127,11 +128,11 @@ public class AggregationBoarding implements IBoardingAggregation {
                 // pricing
                 boarding.getPaymentStatus().getPaymentStatus(),
                 pricing.getRatePerHour(),
-                BoardingPricingDS.getBoardingTotal(pricing),
+                BoardingPricingDS.getBoardingTotal(pricing, durationHours),
                 RequestBreakdownDTO.map(pricing.getRequestBreakdown()),
-                BoardingPricingDS.getOverallTotal(pricing),
-                boarding.getCreatedAt()
-        );
+                BoardingPricingDS.getOverallTotal(pricing, durationHours),
+                boarding.getCreatedAt(),
+                DateUtils.isAfter(extension));
     }
 
 

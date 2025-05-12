@@ -136,6 +136,18 @@ public class RequestSearchRepository implements IRequestSearchRepository {
                 .toList();
     }
 
+    @Override
+    public List<RequestDomain> findAllByOwnerId(String petId) {
+        Query query = new Query(Criteria.where("ownerId").is(new ObjectId(petId)));
+        List<RequestEntity> entities = mongoTemplate.find(query, RequestEntity.class);
+
+        if (entities.isEmpty()) return new ArrayList<>();
+
+        return entities.stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
 
     // Recent
     @Override

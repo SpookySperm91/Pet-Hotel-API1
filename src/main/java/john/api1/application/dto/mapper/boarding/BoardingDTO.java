@@ -44,6 +44,7 @@ public record BoardingDTO(
         double total,
 
         // Created at
-        Instant createdAt
+        Instant createdAt,
+        boolean overdue
 ) {
 }

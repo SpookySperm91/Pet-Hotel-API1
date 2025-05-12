@@ -20,6 +20,8 @@ public record RequestExtensionCreatedDTO(
         // duration
         long duration,
         String unit,
+//        String previousEnd,
+//        String newEnd,
         //
         String requestStatus,
         @Nullable

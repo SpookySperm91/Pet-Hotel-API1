@@ -13,4 +13,7 @@ public interface IRequestSearchAdmin {
     DomainResponse<List<RequestSearchDTO>> searchAllCompleted();
 
     DomainResponse<List<RequestSearchDTO>> searchAllRejected();
+
+    DomainResponse<List<RequestSearchDTO>> searchAllByOwnerId(String id);
+
 }

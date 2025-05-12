@@ -24,10 +24,10 @@ public class BoardingRDTO {
     @Pattern(regexp = "(?i)DAYCARE|LONG_STAY", message = "Boarding type must be: DAYCARE or LONG_STAY")
     private final String boardingType;
     @NotNull(message = "boarding start time cannot be empty")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH")  // Hour precision only
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")  // Hour precision only
     private final LocalDateTime  boardingStart;
     @NotNull(message = "boarding end time cannot be empty")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH")  // Hour precision only
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")  // Hour precision only
     private final LocalDateTime  boardingEnd;
     @NotBlank(message = "payment status cannot be empty")
     @Pattern(regexp = "(?i)PAID|NOT_PAID", message = "Payment status must be: PAID or NOT_PAID")

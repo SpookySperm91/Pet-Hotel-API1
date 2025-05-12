@@ -109,6 +109,60 @@ public class PetSearchAggregationAS implements IPetSearchResponse {
 
 
     @Override
+    public DomainResponse<List<PetDetailsDTO>> searchAllByOwnerId(String id) {
+        var pets = petSearch.getAllByOwner(id);
+        if (pets.isEmpty()) throw new PersistenceException("No pets for this owner are retrieved");
+
+        var dto = new PetDetailsDTO[pets.size()];
+        List<PetDetailsDTO> dtoList = new ArrayList<>();
+
+        for (var pet : pets) {
+            List<PetBoardingHistoryDTO> boardingHistory = new ArrayList<>();
+            List<PetRequestHistoryDTO> requestHistory = new ArrayList<>();
+            MediaIdUrlExpire media = null;
+            String ownerName;
+
+            try {
+                ownerName = ownerSearch.getPetOwnerName(pet.ownerId());
+            } catch (PersistenceException e) {
+                continue; // Skip this pet if owner name cannot be retrieved
+            }
+
+            try {
+                var boarding = boardingSearch.searchAllCompletedByPetId(pet.id());
+                boardingHistory = getBoardingData(boarding);
+            } catch (Exception e) {
+                // Ignore and continue
+            }
+
+            try {
+                var requests = requestSearch.findAllCompletedByPetId(pet.id());
+                requestHistory = getRequestData(requests);
+            } catch (Exception e) {
+                // Ignore and continue
+            }
+
+            try {
+                media = mediaSearch.findProfilePicByOwnerId(pet.id()).orElse(null);
+            } catch (Exception e) {
+                // Optional media, continue silently
+            }
+
+            dtoList.add(PetDetailsDTO.map(
+                    pet,
+                    media != null ? media : new MediaIdUrlExpire(null, null, null),
+                    pet.ownerId(),
+                    ownerName,
+                    boardingHistory,
+                    requestHistory
+            ));
+        }
+
+        return DomainResponse.success(dtoList, "Successfully retrieve " + dto.length + " pets");
+    }
+
+
+    @Override
     public DomainResponse<PetDetailsDTO> searchRecent() {
         try {
             var pet = petSearch.getRecent();
@@ -158,61 +212,61 @@ public class PetSearchAggregationAS implements IPetSearchResponse {
     }
 
 
-        private List<PetBoardingHistoryDTO> getBoardingData (List < BoardingDomain > boarding) {
-            PetBoardingHistoryDTO[] data = new PetBoardingHistoryDTO[boarding.size()];
+    private List<PetBoardingHistoryDTO> getBoardingData(List<BoardingDomain> boarding) {
+        PetBoardingHistoryDTO[] data = new PetBoardingHistoryDTO[boarding.size()];
 
-            for (int i = 0; i < boarding.size(); i++) {
-                String checkIn = DateUtils.formatInstant(boarding.get(i).getBoardingStart());
-                String checkOut = DateUtils.formatInstant(boarding.get(i).getUpdatedAt());
+        for (int i = 0; i < boarding.size(); i++) {
+            String checkIn = DateUtils.formatInstant(boarding.get(i).getBoardingStart());
+            String checkOut = DateUtils.formatInstant(boarding.get(i).getUpdatedAt());
 
-                var priceDetails = boardingPricing.getBoardingPricingCqrs(boarding.get(i).getId());
-                Double price = BoardingPricingDS.getBoardingTotal(priceDetails.get());
-                String duration = switch (priceDetails.get().type()) {
-                    case DAYCARE -> priceDetails.get().rate() + " Hours";
-                    case LONG_STAY -> priceDetails.get().rate() + " Days";
-                };
+            var priceDetails = boardingPricing.getBoardingPricingCqrs(boarding.get(i).getId());
+            Double price = BoardingPricingDS.getBoardingTotal(priceDetails.get());
+            String duration = switch (priceDetails.get().type()) {
+                case DAYCARE -> priceDetails.get().rate() + " Hours";
+                case LONG_STAY -> priceDetails.get().rate() + " Days";
+            };
 
-                data[i] = new PetBoardingHistoryDTO(
-                        boarding.get(i).getId(),
-                        boarding.get(i).getBoardingType().getDurationType(),
-                        duration,
-                        boarding.get(i).getNotes(),
-                        price,
-                        boarding.get(i).getPaymentStatus().getPaymentStatusDto(),
-                        checkIn, checkOut
-                );
+            data[i] = new PetBoardingHistoryDTO(
+                    boarding.get(i).getId(),
+                    boarding.get(i).getBoardingType().getDurationType(),
+                    duration,
+                    boarding.get(i).getNotes(),
+                    price,
+                    boarding.get(i).getPaymentStatus().getPaymentStatusDto(),
+                    checkIn, checkOut
+            );
 
-            }
-
-            return Arrays.stream(data).toList();
         }
 
-        private List<PetRequestHistoryDTO> getRequestData (List < RequestCQRS > request) {
-
-            PetRequestHistoryDTO[] data = new PetRequestHistoryDTO[request.size()];
-
-            for (int i = 0; i < request.size(); i++) {
-                String createdAt = DateUtils.formatInstant(request.get(i).createdAt());
-
-                Double price = switch (request.get(i).type()) {
-                    case RequestType.BOARDING_EXTENSION ->
-                            requestPricing.getExtensionPriceByRequestId(request.get(i).id()).get();
-                    case RequestType.GROOMING_SERVICE ->
-                            requestPricing.getGroomingPriceByRequestId(request.get(i).id()).get();
-                    default -> null;
-                };
-
-                data[i] = new PetRequestHistoryDTO(
-                        request.get(i).id(),
-                        request.get(i).type().getRequestTypeToDto(),
-                        createdAt,
-                        request.get(i).description(),
-                        price != null ? price : 0,
-                        price != null ? "Paid" : "N/A",
-                        "Completed"
-                );
-
-            }
-            return Arrays.stream(data).toList();
-        }
+        return Arrays.stream(data).toList();
     }
+
+    private List<PetRequestHistoryDTO> getRequestData(List<RequestCQRS> request) {
+
+        PetRequestHistoryDTO[] data = new PetRequestHistoryDTO[request.size()];
+
+        for (int i = 0; i < request.size(); i++) {
+            String createdAt = DateUtils.formatInstant(request.get(i).createdAt());
+
+            Double price = switch (request.get(i).type()) {
+                case RequestType.BOARDING_EXTENSION ->
+                        requestPricing.getExtensionPriceByRequestId(request.get(i).id()).get();
+                case RequestType.GROOMING_SERVICE ->
+                        requestPricing.getGroomingPriceByRequestId(request.get(i).id()).get();
+                default -> null;
+            };
+
+            data[i] = new PetRequestHistoryDTO(
+                    request.get(i).id(),
+                    request.get(i).type().getRequestTypeToDto(),
+                    createdAt,
+                    request.get(i).description(),
+                    price != null ? price : 0,
+                    price != null ? "Paid" : "N/A",
+                    "Completed"
+            );
+
+        }
+        return Arrays.stream(data).toList();
+    }
+}

@@ -121,6 +121,25 @@ public class RequestSearchAdminAS implements IRequestSearchAdmin {
         }
     }
 
+    @Override
+    public DomainResponse<List<RequestSearchDTO>> searchAllByOwnerId(String id) {
+        try {
+            log.info("=======SEARCH-ALL-FOR-PET-OWNER STARTS=======");
+            var request = requestSearch.findAllByOwnerId(id);
+            if (request.isEmpty()) {
+                log.warn("=======NO SEARCH-ALL REQUEST FOUND. RETURN EMPTY LIST=======");
+                return DomainResponse.success(new ArrayList<>(), "No rejected request founded");
+            }
+
+            var ok = loop(request, RequestStatus.REJECTED);
+            return DomainResponse.success(ok, "Successfully retrieved " + ok.size() + " rejected request");
+
+        } catch (Exception e) {
+            return DomainResponse.success(new ArrayList<>(), "No rejected request. Note: Something wrong with the system.");
+        }
+    }
+
+
     private List<RequestSearchDTO> loop(List<RequestDomain> request, RequestStatus status) {
         return request.stream()
                 .map(domain -> {
