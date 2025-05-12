@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface IHistoryMediaSearch {
     Optional<MediaHistoryDTO> getRecentHistoryMedia();
 
-    List<MediaHistoryDTO> getAllHistoryMedia();
 }

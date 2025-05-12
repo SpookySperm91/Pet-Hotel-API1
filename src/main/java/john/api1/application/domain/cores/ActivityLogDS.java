@@ -1,5 +1,6 @@
 package john.api1.application.domain.cores;
 
+import john.api1.application.components.DateUtils;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.cores.boarding.BoardingExtensionDS;
 import john.api1.application.domain.cores.boarding.BoardingPricingDS;
@@ -26,6 +27,7 @@ public class ActivityLogDS {
             String description = domain.getDescription();
             String performBy = domain.getPerformedBy();
             Instant timestamp = domain.getTimestamp();
+            String timestampSet = DateUtils.formatInstantWithTime(timestamp);
 
             // owner
             String ownerName = owner.ownerName();
@@ -34,7 +36,7 @@ public class ActivityLogDS {
             String address = ClientCreationDS.mapAddress(owner);
 
             return new ActivityLogOwnerRegisterDTO(
-                    id, activityType, description, performBy, timestamp,
+                    id, activityType, description, performBy, timestampSet,
                     ownerName, ownerEmail, ownerPhoneNumber, address);
         }
         return null;
@@ -51,6 +53,7 @@ public class ActivityLogDS {
             String description = domain.getDescription();
             String performBy = domain.getPerformedBy();
             Instant timestamp = domain.getTimestamp();
+            String timestampSet = DateUtils.formatInstantWithTime(timestamp);
 
             // Pet details
             String petName = pet.petName();
@@ -62,7 +65,7 @@ public class ActivityLogDS {
             String ownerName = owner.ownerName();
 
             return new ActivityLogPetRegisterDTO(
-                    id, activityType, description, performBy, timestamp,
+                    id, activityType, description, performBy, timestampSet,
                     petName, petType, petBreed, petSize, ownerName);
         }
         return null;
@@ -80,6 +83,7 @@ public class ActivityLogDS {
             String description = domain.getDescription();
             String performBy = domain.getPerformedBy();
             Instant timestamp = domain.getTimestamp();
+            String timestampSet = DateUtils.formatInstantWithTime(timestamp);
 
             // pet information
             String petName = pet.petName();
@@ -94,14 +98,19 @@ public class ActivityLogDS {
             String boardingType = boarding.getBoardingType().getDurationType();
             int duration = (int) boarding.determineDuration();
             Double price = BoardingPricingDS.getBoardingTotal(pricing);
-            Instant start = boarding.getBoardingStart();
-            Instant end = boarding.getBoardingEnd();
+            String start = DateUtils.formatInstantWithTime(boarding.getBoardingStart());
+            String end = DateUtils.formatInstantWithTime(boarding.getBoardingEnd());
+            String durationFinal = switch (boarding.getBoardingType()) {
+                case DAYCARE -> duration + " Hours";
+                case LONG_STAY -> duration + " Days";
+            };
+
 
             return new ActivityLogBoardingDTO(
-                    id, activityType, description, performBy, timestamp,
+                    id, activityType, description, performBy, timestampSet,
                     petName, petType, breed, size,
                     owner,
-                    boardingType, duration, price, start, end);
+                    boardingType, durationFinal, price, start, end);
         }
         return null;
     }
@@ -117,6 +126,7 @@ public class ActivityLogDS {
         String description = domain.getDescription();
         String performBy = domain.getPerformedBy();
         Instant timestamp = domain.getTimestamp();
+        String timestampSet = DateUtils.formatInstantWithTime(timestamp);
 
         // pet information
         String petName = pet.petName();
@@ -129,7 +139,7 @@ public class ActivityLogDS {
 
 
         return new ActivityLogRequestDTO(
-                id, activityType, requestType, description, performBy, timestamp,
+                id, activityType, requestType, description, performBy, timestampSet,
                 petName, petType, breed, size,
                 owner);
 
@@ -149,6 +159,7 @@ public class ActivityLogDS {
             String description = domain.getDescription();
             String performBy = domain.getPerformedBy();
             Instant timestamp = domain.getTimestamp();
+            String timestampSet = DateUtils.formatInstantWithTime(timestamp);
 
             // pet information
             String petName = pet.petName();
@@ -165,12 +176,16 @@ public class ActivityLogDS {
             Instant current = boarding.getBoardingStart();
             Instant end = BoardingExtensionDS.calculateFinalBoardingEnd(boarding.getBoardingEnd(), extension);
             Double price = BoardingPricingDS.getBoardingTotal(pricing);
+            String durationSet = switch (extension.durationType()) {
+                case DAYCARE -> duration + " Hours";
+                case LONG_STAY -> duration + " Days";
+            };
 
             return new ActivityLogExtensionRequestDTO(
-                    id, activityType, requestType, description, performBy, timestamp,
+                    id, activityType, requestType, description, performBy, timestampSet,
                     petName, petType, breed, size,
                     owner,
-                    duration, durationType, current, end, price);
+                    durationSet, durationType, current, end, price);
         }
         return null;
     }
@@ -188,6 +203,7 @@ public class ActivityLogDS {
             String description = domain.getDescription();
             String performBy = domain.getPerformedBy();
             Instant timestamp = domain.getTimestamp();
+            String timestampSet = DateUtils.formatInstantWithTime(timestamp);
 
             // pet information
             String petName = pet.petName();
@@ -203,7 +219,7 @@ public class ActivityLogDS {
             Double price = grooming.price();
 
             return new ActivityLogGroomingRequestDTO(
-                    id, activityType, requestType, description, performBy, timestamp,
+                    id, activityType, requestType, description, performBy, timestampSet,
                     petName, petType, breed, size,
                     owner,
                     groomingType, price);

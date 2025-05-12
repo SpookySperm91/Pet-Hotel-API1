@@ -89,8 +89,6 @@ public class BoardingManagementAS implements IBoardingManagement {
         // Cannot release if not paid
         if (boarding.get().getBoardingStatus() == BoardingStatus.RELEASED)
             return DomainResponse.error("Boarding is already released");
-        if (boarding.get().getPaymentStatus() != PaymentStatus.PAID)
-            return DomainResponse.error("Boarding is not paid yet");
         return release(boarding.get(), boardingId);
     }
 

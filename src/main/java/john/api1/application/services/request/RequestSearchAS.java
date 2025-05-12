@@ -109,6 +109,12 @@ public class RequestSearchAS implements IRequestSearch {
         return searchRepository.findRecentMediaRequest();
     }
 
+    @Override
+    public List<RequestDomain> searchAllMedia(){
+        return searchRepository.findAllMediaCompleted();
+    }
+
+
 
     private void validateId(String id) {
         if (!ObjectId.isValid(id)) throw new PersistenceException("Invalid id cannot be converted to ObjectId");

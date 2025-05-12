@@ -22,6 +22,5 @@ public class RequestCompleteVideoRDTO {
     private String videoFile;
     @Nullable
     private String notes;
-    private Instant requestAt;
 }
 

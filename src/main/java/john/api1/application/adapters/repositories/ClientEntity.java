@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "client_accounts")
+@Document(collection = "${db.collection.pet.owner}")
 @CompoundIndexes({
         @CompoundIndex(name = "idx_animalIds", def = "{'animalIds': 1}")
 })

@@ -13,7 +13,7 @@ import java.time.Instant;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "admin_account")
+@Document(collection = "${db.collection.admin}")
 public class AdminEntity {
     @Id
     private ObjectId id;

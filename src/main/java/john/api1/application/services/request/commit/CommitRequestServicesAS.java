@@ -11,7 +11,7 @@ import john.api1.application.components.exception.PersistenceHistoryException;
 import john.api1.application.domain.cores.RequestStatusDS;
 import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.boarding.BoardingPricingDomain;
-import john.api1.application.dto.mapper.request.commit.RequestCompletedServiceDTO;
+import john.api1.application.dto.mapper.request.commit.RequestCommittedServiceDTO;
 import john.api1.application.dto.request.request.admin.RequestCompleteServiceRDTO;
 import john.api1.application.ports.repositories.boarding.IBoardingManagementRepository;
 import john.api1.application.ports.repositories.request.IRequestCompletedUpdateRepository;
@@ -77,7 +77,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
     // update DB
     // Return aggregated DTO response
     @Override
-    public DomainResponse<RequestCompletedServiceDTO> commitExtensionRequest(RequestCompleteServiceRDTO request) {
+    public DomainResponse<RequestCommittedServiceDTO> commitExtensionRequest(RequestCompleteServiceRDTO request) {
         try {
             validateId(request.getRequestId());
 
@@ -112,7 +112,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             String petName = petSearch.getPetName(boarding.getPetId());
             String ownerName = ownerSearch.getPetOwnerName(boarding.getOwnerId());
             String message = "The boarding extension for " + petName + " is completed.";
-            var dto = new RequestCompletedServiceDTO(
+            var dto = new RequestCommittedServiceDTO(
                     check.getId(),
                     check.getRequestType().getRequestType(),
                     RequestStatus.COMPLETED.getRequestStatus(),
@@ -142,7 +142,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
     // update DB
     // Return aggregated DTO response
     @Override
-    public DomainResponse<RequestCompletedServiceDTO> commitGroomingRequest(RequestCompleteServiceRDTO request) {
+    public DomainResponse<RequestCommittedServiceDTO> commitGroomingRequest(RequestCompleteServiceRDTO request) {
 
         try {
             validateId(request.getRequestId());
@@ -175,7 +175,7 @@ public class CommitRequestServicesAS implements ICommitRequestServices {
             String petName = petSearch.getPetName(boarding.getPetId());
             String ownerName = ownerSearch.getPetOwnerName(boarding.getOwnerId());
             String message = "The grooming for " + petName + " is completed.";
-            var dto = new RequestCompletedServiceDTO(
+            var dto = new RequestCommittedServiceDTO(
                     check.getId(),
                     check.getRequestType().getRequestType(),
                     RequestStatus.COMPLETED.getRequestStatus(),

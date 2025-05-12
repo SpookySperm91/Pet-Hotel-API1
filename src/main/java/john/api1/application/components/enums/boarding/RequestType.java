@@ -10,8 +10,7 @@ public enum RequestType {
     PHOTO_REQUEST("PHOTO_REQUEST", "Photo Request"),
     VIDEO_REQUEST("VIDEO_REQUEST", "Video Request"),
     GROOMING_SERVICE("GROOMING_SERVICE", "Grooming Service"),
-    BOARDING_EXTENSION("BOARDING_EXTENSION", "Boarding Extension"),
-    CUSTOM_REQUEST("CUSTOM_REQUEST", "Custom Request");
+    BOARDING_EXTENSION("BOARDING_EXTENSION", "Boarding Extension");
 
     private final String requestType;
     private final String requestTypeToDto;

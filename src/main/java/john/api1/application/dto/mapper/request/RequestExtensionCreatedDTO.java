@@ -1,9 +1,11 @@
 package john.api1.application.dto.mapper.request;
 
+import jakarta.annotation.Nullable;
+import john.api1.application.components.DateUtils;
 import john.api1.application.domain.models.request.ExtensionDomain;
 import john.api1.application.domain.models.request.RequestDomain;
-
-import java.time.Instant;
+import john.api1.application.dto.mapper.request.search.RequestSearchDTO;
+import john.api1.application.ports.repositories.request.ExtensionCQRS;
 
 public record RequestExtensionCreatedDTO(
         // id
@@ -20,15 +22,33 @@ public record RequestExtensionCreatedDTO(
         String unit,
         //
         String requestStatus,
+        @Nullable
         String description,
-        Instant requestAt
-) {
+        @Nullable
+        String adminResponse,
+        String requestAt
+) implements RequestSearchDTO {
+
     public static RequestExtensionCreatedDTO map(RequestDomain domain, ExtensionDomain extension, String ownerName, String petName, String unit) {
         return new RequestExtensionCreatedDTO(
                 domain.getId(), domain.getOwnerId(), domain.getPetId(), extension.getBoardingId(),
                 ownerName, petName, domain.getRequestType().getRequestType(),
                 extension.getExtendedHours(), unit,
-                domain.getRequestStatus().getRequestStatus(), domain.getDescription(), domain.getRequestTime()
+                domain.getRequestStatus().getRequestStatus(), domain.getDescription(), domain.getResponseMessage(), DateUtils.formatInstantWithTime(domain.getRequestTime())
+        );
+    }
+
+
+    public static RequestExtensionCreatedDTO searchMap(RequestDomain domain, ExtensionCQRS extension, String ownerName, String petName) {
+        String unit = switch (extension.durationType()) {
+            case DAYCARE -> "Hours";
+            case LONG_STAY -> "Days";
+        };
+        return new RequestExtensionCreatedDTO(
+                domain.getId(), domain.getOwnerId(), domain.getPetId(), extension.boardingId(),
+                ownerName, petName, domain.getRequestType().getRequestType(),
+                extension.extendedHours(), unit,
+                domain.getRequestStatus().getRequestStatus(), domain.getDescription(), domain.getResponseMessage(), DateUtils.formatInstantWithTime(domain.getRequestTime())
         );
     }
 }

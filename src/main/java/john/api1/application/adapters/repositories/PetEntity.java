@@ -12,7 +12,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "pets")
+@Document(collection = "${db.collection.pet}")
 public class PetEntity {
     @Id
     private ObjectId id;

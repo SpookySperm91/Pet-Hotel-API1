@@ -14,6 +14,8 @@ public interface IMediaSearch {
     // Find a single media file by its unique ID.
     DomainResponse<MediaPreview> findById(String id);
 
+    Optional<MediaIdUrlExpire> optionalFindById(String ownerId);
+
     // Fetch all media for a specific owner within a date range (e.g., by week).
     DomainResponse<List<MediaPreview>> findByOwnerIdAndUploadedBetween(String ownerId, Instant start, Instant end);
 

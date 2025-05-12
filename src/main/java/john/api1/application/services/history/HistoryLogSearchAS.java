@@ -1,17 +1,25 @@
 package john.api1.application.services.history;
 
+import john.api1.application.components.DateUtils;
 import john.api1.application.components.enums.ActivityLogType;
 import john.api1.application.components.exception.PersistenceException;
 import john.api1.application.domain.cores.ActivityLogDS;
 import john.api1.application.domain.cores.ActivityLogDataContext;
 import john.api1.application.domain.models.ActivityLogDomain;
+import john.api1.application.domain.models.request.RequestDomain;
 import john.api1.application.dto.mapper.history.ActivityLogDTO;
+import john.api1.application.dto.mapper.request.RequestMediaCreatedDTO;
+import john.api1.application.dto.mapper.request.search.RequestPhotoCompletedDTO;
+import john.api1.application.dto.mapper.request.search.RequestVideoCompletedDTO;
 import john.api1.application.ports.repositories.history.IHistoryLogSearchRepository;
 import john.api1.application.ports.repositories.pet.IPetSearchRepository;
+import john.api1.application.ports.repositories.request.IRequestCompletedSearchRepository;
+import john.api1.application.ports.repositories.wrapper.MediaIdUrlExpire;
 import john.api1.application.ports.services.IPetOwnerSearch;
 import john.api1.application.ports.services.boarding.IBoardingSearch;
 import john.api1.application.ports.services.boarding.IPricingManagement;
 import john.api1.application.ports.services.history.IHistoryLogSearch;
+import john.api1.application.ports.services.media.IMediaSearch;
 import john.api1.application.ports.services.pet.IPetSearch;
 import john.api1.application.ports.services.request.IRequestSearch;
 import org.slf4j.Logger;
@@ -20,8 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // Note: This layer throw persistence exception instead of handling. Expected other actors who use will catch gracefully!
@@ -34,6 +41,8 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
     private final IPetOwnerSearch ownerSearch;
     private final IPetSearch petSearch;
     private final IPetSearchRepository petSearchRepository;
+    private final IRequestCompletedSearchRepository serviceRequestSearch;
+    private final IMediaSearch mediaSearch;
     private final IRequestSearch requestSearch;
     private final IPricingManagement pricingSearch;
 
@@ -44,6 +53,8 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
                               IPetOwnerSearch ownerSearch,
                               IPetSearch petSearch,
                               IPetSearchRepository petSearchRepository,
+                              IRequestCompletedSearchRepository serviceRequestSearch,
+                              IMediaSearch mediaSearch,
                               IRequestSearch requestSearch,
                               IPricingManagement pricingSearch) {
         this.searchRepository = searchRepository;
@@ -51,6 +62,8 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
         this.ownerSearch = ownerSearch;
         this.petSearch = petSearch;
         this.petSearchRepository = petSearchRepository;
+        this.serviceRequestSearch = serviceRequestSearch;
+        this.mediaSearch = mediaSearch;
         this.requestSearch = requestSearch;
         this.pricingSearch = pricingSearch;
     }
@@ -89,6 +102,126 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
         } catch (PersistenceException | NullPointerException e) {
             log.error("Error occurred while fetching activity logs: {}", e.getMessage());
             throw e;
+        }
+    }
+
+    @Override
+    public List<ActivityLogDTO> getAllMedia() {
+        try {
+            log.info("=======SEARCH-ALL-REJECTED REQUEST STARTS=======");
+            var request = requestSearch.searchAllMedia();
+            if (request.isEmpty()) {
+                log.warn("=======NO REJECTED REQUEST FOUND. RETURN EMPTY LIST=======");
+                return new ArrayList<>();
+            }
+            return loop(request);
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private List<ActivityLogDTO> loop(List<RequestDomain> request) {
+        return request.stream()
+                .map(domain -> {
+                    try {
+                        return switch (domain.getRequestType()) {
+                            case PHOTO_REQUEST -> {
+                                yield mapPhoto(domain);
+                            }
+                            case VIDEO_REQUEST -> {
+                                yield mapVideo(domain);
+                            }
+                            default -> throw new Exception();
+                        };
+                    } catch (Exception e) {
+                        log.error("FAILED MAPPING: Could not map request ID {}. Reason: {}", domain.getId(), e.getMessage());
+                        return null; // ensures this one is skipped
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+
+    private ActivityLogDTO mapPhoto(RequestDomain domain) {
+        try {
+            log.info("PHOTO HISTORY: Start data querying. Request-ID:{} | Owner-ID:{}, Pet-ID:{}",
+                    domain.getId(), domain.getOwnerId(), domain.getPetId());
+
+            String ownerName = ownerSearch.getPetOwnerName(domain.getOwnerId());
+            String petName = petSearch.getPetName(domain.getPetId());
+            String createAt = DateUtils.formatInstantWithTime(domain.getRequestTime());
+            String completed = DateUtils.formatInstantWithTime(domain.getResolvedTime());
+
+            var photoRequestOpt = serviceRequestSearch.findPhotoRequestByRequestId(domain.getId());
+            if (photoRequestOpt.isEmpty()) {
+                log.warn("PHOTO REQUEST: No photo request found. Request-ID: {}", domain.getId());
+                return null;
+            }
+
+            var photoRequest = photoRequestOpt.get();
+            var photos = photoRequest.photo();
+            if (photos == null || photos.isEmpty()) {
+                log.warn("PHOTO HISTORY: No photo entries present. Request-ID: {}", domain.getId());
+                return null;
+            }
+
+            var list = new MediaIdUrlExpire[photos.size()];
+            for (int i = 0; i < photos.size(); i++) {
+                var mediaId = photos.get(i).id();
+                var mediaOpt = mediaSearch.optionalFindById(mediaId);
+                if (mediaOpt.isEmpty()) {
+                    log.warn("PHOTO HISTORY: Media not found. Media-ID: {} | Request-ID: {}", mediaId, domain.getId());
+                    return null;
+                }
+                list[i] = mediaOpt.get();
+            }
+
+            return RequestPhotoCompletedDTO.mapCompleted(
+                    photoRequest, Arrays.asList(list), domain,
+                    ownerName, petName, createAt, completed);
+
+        } catch (Exception e) {
+            log.error("PHOTO HISTORY: Unexpected failure. Request-ID:{} | Exception: {}", domain.getId(), e.getMessage(), e);
+            return null;
+        }
+    }
+
+    private ActivityLogDTO mapVideo(RequestDomain domain) {
+        try {
+            log.info("VIDEO HISTORY: Start data querying. Request-ID:{} | Owner-ID:{}, Pet-ID:{}",
+                    domain.getId(), domain.getOwnerId(), domain.getPetId());
+
+            String ownerName = ownerSearch.getPetOwnerName(domain.getOwnerId());
+            String petName = petSearch.getPetName(domain.getPetId());
+            String createAt = DateUtils.formatInstantWithTime(domain.getRequestTime());
+            String completed = DateUtils.formatInstantWithTime(domain.getResolvedTime());
+
+            var videoRequestOpt = serviceRequestSearch.findVideoRequestByRequestId(domain.getId());
+            if (videoRequestOpt.isEmpty()) {
+                log.warn("VIDEO HISTORY: No video request found. Request-ID: {}", domain.getId());
+                return null;
+            }
+
+            // SEARCH VIDEO
+            var videoRequest = videoRequestOpt.get();
+            var mediaId = videoRequest.mediaId();
+            var mediaOpt = mediaSearch.optionalFindById(mediaId);
+
+            if (mediaOpt.isEmpty()) {
+                log.warn("VIDEO HISTORY: Media not found. Media-ID: {} | Request-ID: {}", mediaId, domain.getId());
+                return null;
+            }
+
+            return RequestVideoCompletedDTO.mapCompleted(
+                    videoRequest, mediaOpt.get(), domain,
+                    ownerName, petName, createAt, completed);
+
+        } catch (
+                Exception e) {
+            log.error("VIDEO HISTORY: Unexpected failure. Request-ID:{} | Exception: {}", domain.getId(), e.getMessage(), e);
+            return null;
         }
     }
 
@@ -149,7 +282,7 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
             log.info("Before Switch: Starting searching data for " + activity.getActivityType().getActivityLogTypeToDTO());
             switch (activity.getActivityType()) {
                 case BOARDING_MANAGEMENT -> {
-                    log.info("Starting searching data for Boarding Management");
+                    log.info("Starting searching data for Boarding Management. TypeId: {}", activity.getTypeId());
                     if (activity.getTypeId() != null) {
                         var boardingResult = boardingSearch.findBoardingById(activity.getTypeId());
                         if (boardingResult.isSuccess()) {
@@ -171,7 +304,7 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
                 }
 
                 case PET_OWNER_MANAGEMENT -> {
-                    log.info("Starting searching data for Pet Owner Management");
+                    log.info("Starting searching data for Pet Owner Management. TypeId: {}", activity.getTypeId());
                     if (activity.getTypeId() != null) {
 
                         var ownerOpt = ownerSearch.getPetOwnerBoardingDetails(activity.getTypeId());
@@ -189,7 +322,7 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
 
                 // New Pet Created
                 case PET_MANAGEMENT -> {
-                    log.info("Starting searching data for Pet Management");
+                    log.info("Starting searching data for Pet Management. TypeId: {}", activity.getTypeId());
                     if (activity.getTypeId() != null) {
 
                         var pet = petSearchRepository.getPetById(activity.getTypeId());
@@ -212,7 +345,7 @@ public class HistoryLogSearchAS implements IHistoryLogSearch {
 
                 case REQUEST_MANAGEMENT -> {
                     if (activity.getTypeId() != null) {
-                        log.info("Starting searching data for Request Management");
+                        log.info("Starting searching data for Request Management. TypeId: {}", activity.getTypeId());
                         var request = requestSearch.searchByRequestId(activity.getTypeId());
                         if (request != null) {
                             log.info("Request Management: not null, proceed to search");

@@ -17,7 +17,7 @@ import java.time.Instant;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "history_log")
+@Document(collection = "${db.collection.history}")
 public class ActivityLogEntity {
     @Id
     private ObjectId id;

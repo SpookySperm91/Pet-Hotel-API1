@@ -9,11 +9,13 @@ import java.util.Arrays;
 @AllArgsConstructor
 @Getter
 public enum PaymentStatus {
-    PAID("PAID"),
-    NOT_PAID("NOT_PAID"),
-    PENDING("PENDING");
+    PAID("PAID", "Paid"),
+    NOT_PAID("NOT_PAID", "Not Paid"),
+    PENDING("PENDING", "Pending");
 
     private final String paymentStatus;
+    private final String paymentStatusDto;
+
 
     public static PaymentStatus fromStringOrDefault(String dbValue) {
         return Arrays.stream(PaymentStatus.values())

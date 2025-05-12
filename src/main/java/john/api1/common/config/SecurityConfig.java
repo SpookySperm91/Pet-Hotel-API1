@@ -38,7 +38,9 @@ public class SecurityConfig {
         // Add allowed origins here (must be full URLs)
         config.setAllowedOrigins(List.of(
                 petOwnerEndpoint,
-                "http://localhost:5000"
+                "http://localhost:5000",
+                "http://localhost:3000"
+
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

@@ -177,7 +177,7 @@ public class RequestCreateAS implements IRequestCreate {
             groomingDomain = groomingDomain.mapWithId(domainId.get());
 
             // Aggregation DTO
-            var dto = aggregation.requestCreateGroomingAggregation(domain, ownerName, pet.petName(), groomingDomain.getGroomingPrice(), pet.size());
+            var dto = aggregation.requestCreateGroomingAggregation(domain, groomingDomain, ownerName, pet.petName(), pet.size());
 
             return DomainResponse.success(dto, "New grooming request for pet '" + pet.petName() + "' is successfully created. Currently pending to be approved!");
 

@@ -1,13 +1,12 @@
 package john.api1.application.dto.mapper.history;
 
-import java.time.Instant;
 
 public record ActivityLogBoardingDTO(
         String id,
         String activityType,
         String description,
         String performedBy,
-        Instant timestamp,
+        String timestamp,
 
         // Pet information
         String petName,
@@ -18,9 +17,9 @@ public record ActivityLogBoardingDTO(
         String ownerName,
         // Boarding infos
         String boardingType,
-        int duration,
+        String duration,
         Double price,
-        Instant startDate,
-        Instant endDate
+        String startDate,
+        String endDate
 ) implements ActivityLogDTO {
 }

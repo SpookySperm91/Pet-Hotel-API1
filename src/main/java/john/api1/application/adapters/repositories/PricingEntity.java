@@ -1,6 +1,7 @@
 package john.api1.application.adapters.repositories;
 
 import john.api1.application.domain.models.boarding.BoardingPricingDomain;
+import john.api1.common.config.DatabaseCollectionConfig;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 import java.util.List;
 
-@Document(collection = "pricing-breakdowns")
+@Document("${db.collection.price.breakdown}")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

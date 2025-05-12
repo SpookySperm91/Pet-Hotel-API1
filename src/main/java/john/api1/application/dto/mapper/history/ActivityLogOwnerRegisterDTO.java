@@ -1,5 +1,7 @@
 package john.api1.application.dto.mapper.history;
 
+import john.api1.application.components.DateUtils;
+
 import java.time.Instant;
 
 public record ActivityLogOwnerRegisterDTO(
@@ -7,11 +9,12 @@ public record ActivityLogOwnerRegisterDTO(
         String activityType,
         String description,
         String performedBy,
-        Instant timestamp,
+        String timestamp,
         // Owner
         String ownerName,
         String email,
         String phoneNumber,
         String address
+
 ) implements ActivityLogDTO{
 }

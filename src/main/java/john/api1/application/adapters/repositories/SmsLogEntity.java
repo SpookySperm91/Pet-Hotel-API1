@@ -13,7 +13,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "sms_logs")
+@Document(collection = "${db.collection.sms}")
 public class SmsLogEntity {
     @Id
     private ObjectId id;

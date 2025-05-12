@@ -2,7 +2,7 @@ package john.api1.application.dto.mapper.request.commit;
 
 import java.time.Instant;
 
-public record RequestCompletedVideoDTO(
+public record RequestCommittedVideoDTO(
         String id,
         String requestId,
         String ownerId,

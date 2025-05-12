@@ -27,4 +27,7 @@ public interface IBoardingSearchRepository {
 
     // Time
     Optional<BoardingDurationCQRS> checkBoardingTime(String id);
+
+    List<BoardingDomain> searchAllCompletedByPetId(String petId);
+
 }

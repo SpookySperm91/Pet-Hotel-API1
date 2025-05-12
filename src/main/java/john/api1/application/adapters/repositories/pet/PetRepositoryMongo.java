@@ -8,6 +8,7 @@ import john.api1.application.domain.models.PetDomain;
 import john.api1.application.ports.repositories.pet.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -146,9 +147,45 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
                 .toList();
     }
 
+    @Override
+    public List<PetCQRS> getAll() {
+        List<PetEntity> pets = mongoTemplate.findAll(PetEntity.class);
+        return pets.stream()
+                .map(this::toPetCQRS)
+                .toList();
+    }
+
+    @Override
+    public Optional<PetCQRS> getRecent() {
+        Query query = new Query();
+        query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
+        query.limit(1);
+
+        PetEntity recent = mongoTemplate.findOne(query, PetEntity.class);
+        return Optional.ofNullable(toPetCQRS(recent));
+    }
+
+
+    @Override
+    public List<PetListCQRS> getAllByOwnerAsList(String id) {
+        if (!ObjectId.isValid(id)) {
+            throw new PersistenceException("Invalid owner ID format");
+        }
+
+        Query query = new Query(Criteria.where("petOwnerId").is(new ObjectId(id)));
+        List<PetEntity> pets = mongoTemplate.find(query, PetEntity.class);
+
+
+        return pets.stream()
+                .map(p -> new PetListCQRS(p.getId().toString(), p.getPetName(), p.getAnimalType(), p.isBoarding()))
+                .toList();
+    }
+
+
     private PetCQRS toPetCQRS(PetEntity entity) {
         return new PetCQRS(
                 entity.getId().toString(),
+                entity.getPetOwnerId().toString(),
                 entity.getProfilePictureUrl(),
                 entity.getPetName(),
                 entity.getAnimalType(),
@@ -248,6 +285,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
         return Optional.ofNullable(mongoTemplate.findOne(query, PetEntity.class))
                 .map(entity -> new PetCQRS(
                         entity.getId().toString(),
+                        entity.getPetOwnerId().toString(),
                         entity.getProfilePictureUrl(),
                         entity.getPetName(),
                         entity.getAnimalType(),
@@ -274,6 +312,7 @@ public class PetRepositoryMongo implements IPetCreateRepository, IPetSearchRepos
 
         return Optional.of(new PetCQRS(
                 entity.getId().toString(),
+                entity.getPetOwnerId().toString(),
                 entity.getProfilePictureUrl(),
                 entity.getPetName(),
                 entity.getAnimalType(),

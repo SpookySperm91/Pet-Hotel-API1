@@ -132,6 +132,19 @@ public class BoardingSearchRepository implements IBoardingSearchRepository {
     }
 
 
+    @Override
+    public List<BoardingDomain> searchAllCompletedByPetId(String petId) {
+        if (!ObjectId.isValid(petId)) {
+            return List.of();
+        }
+
+        Query query = new Query(new Criteria().andOperator(
+                Criteria.where("petId").is(new ObjectId(petId)),
+                Criteria.where("boardingStatus").is("RELEASED")));
+        return fetchBoardings(query);
+    }
+
+
     private List<BoardingDomain> fetchBoardings(Query query) {
         return mongoTemplate.find(query, BoardingEntity.class)
                 .stream()

@@ -2,8 +2,11 @@ package john.api1.application.adapters.controllers.admin;
 
 import john.api1.application.dto.DTOResponse;
 import john.api1.application.dto.mapper.owner.PetOwnerDTO;
+import john.api1.application.dto.mapper.owner.PetOwnerListDTO;
 import john.api1.application.dto.mapper.owner.PetOwnerPendingDTO;
 import john.api1.application.ports.services.IPetOwnerSearchAggregation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/admin/search/pet-owner")
 public class AdminPetOwnerSearchController {
+    private static final Logger logger = LoggerFactory.getLogger(AdminPetOwnerSearchController.class);
+
     private final IPetOwnerSearchAggregation ownerSearch;
 
     @Autowired
@@ -30,10 +35,25 @@ public class AdminPetOwnerSearchController {
         if (!all.isSuccess())
             return buildErrorResponse(HttpStatus.BAD_REQUEST, all.getMessage());
 
+        logger.info("Active pet-owners successfully fetch");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DTOResponse.of(
                         HttpStatus.OK.value(),
                         all.getData()));
+    }
+
+    @GetMapping("/all-list")
+    public ResponseEntity<DTOResponse<List<PetOwnerListDTO>>> getAllActiveAsList() {
+        var list = ownerSearch.searchAllActiveAsList();
+        if (!list.isSuccess())
+            return buildErrorResponse(HttpStatus.BAD_REQUEST, list.getMessage());
+
+        logger.info("Active pet-owners list successfully fetch");
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DTOResponse.of(
+                        HttpStatus.OK.value(),
+                        list.getData(),
+                        list.getMessage()));
     }
 
     @GetMapping("/recent")
@@ -42,10 +62,12 @@ public class AdminPetOwnerSearchController {
         if (!recent.isSuccess())
             return buildErrorResponse(HttpStatus.BAD_REQUEST, recent.getMessage());
 
+        logger.info("Recently approved pet-owner successfully fetch");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DTOResponse.of(
                         HttpStatus.OK.value(),
-                        recent.getData()));
+                        recent.getData(),
+                        recent.getMessage()));
     }
 
     @GetMapping("/{id}")

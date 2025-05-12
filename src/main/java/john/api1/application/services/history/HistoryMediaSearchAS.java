@@ -110,11 +110,4 @@ public class HistoryMediaSearchAS implements IHistoryMediaSearch {
         }
     }
 
-
-    public List<MediaHistoryDTO> getAllHistoryMedia() {
-
-        return null;
-    }
-
-
 }

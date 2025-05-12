@@ -13,10 +13,10 @@ import john.api1.application.domain.models.boarding.BoardingDomain;
 import john.api1.application.domain.models.request.PhotoRequestDomain;
 import john.api1.application.domain.models.request.RequestDomain;
 import john.api1.application.domain.models.request.VideoRequestDomain;
-import john.api1.application.dto.mapper.request.commit.RequestCompletedPhotoDTO;
-import john.api1.application.dto.mapper.request.commit.RequestCompletedVideoDTO;
+import john.api1.application.dto.mapper.request.commit.RequestCommittedPhotoDTO;
+import john.api1.application.dto.mapper.request.commit.RequestCommittedVideoDTO;
 import john.api1.application.dto.request.request.admin.RequestCompletePhotoRDTO;
-import john.api1.application.dto.request.request.admin.RequestCompleteVideoRDTO;
+import john.api1.application.dto.request.request.admin. RequestCompleteVideoRDTO;
 import john.api1.application.ports.repositories.request.IRequestCompletedCreateRepository;
 import john.api1.application.ports.repositories.wrapper.PreSignedUrlResponse;
 import john.api1.application.ports.services.IPetOwnerSearch;
@@ -80,13 +80,14 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
     // Update request status as completed
     // Return aggregated DTO response
     @Override
-    public DomainResponse<RequestCompletedPhotoDTO> commitPhotoRequest(RequestCompletePhotoRDTO request) {
+    public DomainResponse<RequestCommittedPhotoDTO> commitPhotoRequest(RequestCompletePhotoRDTO request) {
         try {
             validateId(request.getRequestId());
 
             RequestDomain requestdomain = requestSearch.searchByRequestId(request.getRequestId());
             if (requestdomain.getRequestType() != RequestType.PHOTO_REQUEST)
                 throw new DomainArgumentException("Invalid. The request is not a photo request");
+
             RequestStatusDS.isValidToCommit(requestdomain);
 
             // Generate media pre-sign url
@@ -120,7 +121,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
             // Save to DB
             // Update request status
             var saved = createRepository.createPhotoRequest(photo);
-            var update = requestUpdate.markRequestAsCompletedWithMessage(request.getRequestId(), request.getNotes());
+            var update = requestUpdate.markRequestAsCompletedWithMessage(requestdomain.getId(), requestdomain.getResponseMessage());
             String photoId = saved
                     .orElseThrow(() -> new PersistenceException("Failed to save video domain..."));
             if (!update.isSuccess())
@@ -154,7 +155,7 @@ public class CommitRequestMediasAS implements ICommitRequestMedia {
     // Update request status as completed
     // Return aggregated DTO response
     @Override
-    public DomainResponse<RequestCompletedVideoDTO> commitVideoRequest(RequestCompleteVideoRDTO request) {
+    public DomainResponse<RequestCommittedVideoDTO> commitVideoRequest(RequestCompleteVideoRDTO request) {
         try {
             validateId(request.getRequestId());
 

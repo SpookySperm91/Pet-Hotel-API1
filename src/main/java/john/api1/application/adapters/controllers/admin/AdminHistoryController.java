@@ -84,7 +84,20 @@ public class AdminHistoryController {
 
     @GetMapping("/search/media/all")
     public ResponseEntity<DTOResponse<List<ActivityLogDTO>>> searchAllMedia() {
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with the system. Try again");
+        try {
+            var recent = historyLogSearch.getAllMedia();
+
+            if (!recent.isEmpty()) {
+                return ResponseEntity.ok(DTOResponse.of(
+                        HttpStatus.OK.value(),
+                        recent,
+                        "Ok."));
+            } else {
+                return buildErrorResponse(HttpStatus.OK, "No recent activity log found");
+            }
+        } catch (PersistenceException | NullPointerException e) {
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with the system. Try again");
+        }
     }
 
 

@@ -16,7 +16,7 @@ import java.time.Instant;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "boarding")
+@Document(collection = "${db.collection.boarding}")
 public class BoardingEntity {
     @Id
     private ObjectId id;

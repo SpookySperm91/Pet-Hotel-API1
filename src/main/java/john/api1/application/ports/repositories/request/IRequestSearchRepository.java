@@ -18,6 +18,8 @@ public interface IRequestSearchRepository {
     // active, inactive
     List<RequestDomain> findAllActive();
 
+    List<RequestDomain> findAllActiveByStatus(RequestStatus status);
+
     List<RequestDomain> findAllInactive();
 
     // pet history
@@ -25,4 +27,10 @@ public interface IRequestSearchRepository {
 
     // CQRS
     Optional<RequestCQRS> findRecentMediaRequest();
+
+    List<RequestCQRS> findAllCompletedByPetId(String petId);
+
+    List<RequestDomain> findAllMediaCompleted();
+
+
 }

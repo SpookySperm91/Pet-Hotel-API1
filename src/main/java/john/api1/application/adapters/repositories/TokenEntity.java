@@ -12,7 +12,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "token_apis")
+@Document(collection = "${db.collection.token}")
 public class TokenEntity {
     @Id
     private ObjectId id;

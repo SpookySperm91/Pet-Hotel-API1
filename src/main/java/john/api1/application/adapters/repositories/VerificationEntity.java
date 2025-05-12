@@ -13,7 +13,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "verification_requests")
+@Document(collection = "${db.collection.verification}")
 public class VerificationEntity {
     @Id
     private ObjectId id;

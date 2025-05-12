@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
-@Document(collection = "grooming_request")
+@Document(collection = "${db.collection.request.grooming}")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

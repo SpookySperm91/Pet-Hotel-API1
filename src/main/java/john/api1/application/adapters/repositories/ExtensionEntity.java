@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
-@Document(collection = "boarding_extension")
+@Document(collection = "${db.collection.request.extension}")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

@@ -50,6 +50,10 @@ public class PetRegistrationAS implements IPetRegister {
 
         try {
             // check if pet owner's id is convertable to ObjectId
+            if (ownerId == null || ownerId.isEmpty())
+                throw new DomainArgumentException("Owner id is empty");
+
+
             if (!ObjectId.isValid(ownerId))
                 throw new DomainArgumentException("Invalid owner id format cannot bec converted to ObjectId");
 

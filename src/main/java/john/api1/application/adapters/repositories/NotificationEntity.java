@@ -13,7 +13,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "owners_notification")
+@Document(collection = "${db.collection.notification}")
 public class NotificationEntity {
     @Id
     private ObjectId id;

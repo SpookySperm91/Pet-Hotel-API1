@@ -1,5 +1,6 @@
 package john.api1.application.dto.mapper.owner;
 
+import java.time.Instant;
 import java.util.List;
 
 public record PetOwnerDTO(
@@ -19,8 +20,12 @@ public record PetOwnerDTO(
             String animal,
             String breed,
             String size,
+            String description,
             int age,
-            boolean boarding
+            boolean boarding,
+            String photoId,
+            String photoUrl,
+            Instant expireAt
     ) {
     }
 }

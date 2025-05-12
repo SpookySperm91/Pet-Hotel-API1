@@ -13,7 +13,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "request_video")
+@Document(collection = "${db.collection.request.video}")
 public class VideoRequestEntity {
     @Id
     private ObjectId id;

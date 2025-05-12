@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "request_photo")
+@Document(collection = "${db.collection.request.photo}")
 public class PhotoRequestEntity {
     @Id
     private ObjectId id;

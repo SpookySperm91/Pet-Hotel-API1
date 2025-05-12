@@ -2,9 +2,9 @@ package john.api1.application.adapters.controllers.admin;
 
 import jakarta.validation.Valid;
 import john.api1.application.dto.DTOResponse;
-import john.api1.application.dto.mapper.request.commit.RequestCompletedPhotoDTO;
-import john.api1.application.dto.mapper.request.commit.RequestCompletedServiceDTO;
-import john.api1.application.dto.mapper.request.commit.RequestCompletedVideoDTO;
+import john.api1.application.dto.mapper.request.commit.RequestCommittedPhotoDTO;
+import john.api1.application.dto.mapper.request.commit.RequestCommittedServiceDTO;
+import john.api1.application.dto.mapper.request.commit.RequestCommittedVideoDTO;
 import john.api1.application.dto.request.request.admin.RequestCompletePhotoRDTO;
 import john.api1.application.dto.request.request.admin.RequestCompleteServiceRDTO;
 import john.api1.application.dto.request.request.admin.RequestCompleteVideoRDTO;
@@ -37,7 +37,7 @@ public class AdminRequestCommitController {
 
 
     @PostMapping("/media-photo")
-    public ResponseEntity<DTOResponse<RequestCompletedPhotoDTO>> completePhotoRequest(
+    public ResponseEntity<DTOResponse<RequestCommittedPhotoDTO>> completePhotoRequest(
             @Valid @RequestBody RequestCompletePhotoRDTO request,
             BindingResult result
     ) {
@@ -46,10 +46,6 @@ public class AdminRequestCommitController {
         if (error != null) return buildErrorResponse(HttpStatus.BAD_REQUEST, error);
 
         try {
-            //////////////////////////
-            // Session and magic shits
-            //////////////////////////
-
             var commit = commitRequestMedia.commitPhotoRequest(request);
             if (!commit.isSuccess()) return buildErrorResponse(HttpStatus.BAD_REQUEST, commit.getMessage());
 
@@ -65,7 +61,7 @@ public class AdminRequestCommitController {
 
 
     @PostMapping("/media-video")
-    public ResponseEntity<DTOResponse<RequestCompletedVideoDTO>> completeVideoRequest(
+    public ResponseEntity<DTOResponse<RequestCommittedVideoDTO>> completeVideoRequest(
             @Valid @RequestBody RequestCompleteVideoRDTO request,
             BindingResult result
     ) {
@@ -93,7 +89,7 @@ public class AdminRequestCommitController {
 
 
     @PostMapping("/service-extension")
-    public ResponseEntity<DTOResponse<RequestCompletedServiceDTO>> completeExtensionRequest(
+    public ResponseEntity<DTOResponse<RequestCommittedServiceDTO>> completeExtensionRequest(
             @Valid @RequestBody RequestCompleteServiceRDTO request,
             BindingResult result
     ) {
@@ -122,7 +118,7 @@ public class AdminRequestCommitController {
     }
 
     @PostMapping("/service-grooming")
-    public ResponseEntity<DTOResponse<RequestCompletedServiceDTO>> completeGroomingRequest(
+    public ResponseEntity<DTOResponse<RequestCommittedServiceDTO>> completeGroomingRequest(
             @Valid @RequestBody RequestCompleteServiceRDTO request,
             BindingResult result
     ) {

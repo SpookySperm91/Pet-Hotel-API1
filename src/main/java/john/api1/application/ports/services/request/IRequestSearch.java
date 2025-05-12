@@ -4,6 +4,7 @@ import john.api1.application.components.DomainResponse;
 import john.api1.application.domain.models.request.ExtensionDomain;
 import john.api1.application.domain.models.request.GroomingDomain;
 import john.api1.application.domain.models.request.RequestDomain;
+import john.api1.application.domain.models.request.VideoRequestDomain;
 import john.api1.application.ports.repositories.request.ExtensionCQRS;
 import john.api1.application.ports.repositories.request.GroomingCQRS;
 import john.api1.application.ports.repositories.request.RequestCQRS;
@@ -37,4 +38,9 @@ public interface IRequestSearch {
 
     // Recent media?
     Optional<RequestCQRS> searchRecentMediaRequest();
+
+
+    // All Media
+    List<RequestDomain> searchAllMedia();
+
 }

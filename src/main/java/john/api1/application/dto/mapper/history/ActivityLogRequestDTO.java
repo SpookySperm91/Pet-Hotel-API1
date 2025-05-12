@@ -15,7 +15,7 @@ public class ActivityLogRequestDTO implements ActivityLogDTO{
     private String requestType;
     private String description;
     private String performedBy;
-    private Instant timestamp;
+    private String timestamp;
     // Pet information
     private String petName;
     private String animalType;

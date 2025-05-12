@@ -15,8 +15,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 
 @Repository
 public class RequestSearchRepository implements IRequestSearchRepository {
@@ -60,6 +62,8 @@ public class RequestSearchRepository implements IRequestSearchRepository {
         Query query = new Query(Criteria.where("requestStatus").is(status.getRequestStatus()));
         List<RequestEntity> entities = mongoTemplate.find(query, RequestEntity.class);
 
+        if (entities.isEmpty()) return new ArrayList<>();
+
         return entities.stream()
                 .map(this::toDomain)
                 .toList();
@@ -71,6 +75,8 @@ public class RequestSearchRepository implements IRequestSearchRepository {
         Query query = new Query();
         List<RequestEntity> entities = mongoTemplate.find(query, RequestEntity.class);
 
+        if (entities.isEmpty()) return new ArrayList<>();
+
         return entities.stream()
                 .map(this::toDomain)
                 .toList();
@@ -81,15 +87,34 @@ public class RequestSearchRepository implements IRequestSearchRepository {
         Query query = new Query(Criteria.where("active").is(true));
         List<RequestEntity> entities = mongoTemplate.find(query, RequestEntity.class);
 
+        if (entities.isEmpty()) return new ArrayList<>();
+
         return entities.stream()
                 .map(this::toDomain)
                 .toList();
     }
 
+    public List<RequestDomain> findAllActiveByStatus(RequestStatus status) {
+        Query query = new Query(
+                Criteria.where("active").is(true)
+                        .and("requestStatus").is(status.getRequestStatus()));
+        List<RequestEntity> entities = mongoTemplate.find(query, RequestEntity.class);
+
+        if (entities.isEmpty()) return new ArrayList<>();
+
+        return entities.stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
+
     @Override
     public List<RequestDomain> findAllInactive() {
         Query query = new Query(Criteria.where("active").is(false));
         List<RequestEntity> entities = mongoTemplate.find(query, RequestEntity.class);
+
+        if (entities.isEmpty()) return new ArrayList<>();
+
 
         return entities.stream()
                 .map(this::toDomain)
@@ -103,6 +128,8 @@ public class RequestSearchRepository implements IRequestSearchRepository {
 
         Query query = new Query(Criteria.where("petId").is(new ObjectId(petId)));
         List<RequestEntity> entities = mongoTemplate.find(query, RequestEntity.class);
+
+        if (entities.isEmpty()) return new ArrayList<>();
 
         return entities.stream()
                 .map(this::toDomain)
@@ -138,6 +165,39 @@ public class RequestSearchRepository implements IRequestSearchRepository {
     }
 
 
+    @Override
+    public List<RequestCQRS> findAllCompletedByPetId(String petId) {
+        if (!ObjectId.isValid(petId)) throw new PersistenceException("Invalid pet id cannot be converted to ObjectId");
+
+        Query query = new Query(new Criteria().andOperator(
+                Criteria.where("petId").is(new ObjectId(petId)),
+                Criteria.where("requestStatus").is("COMPLETED")
+        ));
+        List<RequestEntity> entities = mongoTemplate.find(query, RequestEntity.class);
+
+        if (entities.isEmpty()) return new ArrayList<>();
+
+        return entities.stream()
+                .map(this::toCqrs)
+                .toList();
+    }
+
+    @Override
+    public List<RequestDomain> findAllMediaCompleted() {
+        Query query = new Query(new Criteria().andOperator(
+                new Criteria().orOperator(Criteria.where("requestType").is("PHOTO_REQUEST"), Criteria.where("requestType").is("VIDEO_REQUEST")),
+                Criteria.where("requestStatus").is("COMPLETED")
+        ));
+
+        List<RequestEntity> entities = mongoTemplate.find(query, RequestEntity.class);
+        if (entities.isEmpty()) return new ArrayList<>();
+
+        return entities.stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
+
     private RequestDomain toDomain(RequestEntity entity) {
         return new RequestDomain(
                 entity.getId().toString(),
@@ -149,7 +209,22 @@ public class RequestSearchRepository implements IRequestSearchRepository {
                 entity.getDescription(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
-                entity.getResponseMessage(),
+                entity.getResponseMessage() != null ? entity.getResponseMessage() : "No reply",
+                entity.isActive()
+        );
+    }
+
+
+    private RequestCQRS toCqrs(RequestEntity entity) {
+        return new RequestCQRS(
+                entity.getId().toString(),
+                entity.getPetId().toString(),
+                entity.getOwnerId().toString(),
+                entity.getBoardingId().toString(),
+                RequestType.fromString(entity.getRequestType()),
+                entity.getDescription(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
                 entity.isActive()
         );
     }

@@ -39,6 +39,29 @@ public class MediaSearchAS implements IMediaSearch {
     }
 
     @Override
+    public Optional<MediaIdUrlExpire> optionalFindById(String id) {
+        if (!ObjectId.isValid(id))
+            throw new PersistenceException("Owner id for media retrieval cannot be converted to ObjectId");
+
+        var results = mediaRepository.findById(id);
+        if (results.isEmpty()) return Optional.empty();
+        System.out.println("////////////");
+        System.out.println(results.get());
+
+        System.out.println("Process profile picture. Filename: " + results.get().fileName());
+        String preSignedUrl = minioAdapter.getReadUrl(
+                results.get().bucketType(),
+                results.get().fileName());
+
+        return Optional.of(new MediaIdUrlExpire(
+                results.get().id(),
+                preSignedUrl,
+                results.get().expiredAt()
+        ));
+    }
+
+
+    @Override
     public DomainResponse<List<MediaPreview>> findByOwnerIdAndUploadedBetween(String ownerId, Instant start, Instant end) {
         var results = mediaRepository.findByOwnerIdAndUploadedBetween(ownerId, start, end)
                 .stream()
@@ -88,7 +111,6 @@ public class MediaSearchAS implements IMediaSearch {
         String preSignedUrl = minioAdapter.getReadUrl(
                 results.get().bucketType(),
                 results.get().fileName());
-
 
 
         return Optional.of(new MediaIdUrlExpire(

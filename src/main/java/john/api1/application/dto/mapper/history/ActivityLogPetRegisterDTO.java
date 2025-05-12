@@ -7,7 +7,7 @@ public record ActivityLogPetRegisterDTO(
         String activityType,
         String description,
         String performedBy,
-        Instant timestamp,
+        String timestamp,
         // Pet information
         String petName,
         String type,

@@ -3,6 +3,7 @@ package john.api1.application.components;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class DateUtils {
     private static final DateTimeFormatter FORMATTER =
@@ -10,8 +11,9 @@ public class DateUtils {
                     .withZone(ZoneId.systemDefault());
 
     private static final DateTimeFormatter FORMATTER_TIME =
-            DateTimeFormatter.ofPattern("MMMM d, yyyy, hh:mm a")
+            DateTimeFormatter.ofPattern("MMM d, yyyy h:mm a", Locale.ENGLISH)
                     .withZone(ZoneId.systemDefault());
+
 
     public static String formatInstant(Instant instant) {
         return FORMATTER.format(instant);

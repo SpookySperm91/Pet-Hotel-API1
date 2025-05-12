@@ -13,6 +13,9 @@ public interface IHistoryLogSearch {
 
     List<ActivityLogDTO> getAll();
 
+    List<ActivityLogDTO> getAllMedia();
+
+
     Optional<ActivityLogDTO> searchById(String id);
 
     Optional<List<ActivityLogDTO>> getByDate(Instant time);

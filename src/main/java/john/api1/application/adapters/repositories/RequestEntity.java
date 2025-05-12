@@ -17,7 +17,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "request")
+@Document(collection = "${db.collection.request}")
 @CompoundIndexes({
         @CompoundIndex(name = "ownerId_idx", def = "{'ownerId': 1}"),
         @CompoundIndex(name = "petId_idx", def = "{'petId': 1}"),

@@ -9,7 +9,7 @@ import java.util.Arrays;
 @Getter
 public enum BoardingType {
     DAYCARE("DAYCARE", "Daycare"),
-    LONG_STAY("LONG_STAY","LongStay");
+    LONG_STAY("LONG_STAY","Long Stay");
 
     private final String boardingType;
     private final String durationType;
